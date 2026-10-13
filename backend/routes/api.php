@@ -16,6 +16,31 @@ use App\Http\Controllers\Api\V1\TicketController;
 use App\Http\Controllers\Api\V1\TicketSatisfactionController;
 use Illuminate\Support\Facades\Route;
 
+// Informações e status da API (/api/v1)
+Route::get('/', function () {
+    return response()->json([
+        'name' => config('app.name', 'HelpDesk Pro'),
+        'version' => '1.0.0',
+        'status' => 'operational',
+        'timestamp' => now()->toISOString(),
+        'endpoints' => [
+            'health' => '/up',
+            'auth' => [
+                'login' => 'POST /api/v1/auth/login',
+                'logout' => 'POST /api/v1/auth/logout',
+                'me' => 'GET /api/v1/auth/me',
+            ],
+            'tickets' => 'GET /api/v1/tickets',
+            'departments' => 'GET /api/v1/departments',
+            'teams' => 'GET /api/v1/teams',
+            'categories' => 'GET /api/v1/categories',
+            'priorities' => 'GET /api/v1/priorities',
+            'articles' => 'GET /api/v1/articles',
+            'dashboard_metrics' => 'GET /api/v1/dashboard/metrics',
+        ],
+    ]);
+});
+
 // Rotas de Autenticação
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
