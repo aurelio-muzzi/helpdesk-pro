@@ -153,7 +153,7 @@ php artisan test                        # 67 testes unitários e de feature (260
 cd frontend
 npm run lint                           # Validação de código ESLint (0 errors, 0 warnings)
 npm run typecheck                      # Verificação de tipos TypeScript (tsc --noEmit)
-npm test -- --run                      # 10 suites Vitest (34 testes passando)
+npm test -- --run                      # 12 suites Vitest (49 testes passando)
 npm run build                          # Build de produção otimizado com Vite
 ```
 

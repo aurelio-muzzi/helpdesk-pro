@@ -156,4 +156,20 @@ describe('KnowledgeBasePage Component', () => {
     expect(screen.getByText('Novo Artigo de Conhecimento')).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Ex: Como configurar acesso à VPN/i)).toBeInTheDocument();
   });
+
+  it('opens ConfirmDeleteModal when clicking delete button on article and triggers delete on confirmation', () => {
+    renderWithProviders(<KnowledgeBasePage />);
+
+    const deleteBtn = screen.getAllByTitle('Excluir artigo')[0];
+    fireEvent.click(deleteBtn);
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByText('Confirmar Exclusão')).toBeInTheDocument();
+    expect(screen.getByText('"Como configurar cliente VPN OpenVPN"')).toBeInTheDocument();
+
+    const confirmBtn = screen.getByRole('button', { name: /Excluir permanentemente/i });
+    fireEvent.click(confirmBtn);
+
+    expect(mockDeleteMutate).toHaveBeenCalledWith(1, expect.anything());
+  });
 });

@@ -14,6 +14,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import { ArticleCard } from '../components/ArticleCard';
 import { ArticleReaderModal } from '../components/ArticleReaderModal';
 import { ArticleFormModal } from '../components/ArticleFormModal';
+import { ConfirmDeleteModal } from '@/components/feedback/ConfirmDeleteModal';
 import type { KnowledgeArticle } from '../types';
 
 export const KnowledgeBasePage: React.FC = () => {
@@ -25,6 +26,7 @@ export const KnowledgeBasePage: React.FC = () => {
   const [readingArticle, setReadingArticle] = useState<KnowledgeArticle | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<KnowledgeArticle | null>(null);
+  const [deletingArticle, setDeletingArticle] = useState<KnowledgeArticle | null>(null);
 
   const { user } = useAuth();
   const isStaff = user?.role?.name === 'admin' || user?.role?.name === 'manager' || user?.role?.name === 'agent';
@@ -49,9 +51,16 @@ export const KnowledgeBasePage: React.FC = () => {
   };
 
   const handleDelete = (article: KnowledgeArticle) => {
-    if (window.confirm(`Deseja realmente remover o artigo "${article.title}"?`)) {
-      deleteMutation.mutate(article.id);
-    }
+    setDeletingArticle(article);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deletingArticle) return;
+    deleteMutation.mutate(deletingArticle.id, {
+      onSuccess: () => {
+        setDeletingArticle(null);
+      },
+    });
   };
 
   return (
@@ -357,6 +366,16 @@ export const KnowledgeBasePage: React.FC = () => {
         isOpen={isFormOpen}
         article={editingArticle}
         onClose={() => setIsFormOpen(false)}
+      />
+
+      {/* Modal Confirmação de Exclusão */}
+      <ConfirmDeleteModal
+        isOpen={!!deletingArticle}
+        itemName={deletingArticle?.title}
+        itemType="o artigo"
+        isLoading={deleteMutation.isPending}
+        onConfirm={handleConfirmDelete}
+        onClose={() => setDeletingArticle(null)}
       />
     </div>
   );
