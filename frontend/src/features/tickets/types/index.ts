@@ -81,3 +81,32 @@ export interface TicketFilterParams {
   page?: number;
   per_page?: number;
 }
+
+export interface TicketAttachment {
+  id: number;
+  ticket_id: number;
+  comment_id?: number | null;
+  original_name: string;
+  file_size: number;
+  formatted_size: string;
+  mime_type: string;
+  download_url: string;
+  created_at: string;
+}
+
+export interface TicketComment {
+  id: number;
+  ticket_id: number;
+  content: string;
+  is_internal: boolean;
+  user: TicketUser & { role?: string };
+  attachments?: TicketAttachment[];
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CreateCommentPayload {
+  content: string;
+  is_internal?: boolean;
+  attachments?: File[];
+}
