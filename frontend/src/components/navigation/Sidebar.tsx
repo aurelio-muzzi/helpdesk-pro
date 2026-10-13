@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Ticket, Users, Settings, X, ShieldAlert, BookOpen } from 'lucide-react';
+import { LayoutDashboard, Ticket, Users, Settings, X, ShieldAlert, BookOpen, ShieldCheck } from 'lucide-react';
 import { useSidebarStore } from '@/stores/useSidebarStore';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
 const navigationItems = [
   { name: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -9,11 +10,16 @@ const navigationItems = [
   { name: 'Base de Conhecimento', path: '/kb', icon: BookOpen },
   { name: 'Equipes & Usuários', path: '/teams', icon: Users },
   { name: 'Políticas de SLA', path: '/sla', icon: ShieldAlert },
+  { name: 'Auditoria & Logs', path: '/audit', icon: ShieldCheck, adminOnly: true },
   { name: 'Configurações', path: '/settings', icon: Settings },
 ];
 
 export const Sidebar: React.FC = () => {
   const { isMobileOpen, closeMobile } = useSidebarStore();
+  const { user } = useAuth();
+
+  const isAdmin = user?.role?.name === 'admin';
+  const visibleItems = navigationItems.filter((item) => !item.adminOnly || isAdmin);
 
   return (
     <>
@@ -80,7 +86,7 @@ export const Sidebar: React.FC = () => {
         </div>
 
         <nav style={{ padding: '1rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          {navigationItems.map((item) => {
+          {visibleItems.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
