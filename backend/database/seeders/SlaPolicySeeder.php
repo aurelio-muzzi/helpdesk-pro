@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\PriorityLevel;
 use App\Models\Priority;
 use App\Models\SlaPolicy;
 use Illuminate\Database\Seeder;
@@ -10,42 +11,57 @@ class SlaPolicySeeder extends Seeder
 {
     public function run(): void
     {
-        $urgente = Priority::where('name', 'urgente')->first();
-        $alta = Priority::where('name', 'alta')->first();
-        $media = Priority::where('name', 'media')->first();
-        $baixa = Priority::where('name', 'baixa')->first();
+        $urgente = Priority::where('name', PriorityLevel::URGENT->value)
+            ->orWhere('name', 'urgente')
+            ->orWhere('display_name', 'Urgente')
+            ->first();
+
+        $alta = Priority::where('name', PriorityLevel::HIGH->value)
+            ->orWhere('name', 'alta')
+            ->orWhere('display_name', 'Alta')
+            ->first();
+
+        $media = Priority::where('name', PriorityLevel::MEDIUM->value)
+            ->orWhere('name', 'media')
+            ->orWhere('display_name', 'Média')
+            ->first();
+
+        $baixa = Priority::where('name', PriorityLevel::LOW->value)
+            ->orWhere('name', 'baixa')
+            ->orWhere('display_name', 'Baixa')
+            ->first();
 
         $policies = [
             [
-                'name' => 'SLA Crítico / Urgente',
-                'description' => 'Aplica-se a incidentes de parada total de operação ou sistemas críticos fora do ar.',
+                'name' => 'SLA Crítico / Urgente (P1)',
+                'description' => 'Aplica-se a incidentes de parada total de operação, sistemas críticos ou filiais inacessíveis.',
                 'priority_id' => $urgente?->id,
                 'first_response_time_minutes' => 15,
-                'resolution_time_minutes' => 120,
+                'resolution_time_minutes' => 120, // 2 horas
                 'is_active' => true,
             ],
             [
-                'name' => 'SLA Alta Severidade',
-                'description' => 'Aplica-se a falhas que afetam processos operacionais essenciais sem solução de contorno.',
+                'name' => 'SLA Alta Severidade (P2)',
+                'description' => 'Aplica-se a falhas que afetam processos operacionais essenciais sem solução temporária de contorno.',
                 'priority_id' => $alta?->id,
-                'first_response_time_minutes' => 60,
-                'resolution_time_minutes' => 480,
+                'first_response_time_minutes' => 60, // 1 hora
+                'resolution_time_minutes' => 480, // 8 horas
                 'is_active' => true,
             ],
             [
-                'name' => 'SLA Padrão / Médio',
-                'description' => 'Aplica-se a solicitações do dia a dia com impacto parcial ou moderado.',
+                'name' => 'SLA Padrão / Médio (P3)',
+                'description' => 'Aplica-se a solicitações do dia a dia com impacto parcial ou moderado nas atividades do colaborador.',
                 'priority_id' => $media?->id,
-                'first_response_time_minutes' => 240,
-                'resolution_time_minutes' => 1440,
+                'first_response_time_minutes' => 240, // 4 horas
+                'resolution_time_minutes' => 1440, // 24 horas
                 'is_active' => true,
             ],
             [
-                'name' => 'SLA Baixa Prioridade',
-                'description' => 'Aplica-se a dúvidas, ajustes cosméticos ou melhorias não urgentes.',
+                'name' => 'SLA Baixa Prioridade (P4)',
+                'description' => 'Aplica-se a pedidos informativos, ajustes cosméticos, periféricos secundários ou melhorias não urgentes.',
                 'priority_id' => $baixa?->id,
-                'first_response_time_minutes' => 480,
-                'resolution_time_minutes' => 2880,
+                'first_response_time_minutes' => 480, // 8 horas
+                'resolution_time_minutes' => 2880, // 48 horas
                 'is_active' => true,
             ],
         ];

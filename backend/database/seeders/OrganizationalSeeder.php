@@ -33,9 +33,19 @@ class OrganizationalSeeder extends Seeder
             ['description' => 'Manutenção predial, equipamentos e logística interna', 'is_active' => true]
         );
 
-        Department::firstOrCreate(
+        $deptRH = Department::firstOrCreate(
             ['name' => 'Recursos Humanos'],
             ['description' => 'Gestão de pessoas, onboarding e benefícios', 'is_active' => true]
+        );
+
+        $deptFin = Department::firstOrCreate(
+            ['name' => 'Financeiro e Controladoria'],
+            ['description' => 'Faturamento, contas a pagar, tesouraria e controladoria', 'is_active' => true]
+        );
+
+        $deptCom = Department::firstOrCreate(
+            ['name' => 'Comercial e Vendas'],
+            ['description' => 'Equipe comercial, expansão de negócios e relacionamento com clientes', 'is_active' => true]
         );
 
         // 2. Equipes
@@ -44,39 +54,77 @@ class OrganizationalSeeder extends Seeder
             ['description' => 'Primeiro nível de atendimento a incidentes e dúvidas diárias', 'is_active' => true]
         );
 
-        Team::firstOrCreate(
+        $teamL2 = Team::firstOrCreate(
             ['department_id' => $deptIT->id, 'name' => 'Suporte Avançado L2'],
-            ['description' => 'Resolução de problemas complexos de software e integrações', 'is_active' => true]
+            ['description' => 'Resolução de problemas complexos de software, banco de dados e integrações', 'is_active' => true]
         );
 
-        Team::firstOrCreate(
+        $teamInfra = Team::firstOrCreate(
             ['department_id' => $deptInfra->id, 'name' => 'Infraestrutura Cloud'],
-            ['description' => 'Monitoramento de servidores, VPN e conectividade', 'is_active' => true]
+            ['description' => 'Monitoramento de servidores, VPN, firewalls e conectividade', 'is_active' => true]
+        );
+
+        $teamSec = Team::firstOrCreate(
+            ['department_id' => $deptInfra->id, 'name' => 'Segurança da Informação'],
+            ['description' => 'Auditoria de acessos, políticas de proteção e resposta a ameaças', 'is_active' => true]
         );
 
         // 3. Alocação de Membros às Equipes
         $manager = User::where('email', 'manager@helpdeskpro.local')->first();
-        $agent = User::where('email', 'agent@helpdeskpro.local')->first();
+        $agentBeatriz = User::whereIn('email', ['agente@helpdeskpro.local', 'agent@helpdeskpro.local'])->first();
+        $agentMariana = User::where('email', 'mariana.souza@helpdeskpro.local')->first();
+        $agentLucas = User::where('email', 'lucas.mendes@helpdeskpro.local')->first();
+        $agentRafael = User::where('email', 'rafael.nogueira@helpdeskpro.local')->first();
+        $agentCarlos = User::where('email', 'carlos.eduardo@helpdeskpro.local')->first();
 
-        if ($manager && $teamL1) {
-            $teamL1->users()->syncWithoutDetaching([
-                $manager->id => ['is_leader' => true],
-            ]);
+        // Service Desk L1
+        if ($teamL1) {
+            $l1Members = [];
+            if ($manager) $l1Members[$manager->id] = ['is_leader' => true];
+            if ($agentBeatriz) $l1Members[$agentBeatriz->id] = ['is_leader' => false];
+            if ($agentMariana) $l1Members[$agentMariana->id] = ['is_leader' => false];
+            if ($agentCarlos) $l1Members[$agentCarlos->id] = ['is_leader' => false];
+
+            $teamL1->users()->syncWithoutDetaching($l1Members);
         }
 
-        if ($agent && $teamL1) {
-            $teamL1->users()->syncWithoutDetaching([
-                $agent->id => ['is_leader' => false],
-            ]);
+        // Suporte Avançado L2
+        if ($teamL2) {
+            $l2Members = [];
+            if ($agentRafael) $l2Members[$agentRafael->id] = ['is_leader' => true];
+            if ($agentMariana) $l2Members[$agentMariana->id] = ['is_leader' => false];
+
+            $teamL2->users()->syncWithoutDetaching($l2Members);
         }
 
-        // 4. Categorias
+        // Infraestrutura Cloud
+        if ($teamInfra) {
+            $infraMembers = [];
+            if ($agentLucas) $infraMembers[$agentLucas->id] = ['is_leader' => true];
+            if ($agentBeatriz) $infraMembers[$agentBeatriz->id] = ['is_leader' => false];
+
+            $teamInfra->users()->syncWithoutDetaching($infraMembers);
+        }
+
+        // Segurança da Informação
+        if ($teamSec) {
+            $secMembers = [];
+            if ($agentLucas) $secMembers[$agentLucas->id] = ['is_leader' => true];
+            if ($manager) $secMembers[$manager->id] = ['is_leader' => false];
+
+            $teamSec->users()->syncWithoutDetaching($secMembers);
+        }
+
+        // 4. Categorias Corporativas
         $categories = [
-            ['name' => 'Problemas com Hardware', 'department_id' => $deptIT->id, 'description' => 'Computadores, monitores e periféricos'],
-            ['name' => 'Acessos e Permissões', 'department_id' => $deptIT->id, 'description' => 'Criação de contas, liberação de pastas e acessos'],
-            ['name' => 'Falha de Conexão ou VPN', 'department_id' => $deptInfra->id, 'description' => 'Instabilidade de internet, VPN e Wi-Fi'],
-            ['name' => 'Solicitação de Equipamento', 'department_id' => $deptFacilities->id, 'description' => 'Troca de cadeiras, mesas ou material de apoio'],
-            ['name' => 'Dúvidas Gerais de Sistema', 'department_id' => $deptIT->id, 'description' => 'Orientações sobre uso das plataformas da empresa'],
+            ['name' => 'Problemas com Hardware', 'department_id' => $deptIT->id, 'description' => 'Computadores, monitores, peças e periféricos com falhas'],
+            ['name' => 'Acessos e Permissões', 'department_id' => $deptIT->id, 'description' => 'Criação de contas, liberação de pastas de rede e permissões especiais'],
+            ['name' => 'Falha de Conexão ou VPN', 'department_id' => $deptInfra->id, 'description' => 'Instabilidade de internet corporativa, túneis VPN e rede Wi-Fi'],
+            ['name' => 'Sistemas ERP & Faturamento', 'department_id' => $deptIT->id, 'description' => 'Módulos de emissão de NF-e, fechamento financeiro e ERP corporativo'],
+            ['name' => 'E-mail e Comunicação Corporativa', 'department_id' => $deptIT->id, 'description' => 'Contas do Exchange/Outlook, listas de distribuição e alias'],
+            ['name' => 'Solicitação de Equipamento', 'department_id' => $deptFacilities->id, 'description' => 'Novos periféricos, fones, adaptadores ou material de apoio'],
+            ['name' => 'Telefonia & VoIP', 'department_id' => $deptInfra->id, 'description' => 'Ramais corporativos, linhas SIP e centrais telefônicas'],
+            ['name' => 'Dúvidas Gerais de Sistema', 'department_id' => $deptIT->id, 'description' => 'Orientações e boas práticas sobre o uso das ferramentas corporativas'],
         ];
 
         foreach ($categories as $catData) {
@@ -119,7 +167,7 @@ class OrganizationalSeeder extends Seeder
         ];
 
         foreach ($priorities as $priorityData) {
-            Priority::firstOrCreate(
+            Priority::updateOrCreate(
                 ['name' => $priorityData['name']],
                 $priorityData
             );

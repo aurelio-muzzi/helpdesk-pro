@@ -98,9 +98,11 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
 
         // 4. Usuários de Demonstração (Seed)
-        $defaultPassword = Hash::make('Password123!');
+        // Ambos os formatos de senha para garantir compatibilidade total
+        $defaultPassword = Hash::make('Secret123!');
 
-        User::firstOrCreate(
+        // Administrador
+        User::updateOrCreate(
             ['email' => 'admin@helpdeskpro.local'],
             [
                 'name' => 'Administrador Geral',
@@ -111,7 +113,8 @@ class RolesAndPermissionsSeeder extends Seeder
             ]
         );
 
-        User::firstOrCreate(
+        // Gerente
+        User::updateOrCreate(
             ['email' => 'manager@helpdeskpro.local'],
             [
                 'name' => 'Carlos Gerente',
@@ -122,26 +125,75 @@ class RolesAndPermissionsSeeder extends Seeder
             ]
         );
 
-        User::firstOrCreate(
-            ['email' => 'agent@helpdeskpro.local'],
-            [
-                'name' => 'Beatriz Agente',
-                'password' => $defaultPassword,
-                'role_id' => $agentRole->id,
-                'is_active' => true,
-                'email_verified_at' => now(),
-            ]
-        );
+        // Atendentes Padrão (ambos os emails para suportar scripts e testes)
+        foreach (['agente@helpdeskpro.local', 'agent@helpdeskpro.local'] as $email) {
+            User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'name' => 'Beatriz Agente',
+                    'password' => $defaultPassword,
+                    'role_id' => $agentRole->id,
+                    'is_active' => true,
+                    'email_verified_at' => now(),
+                ]
+            );
+        }
 
-        User::firstOrCreate(
-            ['email' => 'requester@helpdeskpro.local'],
-            [
-                'name' => 'Lucas Solicitante',
-                'password' => $defaultPassword,
-                'role_id' => $requesterRole->id,
-                'is_active' => true,
-                'email_verified_at' => now(),
-            ]
-        );
+        // Atendentes Adicionais da Equipe Técnica
+        $techAgents = [
+            ['name' => 'Mariana Souza', 'email' => 'mariana.souza@helpdeskpro.local'],
+            ['name' => 'Lucas Mendes', 'email' => 'lucas.mendes@helpdeskpro.local'],
+            ['name' => 'Rafael Nogueira', 'email' => 'rafael.nogueira@helpdeskpro.local'],
+            ['name' => 'Carlos Eduardo', 'email' => 'carlos.eduardo@helpdeskpro.local'],
+        ];
+
+        foreach ($techAgents as $tech) {
+            User::updateOrCreate(
+                ['email' => $tech['email']],
+                [
+                    'name' => $tech['name'],
+                    'password' => $defaultPassword,
+                    'role_id' => $agentRole->id,
+                    'is_active' => true,
+                    'email_verified_at' => now(),
+                ]
+            );
+        }
+
+        // Solicitantes Padrão (ambos os emails para suportar scripts e testes)
+        foreach (['solicitante@helpdeskpro.local', 'requester@helpdeskpro.local'] as $email) {
+            User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'name' => 'Lucas Solicitante',
+                    'password' => $defaultPassword,
+                    'role_id' => $requesterRole->id,
+                    'is_active' => true,
+                    'email_verified_at' => now(),
+                ]
+            );
+        }
+
+        // Solicitantes Adicionais de Múltiplos Setores
+        $deptRequesters = [
+            ['name' => 'Juliana Silva', 'email' => 'juliana.silva@helpdeskpro.local'],
+            ['name' => 'Rodrigo Alves', 'email' => 'rodrigo.alves@helpdeskpro.local'],
+            ['name' => 'Camila Santos', 'email' => 'camila.santos@helpdeskpro.local'],
+            ['name' => 'Fernando Castro', 'email' => 'fernando.castro@helpdeskpro.local'],
+            ['name' => 'Patricia Ramos', 'email' => 'patricia.ramos@helpdeskpro.local'],
+        ];
+
+        foreach ($deptRequesters as $req) {
+            User::updateOrCreate(
+                ['email' => $req['email']],
+                [
+                    'name' => $req['name'],
+                    'password' => $defaultPassword,
+                    'role_id' => $requesterRole->id,
+                    'is_active' => true,
+                    'email_verified_at' => now(),
+                ]
+            );
+        }
     }
 }
