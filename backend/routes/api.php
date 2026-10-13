@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\DepartmentController;
+use App\Http\Controllers\Api\V1\KnowledgeArticleController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PriorityController;
 use App\Http\Controllers\Api\V1\SlaPolicyController;
@@ -50,6 +51,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Dashboard & Relatórios
     Route::get('dashboard/metrics', [DashboardController::class, 'metrics']);
     Route::get('dashboard/export', [DashboardController::class, 'export']);
+
+    // Base de Conhecimento e FAQ
+    Route::get('articles/suggestions', [KnowledgeArticleController::class, 'suggestions']);
+    Route::post('articles/{id}/feedback', [KnowledgeArticleController::class, 'feedback']);
+    Route::apiResource('articles', KnowledgeArticleController::class);
 
     // Notificações In-App
     Route::get('notifications', [NotificationController::class, 'index']);

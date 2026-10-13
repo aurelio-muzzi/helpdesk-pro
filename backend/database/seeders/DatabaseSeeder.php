@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             OrganizationalSeeder::class,
             SlaPolicySeeder::class,
+            KnowledgeArticleSeeder::class,
             TicketSeeder::class,
         ]);
     }
