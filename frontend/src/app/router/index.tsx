@@ -11,6 +11,7 @@ const DashboardPage = lazy(() => import('@/features/dashboard/pages/DashboardPag
 const TicketsPage = lazy(() => import('@/features/tickets/pages/TicketsPage'));
 const TeamsPage = lazy(() => import('@/features/teams/pages/TeamsPage'));
 const SlaPoliciesPage = lazy(() => import('@/features/sla/pages/SlaPoliciesPage'));
+const KnowledgeBasePage = lazy(() => import('@/features/kb/pages/KnowledgeBasePage'));
 
 const router = createBrowserRouter([
   // Rotas Públicas
@@ -67,6 +68,12 @@ const router = createBrowserRouter([
             path: 'sla',
             element: (
               <Suspense fallback={<PageSkeleton />}><SlaPoliciesPage /></Suspense>
+            ),
+          },
+          {
+            path: 'kb',
+            element: (
+              <Suspense fallback={<PageSkeleton />}><KnowledgeBasePage /></Suspense>
             ),
           },
         ],

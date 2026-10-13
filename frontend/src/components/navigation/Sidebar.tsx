@@ -1,11 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Ticket, Users, Settings, X, ShieldAlert } from 'lucide-react';
+import { LayoutDashboard, Ticket, Users, Settings, X, ShieldAlert, BookOpen } from 'lucide-react';
 import { useSidebarStore } from '@/stores/useSidebarStore';
 
 const navigationItems = [
   { name: 'Dashboard', path: '/', icon: LayoutDashboard },
   { name: 'Chamados', path: '/tickets', icon: Ticket },
+  { name: 'Base de Conhecimento', path: '/kb', icon: BookOpen },
   { name: 'Equipes & Usuários', path: '/teams', icon: Users },
   { name: 'Políticas de SLA', path: '/sla', icon: ShieldAlert },
   { name: 'Configurações', path: '/settings', icon: Settings },
