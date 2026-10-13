@@ -49,6 +49,8 @@ describe('LoginPage Component', () => {
     });
 
     const emailInput = screen.getByLabelText(/E-mail profissional/i) as HTMLInputElement;
+    const passwordInput = screen.getByLabelText(/Senha de acesso/i) as HTMLInputElement;
     expect(emailInput.value).toBe('admin@helpdeskpro.local');
+    expect(passwordInput.value).toBe('Secret123!');
   });
 });
