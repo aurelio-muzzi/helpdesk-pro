@@ -186,6 +186,23 @@ helpdesk-pro/
 
 ---
 
+## 🗺️ Etapas Desenvolvidas (Roadmap de Implementação)
+
+- [x] **Etapa 0** — Setup do Ambiente, Arquitetura Base & Estrutura Monorepo
+- [x] **Etapa 1** — Autenticação, Perfis de Usuário (RBAC) e Permissões Granulares
+- [x] **Etapa 2** — Estrutura Organizacional (Departamentos, Equipes, Categorias e Prioridades)
+- [x] **Etapa 3** — Ciclo de Vida dos Chamados (Tickets Core, Máquina de Estados e Protocolos)
+- [x] **Etapa 4** — Frontend da Central de Chamados (Dashboard, Tabela Reativa, Filtros e Modais)
+- [x] **Etapa 5** — Interações, Linha do Tempo, Comentários Públicos/Internos e Upload de Anexos
+- [x] **Etapa 6** — Políticas de SLA, Motor de Prazos (MTTA/MTTR), Detecção de Violações e Notificações In-App
+- [x] **Etapa 7** — Painel Executivo (Dashboard Analytics), Gráficos SVG e Exportação de Relatórios CSV
+- [x] **Etapa 8** — Base de Conhecimento (KB), Catálogo de Artigos, Busca Instantânea e Votação de Utilidade
+- [x] **Etapa 9** — Portal do Solicitante, Avaliação de Satisfação (CSAT 1-5★) e Reabertura de Chamados
+- [x] **Etapa 10** — Auditoria, Segurança, Logs de Atividade Imutáveis e Hardening OWASP
+- [x] **Etapa 11** — CI/CD (GitHub Actions), Docker de Produção e Documentação Consolidada
+
+---
+
 ## 📜 Licença
 
 Este projeto é desenvolvido para fins corporativos e portfólio profissional de arquitetura de software sob a licença **MIT**.
