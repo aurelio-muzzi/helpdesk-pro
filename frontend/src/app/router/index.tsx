@@ -13,6 +13,7 @@ const TeamsPage = lazy(() => import('@/features/teams/pages/TeamsPage'));
 const SlaPoliciesPage = lazy(() => import('@/features/sla/pages/SlaPoliciesPage'));
 const KnowledgeBasePage = lazy(() => import('@/features/kb/pages/KnowledgeBasePage'));
 const AuditLogsPage = lazy(() => import('@/features/audit/pages/AuditLogsPage'));
+const SettingsPage = lazy(() => import('@/features/settings/pages/SettingsPage'));
 
 const router = createBrowserRouter([
   // Rotas Públicas
@@ -91,6 +92,16 @@ const router = createBrowserRouter([
               <ProtectedRoute allowedRoles={['admin']}>
                 <Suspense fallback={<PageSkeleton />}>
                   <AuditLogsPage />
+                </Suspense>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'settings',
+            element: (
+              <ProtectedRoute allowedRoles={['admin']}>
+                <Suspense fallback={<PageSkeleton />}>
+                  <SettingsPage />
                 </Suspense>
               </ProtectedRoute>
             ),
