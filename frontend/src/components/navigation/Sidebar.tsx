@@ -4,22 +4,33 @@ import { LayoutDashboard, Ticket, Users, Settings, X, ShieldAlert, BookOpen, Shi
 import { useSidebarStore } from '@/stores/useSidebarStore';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
-const navigationItems = [
+import type { UserRole } from '@/features/auth/types';
+
+interface NavItem {
+  name: string;
+  path: string;
+  icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>;
+  roles?: UserRole[];
+}
+
+const navigationItems: NavItem[] = [
   { name: 'Dashboard', path: '/', icon: LayoutDashboard },
   { name: 'Chamados', path: '/tickets', icon: Ticket },
   { name: 'Base de Conhecimento', path: '/kb', icon: BookOpen },
-  { name: 'Equipes & Usuários', path: '/teams', icon: Users },
-  { name: 'Políticas de SLA', path: '/sla', icon: ShieldAlert },
-  { name: 'Auditoria & Logs', path: '/audit', icon: ShieldCheck, adminOnly: true },
-  { name: 'Configurações', path: '/settings', icon: Settings },
+  { name: 'Equipes & Usuários', path: '/teams', icon: Users, roles: ['admin', 'manager'] },
+  { name: 'Políticas de SLA', path: '/sla', icon: ShieldAlert, roles: ['admin', 'manager'] },
+  { name: 'Auditoria & Logs', path: '/audit', icon: ShieldCheck, roles: ['admin'] },
+  { name: 'Configurações', path: '/settings', icon: Settings, roles: ['admin'] },
 ];
 
 export const Sidebar: React.FC = () => {
   const { isMobileOpen, closeMobile } = useSidebarStore();
   const { user } = useAuth();
 
-  const isAdmin = user?.role?.name === 'admin';
-  const visibleItems = navigationItems.filter((item) => !item.adminOnly || isAdmin);
+  const userRole = user?.role?.name;
+  const visibleItems = navigationItems.filter(
+    (item) => !item.roles || (userRole && item.roles.includes(userRole))
+  );
 
   return (
     <>
@@ -113,6 +124,61 @@ export const Sidebar: React.FC = () => {
             );
           })}
         </nav>
+
+        {/* Rodapé com Perfil do Usuário Ativo */}
+        {user && (
+          <div
+            style={{
+              marginTop: 'auto',
+              padding: '1rem',
+              borderTop: '1px solid var(--border-subtle)',
+              backgroundColor: 'var(--bg-card)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
+                Nível de Acesso
+              </span>
+              <span
+                style={{
+                  fontSize: '0.6875rem',
+                  fontWeight: 700,
+                  padding: '2px 8px',
+                  borderRadius: 'var(--radius-full)',
+                  backgroundColor:
+                    user.role?.name === 'admin'
+                      ? 'rgba(239, 68, 68, 0.15)'
+                      : user.role?.name === 'manager'
+                      ? 'rgba(59, 130, 246, 0.15)'
+                      : user.role?.name === 'agent'
+                      ? 'rgba(16, 185, 129, 0.15)'
+                      : 'rgba(245, 158, 11, 0.15)',
+                  color:
+                    user.role?.name === 'admin'
+                      ? '#ef4444'
+                      : user.role?.name === 'manager'
+                      ? '#3b82f6'
+                      : user.role?.name === 'agent'
+                      ? '#10b981'
+                      : '#f59e0b',
+                }}
+              >
+                {user.role?.display_name || user.role?.name}
+              </span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                {user.name}
+              </span>
+              <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user.email}
+              </span>
+            </div>
+          </div>
+        )}
       </aside>
     </>
   );

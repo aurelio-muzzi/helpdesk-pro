@@ -6,9 +6,10 @@ import type { UserRole } from '../types';
 
 interface ProtectedRouteProps {
   allowedRoles?: UserRole[];
+  children?: React.ReactNode;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles, children }) => {
   const { user, isLoading, isAuthenticated } = useAuth();
   const location = useLocation();
 
@@ -41,11 +42,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) 
           403 — Acesso Restrito
         </h2>
         <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', maxWidth: '420px' }}>
-          Seu perfil de usuário ({user.role.display_name}) não possui permissão para visualizar esta página.
+          Seu perfil de usuário ({user.role?.display_name || user.role?.name}) não possui permissão para visualizar esta página.
         </p>
       </div>
     );
   }
 
-  return <Outlet />;
+  return children ? <>{children}</> : <Outlet />;
 };

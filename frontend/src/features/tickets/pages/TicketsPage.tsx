@@ -25,6 +25,9 @@ import type { Ticket, TicketStatusValue } from '../types';
 
 export const TicketsPage: React.FC = () => {
   const { user } = useAuth();
+  const isStaff = Boolean(user?.role?.name && ['admin', 'manager', 'agent'].includes(user.role.name));
+  const isRequester = user?.role?.name === 'requester';
+
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
@@ -89,10 +92,12 @@ export const TicketsPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-            Central de Chamados
+            {isRequester ? 'Meus Chamados de Suporte' : 'Central de Chamados'}
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-            Gerenciamento, fluxo de atendimento e ciclo de vida de tickets de suporte.
+            {isRequester
+              ? 'Acompanhe o andamento dos seus tickets, responda aos atendentes e avalie o serviço.'
+              : 'Gerenciamento, fluxo de atendimento e ciclo de vida de tickets de suporte.'}
           </p>
         </div>
 
@@ -460,7 +465,7 @@ export const TicketsPage: React.FC = () => {
                         <SatisfactionBadge satisfaction={ticket.satisfaction} />
                       )}
 
-                      {ticket.status.value === 'open' && (
+                      {isStaff && ticket.status.value === 'open' && (
                         <button
                           onClick={() => handleQuickStatusChange(ticket, 'in_progress')}
                           title="Iniciar atendimento"
@@ -481,7 +486,7 @@ export const TicketsPage: React.FC = () => {
                           <PlayCircle size={14} /> Atender
                         </button>
                       )}
-                      {ticket.status.value === 'in_progress' && (
+                      {isStaff && ticket.status.value === 'in_progress' && (
                         <button
                           onClick={() => handleQuickStatusChange(ticket, 'resolved')}
                           title="Marcar como resolvido"
