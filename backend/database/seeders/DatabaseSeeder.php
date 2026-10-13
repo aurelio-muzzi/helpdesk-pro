@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             SlaPolicySeeder::class,
             KnowledgeArticleSeeder::class,
             TicketSeeder::class,
+            AuditLogSeeder::class,
         ]);
     }
 }
