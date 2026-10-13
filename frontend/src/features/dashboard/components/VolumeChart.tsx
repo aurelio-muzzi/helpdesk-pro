@@ -16,7 +16,7 @@ export const VolumeChart: React.FC<VolumeChartProps> = ({ data }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'var(--text-tertiary)',
+          color: 'var(--text-secondary)',
           fontSize: '0.875rem',
         }}
       >
@@ -28,11 +28,11 @@ export const VolumeChart: React.FC<VolumeChartProps> = ({ data }) => {
   const maxVal = Math.max(...data.map((d) => Math.max(d.created, d.resolved, 1)));
   const yAxisMax = Math.ceil(maxVal * 1.25);
 
-  const width = 600;
-  const height = 220;
-  const paddingX = 40;
-  const paddingTop = 20;
-  const paddingBottom = 30;
+  const width = 640;
+  const height = 230;
+  const paddingX = 42;
+  const paddingTop = 22;
+  const paddingBottom = 34;
 
   const chartWidth = width - paddingX * 2;
   const chartHeight = height - paddingTop - paddingBottom;
@@ -54,15 +54,36 @@ export const VolumeChart: React.FC<VolumeChartProps> = ({ data }) => {
 
   return (
     <div style={{ position: 'relative', width: '100%' }}>
-      {/* Legend */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1.25rem', marginBottom: '0.75rem', fontSize: '0.8125rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
-          <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#3b82f6' }} />
-          <span style={{ color: 'var(--text-secondary)' }}>Criados</span>
+      {/* Legenda com alto contraste */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1rem', marginBottom: '0.875rem', fontSize: '0.8125rem' }}>
+        <div
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            backgroundColor: 'rgba(59, 130, 246, 0.12)',
+            border: '1px solid rgba(59, 130, 246, 0.3)',
+            padding: '0.25rem 0.625rem',
+            borderRadius: 'var(--radius-full)',
+          }}
+        >
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#3b82f6' }} />
+          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Criados</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
-          <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#10b981' }} />
-          <span style={{ color: 'var(--text-secondary)' }}>Resolvidos</span>
+
+        <div
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            backgroundColor: 'rgba(16, 185, 129, 0.12)',
+            border: '1px solid rgba(16, 185, 129, 0.3)',
+            padding: '0.25rem 0.625rem',
+            borderRadius: 'var(--radius-full)',
+          }}
+        >
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981' }} />
+          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Resolvidos</span>
         </div>
       </div>
 
@@ -72,16 +93,16 @@ export const VolumeChart: React.FC<VolumeChartProps> = ({ data }) => {
       >
         <defs>
           <linearGradient id="createdGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.25" />
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.35" />
             <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
           </linearGradient>
           <linearGradient id="resolvedGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
+            <stop offset="0%" stopColor="#10b981" stopOpacity="0.35" />
             <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
           </linearGradient>
         </defs>
 
-        {/* Grid Lines */}
+        {/* Linhas de Grade e Eixo Y Nítidos */}
         {[0, 0.25, 0.5, 0.75, 1].map((pct, i) => {
           const y = paddingTop + chartHeight * (1 - pct);
           const val = Math.round(yAxisMax * pct);
@@ -92,15 +113,16 @@ export const VolumeChart: React.FC<VolumeChartProps> = ({ data }) => {
                 y1={y}
                 x2={width - paddingX}
                 y2={y}
-                stroke="var(--border-subtle)"
+                stroke="rgba(148, 163, 184, 0.2)"
                 strokeDasharray="4 4"
                 strokeWidth="1"
               />
               <text
                 x={paddingX - 10}
                 y={y + 4}
-                fill="var(--text-tertiary)"
-                fontSize="10"
+                fill="var(--text-secondary)"
+                fontSize="11"
+                fontWeight="600"
                 textAnchor="end"
               >
                 {val}
@@ -109,15 +131,15 @@ export const VolumeChart: React.FC<VolumeChartProps> = ({ data }) => {
           );
         })}
 
-        {/* Areas */}
+        {/* Áreas Preenchidas */}
         <polygon points={createdArea} fill="url(#createdGrad)" />
         <polygon points={resolvedArea} fill="url(#resolvedGrad)" />
 
-        {/* Polylines */}
+        {/* Linhas dos Gráficos com Traço Nítido */}
         <polyline
           fill="none"
           stroke="#3b82f6"
-          strokeWidth="2.5"
+          strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
           points={createdPoints}
@@ -125,20 +147,19 @@ export const VolumeChart: React.FC<VolumeChartProps> = ({ data }) => {
         <polyline
           fill="none"
           stroke="#10b981"
-          strokeWidth="2.5"
+          strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
           points={resolvedPoints}
         />
 
-        {/* Interactive Dots and X-axis Labels */}
+        {/* Pontos Interativos e Rótulos do Eixo X */}
         {data.map((d, i) => {
           const cx = getX(i);
           const cyCreated = getY(d.created);
           const cyResolved = getY(d.resolved);
           const isHovered = hoveredIndex === i;
 
-          // Exibe apenas rótulos chave de data para legibilidade
           const showLabel = data.length <= 10 || i % Math.ceil(data.length / 7) === 0 || i === data.length - 1;
           const labelParts = d.date.split('-');
           const shortDate = `${labelParts[2]}/${labelParts[1]}`;
@@ -149,33 +170,34 @@ export const VolumeChart: React.FC<VolumeChartProps> = ({ data }) => {
                 <text
                   x={cx}
                   y={height - 8}
-                  fill="var(--text-tertiary)"
-                  fontSize="10"
+                  fill="var(--text-secondary)"
+                  fontSize="11"
+                  fontWeight="600"
                   textAnchor="middle"
                 >
                   {shortDate}
                 </text>
               )}
 
-              {/* Created Point */}
+              {/* Ponto: Criados */}
               <circle
                 cx={cx}
                 cy={cyCreated}
-                r={isHovered ? 5 : 3.5}
+                r={isHovered ? 6 : 4}
                 fill="#3b82f6"
                 stroke="var(--bg-card)"
-                strokeWidth="2"
+                strokeWidth="2.5"
                 style={{ cursor: 'pointer', transition: 'r 0.15s ease' }}
               />
 
-              {/* Resolved Point */}
+              {/* Ponto: Resolvidos */}
               <circle
                 cx={cx}
                 cy={cyResolved}
-                r={isHovered ? 5 : 3.5}
+                r={isHovered ? 6 : 4}
                 fill="#10b981"
                 stroke="var(--bg-card)"
-                strokeWidth="2"
+                strokeWidth="2.5"
                 style={{ cursor: 'pointer', transition: 'r 0.15s ease' }}
               />
             </g>
@@ -183,7 +205,7 @@ export const VolumeChart: React.FC<VolumeChartProps> = ({ data }) => {
         })}
       </svg>
 
-      {/* Hover Info Tooltip */}
+      {/* Tooltip de Hover */}
       {hoveredIndex !== null && data[hoveredIndex] && (
         <div
           style={{
@@ -192,23 +214,25 @@ export const VolumeChart: React.FC<VolumeChartProps> = ({ data }) => {
             left: '50%',
             transform: 'translateX(-50%)',
             backgroundColor: 'var(--bg-surface)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0.375rem 0.75rem',
-            boxShadow: 'var(--shadow-md)',
+            border: '1px solid var(--border-default)',
+            borderRadius: 'var(--radius-md)',
+            padding: '0.5rem 1rem',
+            boxShadow: 'var(--shadow-lg)',
             display: 'flex',
-            gap: '1rem',
-            fontSize: '0.75rem',
+            alignItems: 'center',
+            gap: '1.25rem',
+            fontSize: '0.8125rem',
             pointerEvents: 'none',
+            zIndex: 10,
           }}
         >
-          <span style={{ color: 'var(--text-secondary)' }}>
+          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
             Data: <strong>{data[hoveredIndex].date.split('-').reverse().join('/')}</strong>
           </span>
-          <span style={{ color: '#3b82f6' }}>
+          <span style={{ color: '#3b82f6', fontWeight: 600 }}>
             Criados: <strong>{data[hoveredIndex].created}</strong>
           </span>
-          <span style={{ color: '#10b981' }}>
+          <span style={{ color: '#10b981', fontWeight: 600 }}>
             Resolvidos: <strong>{data[hoveredIndex].resolved}</strong>
           </span>
         </div>
