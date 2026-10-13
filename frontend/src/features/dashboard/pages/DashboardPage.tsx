@@ -12,6 +12,7 @@ import {
   TrendingUp,
   Star,
 } from 'lucide-react';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useDashboardMetrics, useExportDashboardCsv } from '../hooks/useDashboard';
 import { useDepartments } from '@/features/teams/hooks/useOrganizational';
 import { MetricCard } from '../components/MetricCard';
@@ -31,6 +32,11 @@ function formatMinutes(minutes: number | null): string {
 }
 
 export const DashboardPage: React.FC = () => {
+  const { user } = useAuth();
+  const isRequester = user?.role?.name === 'requester';
+  const isStaff = !isRequester;
+  const isManagerOrAdmin = !isRequester && user?.role?.name !== 'agent';
+
   const [period, setPeriod] = useState<'7d' | '30d' | '90d'>('7d');
   const [departmentId, setDepartmentId] = useState<string>('');
 
@@ -61,10 +67,12 @@ export const DashboardPage: React.FC = () => {
       >
         <div>
           <h1 style={{ fontSize: '1.625rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-            Painel Executivo & Métricas
+            {isRequester ? 'Portal do Solicitante — Visão Geral' : 'Painel Executivo & Métricas'}
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-            Indicadores de desempenho do Service Desk, conformidade de SLA e volume de atendimento.
+            {isRequester
+              ? 'Acompanhe seus chamados abertos, prazos de atendimento e status das solicitações.'
+              : 'Indicadores de desempenho do Service Desk, conformidade de SLA e volume de atendimento.'}
           </p>
         </div>
 
@@ -165,30 +173,32 @@ export const DashboardPage: React.FC = () => {
             <RefreshCw size={16} className={isFetching ? 'animate-spin' : ''} />
           </button>
 
-          {/* Botão Exportar CSV */}
-          <button
-            type="button"
-            onClick={handleExport}
-            disabled={exportMutation.isPending}
-            style={{
-              height: '36px',
-              backgroundColor: 'var(--bg-card)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-primary)',
-              borderRadius: 'var(--radius-md)',
-              padding: '0 1rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              fontSize: '0.8125rem',
-              fontWeight: 600,
-              cursor: exportMutation.isPending ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.15s ease',
-            }}
-          >
-            <Download size={15} style={{ color: 'var(--primary-400)' }} />
-            <span>{exportMutation.isPending ? 'Exportando...' : 'Exportar CSV'}</span>
-          </button>
+          {/* Botão Exportar CSV (Exclusivo Gerência e Admin) */}
+          {isManagerOrAdmin && (
+            <button
+              type="button"
+              onClick={handleExport}
+              disabled={exportMutation.isPending}
+              style={{
+                height: '36px',
+                backgroundColor: 'var(--bg-card)',
+                border: '1px solid var(--border-subtle)',
+                color: 'var(--text-primary)',
+                borderRadius: 'var(--radius-md)',
+                padding: '0 1rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontSize: '0.8125rem',
+                fontWeight: 600,
+                cursor: exportMutation.isPending ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.15s ease',
+              }}
+            >
+              <Download size={15} style={{ color: 'var(--primary-400)' }} />
+              <span>{exportMutation.isPending ? 'Exportando...' : 'Exportar CSV'}</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -410,30 +420,32 @@ export const DashboardPage: React.FC = () => {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
+              gridTemplateColumns: isStaff ? 'repeat(auto-fit, minmax(380px, 1fr))' : '1fr',
               gap: '1.25rem',
             }}
           >
-            {/* Ranking de Atendentes */}
-            <div
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '1.5rem',
-                boxShadow: 'var(--shadow-sm)',
-              }}
-            >
-              <div style={{ marginBottom: '1.25rem' }}>
-                <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                  Produtividade da Equipe de Suporte
-                </h2>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.125rem' }}>
-                  Chamados atribuídos e taxa de resolução individual
-                </p>
+            {/* Ranking de Atendentes (Apenas Staff) */}
+            {isStaff && (
+              <div
+                style={{
+                  backgroundColor: 'var(--bg-card)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-lg)',
+                  padding: '1.5rem',
+                  boxShadow: 'var(--shadow-sm)',
+                }}
+              >
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                    Produtividade da Equipe de Suporte
+                  </h2>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.125rem' }}>
+                    Chamados atribuídos e taxa de resolução individual
+                  </p>
+                </div>
+                <AgentRankingTable data={metrics.agent_performance} />
               </div>
-              <AgentRankingTable data={metrics.agent_performance} />
-            </div>
+            )}
 
             {/* Chamados Recentes */}
             <div

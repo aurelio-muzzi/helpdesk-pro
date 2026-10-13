@@ -56,18 +56,52 @@ Route::prefix('auth')->group(function () {
 
 // Rotas Protegidas de Domínio Organizacional e Chamados
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('departments', DepartmentController::class);
-    Route::post('teams/{team}/members', [TeamController::class, 'syncMembers']);
-    Route::apiResource('teams', TeamController::class);
-    Route::apiResource('categories', CategoryController::class);
-    Route::apiResource('priorities', PriorityController::class);
+    // Leitura Organizacional (dropdowns e telas)
+    Route::get('departments', [DepartmentController::class, 'index']);
+    Route::get('departments/{department}', [DepartmentController::class, 'show']);
+    Route::get('teams', [TeamController::class, 'index']);
+    Route::get('teams/{team}', [TeamController::class, 'show']);
+    Route::get('categories', [CategoryController::class, 'index']);
+    Route::get('categories/{category}', [CategoryController::class, 'show']);
+    Route::get('priorities', [PriorityController::class, 'index']);
+    Route::get('priorities/{priority}', [PriorityController::class, 'show']);
 
-    // Políticas de SLA
-    Route::apiResource('sla-policies', SlaPolicyController::class);
+    // Gestão Organizacional e Políticas de SLA (Exclusivo Admin e Gerentes)
+    Route::middleware('role:admin,manager')->group(function () {
+        Route::post('departments', [DepartmentController::class, 'store']);
+        Route::put('departments/{department}', [DepartmentController::class, 'update']);
+        Route::patch('departments/{department}', [DepartmentController::class, 'update']);
+        Route::delete('departments/{department}', [DepartmentController::class, 'destroy']);
+
+        Route::post('teams', [TeamController::class, 'store']);
+        Route::put('teams/{team}', [TeamController::class, 'update']);
+        Route::patch('teams/{team}', [TeamController::class, 'update']);
+        Route::delete('teams/{team}', [TeamController::class, 'destroy']);
+        Route::post('teams/{team}/members', [TeamController::class, 'syncMembers']);
+
+        Route::post('categories', [CategoryController::class, 'store']);
+        Route::put('categories/{category}', [CategoryController::class, 'update']);
+        Route::patch('categories/{category}', [CategoryController::class, 'update']);
+        Route::delete('categories/{category}', [CategoryController::class, 'destroy']);
+
+        Route::post('priorities', [PriorityController::class, 'store']);
+        Route::put('priorities/{priority}', [PriorityController::class, 'update']);
+        Route::patch('priorities/{priority}', [PriorityController::class, 'update']);
+        Route::delete('priorities/{priority}', [PriorityController::class, 'destroy']);
+
+        Route::apiResource('sla-policies', SlaPolicyController::class);
+    });
 
     // Ciclo de Vida dos Chamados (Tickets Core)
-    Route::post('tickets/{ticket}/assign', [TicketController::class, 'assign']);
+    // Ações de atribuição restritas a Staff (Admin, Manager, Agent)
+    Route::middleware('role:admin,manager,agent')->group(function () {
+        Route::post('tickets/{ticket}/assign', [TicketController::class, 'assign']);
+    });
+
+    // Transição de status (validada no controller para permitir cancelamento pelo solicitante)
     Route::patch('tickets/{ticket}/status', [TicketController::class, 'changeStatus']);
+
+    // Ações do Solicitante / Acompanhamento
     Route::post('tickets/{ticket}/reopen', [TicketController::class, 'reopen']);
     Route::get('tickets/{ticket}/satisfaction', [TicketSatisfactionController::class, 'show']);
     Route::post('tickets/{ticket}/satisfaction', [TicketSatisfactionController::class, 'store']);
@@ -80,12 +114,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Dashboard & Relatórios
     Route::get('dashboard/metrics', [DashboardController::class, 'metrics']);
-    Route::get('dashboard/export', [DashboardController::class, 'export']);
+    Route::get('dashboard/export', [DashboardController::class, 'export'])->middleware('role:admin,manager');
 
-    // Base de Conhecimento e FAQ
+    // Base de Conhecimento e FAQ (Consulta pública interna, autoria por Staff)
     Route::get('articles/suggestions', [KnowledgeArticleController::class, 'suggestions']);
     Route::post('articles/{id}/feedback', [KnowledgeArticleController::class, 'feedback']);
-    Route::apiResource('articles', KnowledgeArticleController::class);
+    Route::get('articles', [KnowledgeArticleController::class, 'index']);
+    Route::get('articles/{article}', [KnowledgeArticleController::class, 'show']);
+
+    Route::middleware('role:admin,manager,agent')->group(function () {
+        Route::post('articles', [KnowledgeArticleController::class, 'store']);
+        Route::put('articles/{article}', [KnowledgeArticleController::class, 'update']);
+        Route::patch('articles/{article}', [KnowledgeArticleController::class, 'update']);
+        Route::delete('articles/{article}', [KnowledgeArticleController::class, 'destroy']);
+    });
 
     // Notificações In-App
     Route::get('notifications', [NotificationController::class, 'index']);

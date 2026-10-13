@@ -60,27 +60,39 @@ const router = createBrowserRouter([
           {
             path: 'teams',
             element: (
-              <Suspense fallback={<PageSkeleton />}>
-                <TeamsPage />
-              </Suspense>
+              <ProtectedRoute allowedRoles={['admin', 'manager']}>
+                <Suspense fallback={<PageSkeleton />}>
+                  <TeamsPage />
+                </Suspense>
+              </ProtectedRoute>
             ),
           },
           {
             path: 'sla',
             element: (
-              <Suspense fallback={<PageSkeleton />}><SlaPoliciesPage /></Suspense>
+              <ProtectedRoute allowedRoles={['admin', 'manager']}>
+                <Suspense fallback={<PageSkeleton />}>
+                  <SlaPoliciesPage />
+                </Suspense>
+              </ProtectedRoute>
             ),
           },
           {
             path: 'kb',
             element: (
-              <Suspense fallback={<PageSkeleton />}><KnowledgeBasePage /></Suspense>
+              <Suspense fallback={<PageSkeleton />}>
+                <KnowledgeBasePage />
+              </Suspense>
             ),
           },
           {
             path: 'audit',
             element: (
-              <Suspense fallback={<PageSkeleton />}><AuditLogsPage /></Suspense>
+              <ProtectedRoute allowedRoles={['admin']}>
+                <Suspense fallback={<PageSkeleton />}>
+                  <AuditLogsPage />
+                </Suspense>
+              </ProtectedRoute>
             ),
           },
         ],

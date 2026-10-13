@@ -244,16 +244,24 @@ export const Navbar: React.FC = () => {
               >
                 <UserIcon size={16} />
               </div>
-              <div style={{ display: 'none', flexDirection: 'column', gap: '2px' }} className="user-info-text">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }} className="user-info-text">
                 <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                   {user.name}
                 </span>
                 <span
                   style={{
                     fontSize: '0.6875rem',
-                    color: 'var(--primary-500)',
-                    fontWeight: 500,
+                    fontWeight: 700,
                     textTransform: 'uppercase',
+                    letterSpacing: '0.03em',
+                    color:
+                      user.role?.name === 'admin'
+                        ? '#ef4444'
+                        : user.role?.name === 'manager'
+                        ? '#3b82f6'
+                        : user.role?.name === 'agent'
+                        ? '#10b981'
+                        : '#f59e0b',
                   }}
                 >
                   {user.role?.display_name || user.role?.name}
