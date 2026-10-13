@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -41,6 +42,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read Category $category
  * @property-read Priority $priority
  * @property-read SlaPolicy|null $slaPolicy
+ * @property-read TicketSatisfaction|null $satisfaction
  * @property-read Collection<int, TicketHistory> $histories
  */
 class Ticket extends Model
@@ -163,6 +165,14 @@ class Ticket extends Model
     public function slaPolicy(): BelongsTo
     {
         return $this->belongsTo(SlaPolicy::class, 'sla_policy_id');
+    }
+
+    /**
+     * @return HasOne<TicketSatisfaction, $this>
+     */
+    public function satisfaction(): HasOne
+    {
+        return $this->hasOne(TicketSatisfaction::class, 'ticket_id');
     }
 
     /**

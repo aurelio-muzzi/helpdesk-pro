@@ -33,6 +33,13 @@ export interface TicketHistory {
   created_at: string;
 }
 
+export interface TicketSatisfactionInfo {
+  id: number;
+  rating: number;
+  comment?: string | null;
+  created_at: string;
+}
+
 export interface Ticket {
   id: number;
   code: string;
@@ -52,6 +59,7 @@ export interface Ticket {
     resolution_due_at?: string | null;
     policy_name?: string | null;
   };
+  satisfaction?: TicketSatisfactionInfo | null;
   resolved_at?: string | null;
   closed_at?: string | null;
   created_at: string;

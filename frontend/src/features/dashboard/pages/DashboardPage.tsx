@@ -10,6 +10,7 @@ import {
   Filter,
   RefreshCw,
   TrendingUp,
+  Star,
 } from 'lucide-react';
 import { useDashboardMetrics, useExportDashboardCsv } from '../hooks/useDashboard';
 import { useDepartments } from '@/features/teams/hooks/useOrganizational';
@@ -289,6 +290,14 @@ export const DashboardPage: React.FC = () => {
               icon={Timer}
               color="#06b6d4"
               subtitle="Tempo médio de solução"
+            />
+            <MetricCard
+              title="Satisfação CSAT"
+              value={metrics.summary.avg_csat ? `${metrics.summary.avg_csat} / 5.0` : 'N/D'}
+              icon={Star}
+              color="#eab308"
+              subtitle={`${metrics.summary.csat_total_ratings ?? 0} avaliações (${metrics.summary.csat_satisfaction_rate ?? 0}% satisfeitos)`}
+              trendPositive={(metrics.summary.csat_satisfaction_rate ?? 0) >= 80}
             />
           </div>
 

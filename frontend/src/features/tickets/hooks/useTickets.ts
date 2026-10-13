@@ -61,3 +61,27 @@ export const useChangeTicketStatus = () => {
     },
   });
 };
+
+export const useRateSatisfaction = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ ticketId, rating, comment }: { ticketId: number; rating: number; comment?: string }) =>
+      ticketService.rateSatisfaction(ticketId, rating, comment),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: TICKET_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: TICKET_KEYS.detail(variables.ticketId) });
+    },
+  });
+};
+
+export const useReopenTicket = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ ticketId, reason }: { ticketId: number; reason?: string }) =>
+      ticketService.reopenTicket(ticketId, reason),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: TICKET_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: TICKET_KEYS.detail(variables.ticketId) });
+    },
+  });
+};

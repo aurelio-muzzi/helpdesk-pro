@@ -7,6 +7,7 @@ use App\Enums\UserRole;
 use App\Models\Department;
 use App\Models\Priority;
 use App\Models\Ticket;
+use App\Models\TicketSatisfaction;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -67,7 +68,7 @@ class DashboardMetricsService
     {
         [$dateFrom, $dateTo] = $this->resolveDateRange($filters);
         $query = $this->buildBaseQuery($user, $filters, $dateFrom, $dateTo)
-            ->with(['requester', 'assignedTo', 'priority', 'department', 'category']);
+            ->with(['requester', 'assignedTo', 'priority', 'department', 'category', 'satisfaction']);
 
         $filename = 'relatorio-chamados-'.date('Y-m-d').'.csv';
 
@@ -96,6 +97,7 @@ class DashboardMetricsService
                 'Solicitante',
                 'Atendente',
                 'SLA Status',
+                'Avaliação CSAT',
                 'Data de Criação',
                 'Primeira Resposta',
                 'Data de Resolução',
@@ -110,6 +112,10 @@ class DashboardMetricsService
                         default => 'Pendente',
                     };
 
+                    $csatLabel = $ticket->satisfaction
+                        ? "{$ticket->satisfaction->rating}/5"
+                        : 'Não avaliado';
+
                     fputcsv($handle, [
                         $ticket->code,
                         $ticket->title,
@@ -120,6 +126,7 @@ class DashboardMetricsService
                         $ticket->requester->name,
                         $ticket->assignedTo ? $ticket->assignedTo->name : 'Não atribuído',
                         $slaStatusLabel,
+                        $csatLabel,
                         $ticket->created_at?->format('d/m/Y H:i') ?? '',
                         $ticket->first_response_at?->format('d/m/Y H:i') ?? 'Pendente',
                         $ticket->resolved_at?->format('d/m/Y H:i') ?? 'Não resolvido',
@@ -237,6 +244,13 @@ class DashboardMetricsService
                 return (float) Carbon::parse($t->created_at)->diffInMinutes(Carbon::parse($t->resolved_at));
             }), 1);
 
+        // Satisfação do Cliente (CSAT)
+        $satisfactions = TicketSatisfaction::whereIn('ticket_id', (clone $query)->select('id'))->get();
+        $totalCsat = $satisfactions->count();
+        $avgCsat = $totalCsat > 0 ? round((float) $satisfactions->avg('rating'), 1) : null;
+        $satisfiedCount = $satisfactions->where('rating', '>=', 4)->count();
+        $csatSatisfactionRate = $totalCsat > 0 ? round(($satisfiedCount / $totalCsat) * 100, 1) : 100.0;
+
         return [
             'total_tickets' => $total,
             'open_tickets' => $open,
@@ -250,6 +264,9 @@ class DashboardMetricsService
             'sla_compliance_rate' => $slaComplianceRate,
             'avg_first_response_minutes' => $avgFirstResponseMinutes,
             'avg_resolution_minutes' => $avgResolutionMinutes,
+            'avg_csat' => $avgCsat,
+            'csat_total_ratings' => $totalCsat,
+            'csat_satisfaction_rate' => $csatSatisfactionRate,
         ];
     }
 

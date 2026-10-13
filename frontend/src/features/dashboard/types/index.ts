@@ -11,6 +11,9 @@ export interface DashboardSummary {
   sla_compliance_rate: number;
   avg_first_response_minutes: number | null;
   avg_resolution_minutes: number | null;
+  avg_csat: number | null;
+  csat_total_ratings: number;
+  csat_satisfaction_rate: number;
 }
 
 export interface StatusCount {
