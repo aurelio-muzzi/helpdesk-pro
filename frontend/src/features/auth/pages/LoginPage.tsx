@@ -40,7 +40,7 @@ export const LoginPage: React.FC = () => {
 
   const fillQuickCredentials = (email: string) => {
     setValue('email', email, { shouldValidate: true });
-    setValue('password', 'Password123!', { shouldValidate: true });
+    setValue('password', 'Secret123!', { shouldValidate: true });
   };
 
   return (

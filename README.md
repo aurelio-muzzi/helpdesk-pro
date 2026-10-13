@@ -126,13 +126,16 @@ npm run dev
 
 ## 🔑 Credenciais Padrão de Demonstração
 
-O comando `php artisan db:seed` cria os seguintes usuários para homologação imediata:
+A tela de login conta com botões de **Acesso Rápido** (`Admin`, `Manager`, `Agent` e `Requester`) que preenchem automaticamente as credenciais para homologação instantânea:
 
-| Papel (Role) | E-mail | Senha | Acessos |
+| Perfil / Botão | E-mail de Acesso | Senha Padrão | Nível de Acesso e Permissões |
 | :--- | :--- | :--- | :--- |
-| **Administrador** | `admin@helpdeskpro.local` | `Secret123!` | Acesso irrestrito, Trilha de Auditoria, SLAs, Configurações |
-| **Agente / Suporte** | `agente@helpdeskpro.local` | `Secret123!` | Triagem de tickets, atendimento, notas internas, Base de Conhecimento |
-| **Solicitante / Cliente** | `solicitante@helpdeskpro.local` | `Secret123!` | Central do Cliente, abertura de chamados, avaliação CSAT, reabertura |
+| **Admin** | `admin@helpdeskpro.local` | `Secret123!` | Acesso irrestrito a todos os módulos, Trilha de Auditoria, Configurações globais e SLAs |
+| **Manager** | `manager@helpdeskpro.local` | `Secret123!` | Gestão executiva de equipes, times de atendimento, metas de SLA e relatórios operacionais |
+| **Agent** | `agent@helpdeskpro.local` *(ou `agente@`)* | `Secret123!` | Atendimento a incidentes, triagem, notas internas na timeline e publicação na Base de Conhecimento |
+| **Requester** | `requester@helpdeskpro.local` *(ou `solicitante@`)* | `Secret123!` | Central do Cliente, abertura de tickets, histórico pessoal, avaliações CSAT e reabertura de chamados |
+
+> **💡 Dica:** Todos os 15 usuários corporativos semeados na base possuem a senha padrão unificada: **`Secret123!`**.
 
 ---
 
