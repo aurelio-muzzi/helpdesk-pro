@@ -24,6 +24,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $department_id
  * @property int $category_id
  * @property int $priority_id
+ * @property int|null $sla_policy_id
+ * @property Carbon|null $first_response_due_at
+ * @property Carbon|null $first_response_at
+ * @property Carbon|null $resolution_due_at
+ * @property string $sla_status
  * @property Carbon|null $resolved_at
  * @property Carbon|null $closed_at
  * @property Carbon|null $created_at
@@ -35,6 +40,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read Department|null $department
  * @property-read Category $category
  * @property-read Priority $priority
+ * @property-read SlaPolicy|null $slaPolicy
  * @property-read Collection<int, TicketHistory> $histories
  */
 class Ticket extends Model
@@ -52,6 +58,11 @@ class Ticket extends Model
         'department_id',
         'category_id',
         'priority_id',
+        'sla_policy_id',
+        'first_response_due_at',
+        'first_response_at',
+        'resolution_due_at',
+        'sla_status',
         'resolved_at',
         'closed_at',
     ];
@@ -63,6 +74,9 @@ class Ticket extends Model
     {
         return [
             'status' => TicketStatus::class,
+            'first_response_due_at' => 'datetime',
+            'first_response_at' => 'datetime',
+            'resolution_due_at' => 'datetime',
             'resolved_at' => 'datetime',
             'closed_at' => 'datetime',
         ];
@@ -141,6 +155,14 @@ class Ticket extends Model
     public function priority(): BelongsTo
     {
         return $this->belongsTo(Priority::class, 'priority_id');
+    }
+
+    /**
+     * @return BelongsTo<SlaPolicy, $this>
+     */
+    public function slaPolicy(): BelongsTo
+    {
+        return $this->belongsTo(SlaPolicy::class, 'sla_policy_id');
     }
 
     /**
