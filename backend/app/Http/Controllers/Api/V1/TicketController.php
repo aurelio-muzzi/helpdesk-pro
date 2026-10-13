@@ -12,6 +12,8 @@ use App\Http\Resources\Api\V1\TicketResource;
 use App\Models\Ticket;
 use App\Models\TicketHistory;
 use App\Models\User;
+use App\Notifications\TicketAssignedNotification;
+use App\Services\SlaService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -78,6 +80,9 @@ class TicketController extends Controller
 
             /** @var Ticket $newTicket */
             $newTicket = Ticket::create($data);
+
+            app(SlaService::class)->applySlaToTicket($newTicket);
+            $newTicket->save();
 
             TicketHistory::create([
                 'ticket_id' => $newTicket->id,
@@ -199,6 +204,14 @@ class TicketController extends Controller
                 'comment' => $comment,
                 'created_at' => now(),
             ]);
+
+            if ($assignedToId !== null) {
+                /** @var User|null $assignedUser */
+                $assignedUser = User::find($assignedToId);
+                if ($assignedUser) {
+                    $assignedUser->notify(new TicketAssignedNotification($ticket));
+                }
+            }
         });
 
         return new TicketResource($ticket->fresh([
@@ -254,6 +267,10 @@ class TicketController extends Controller
             }
 
             $ticket->update($updateData);
+
+            if ($targetStatus === TicketStatus::RESOLVED) {
+                app(SlaService::class)->evaluateResolution($ticket);
+            }
 
             TicketHistory::create([
                 'ticket_id' => $ticket->id,
