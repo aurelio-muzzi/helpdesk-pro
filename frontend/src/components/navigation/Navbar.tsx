@@ -1,11 +1,13 @@
 import React from 'react';
-import { Menu, Sun, Moon, Bell } from 'lucide-react';
+import { Menu, Sun, Moon, Bell, LogOut, User as UserIcon } from 'lucide-react';
 import { useThemeStore } from '@/stores/useThemeStore';
 import { useSidebarStore } from '@/stores/useSidebarStore';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
 export const Navbar: React.FC = () => {
   const { theme, toggleTheme } = useThemeStore();
   const toggleMobile = useSidebarStore((state) => state.toggleMobile);
+  const { user, logout, isLoggingOut } = useAuth();
 
   return (
     <header
@@ -115,6 +117,73 @@ export const Navbar: React.FC = () => {
             }}
           />
         </button>
+
+        {/* User Profile & Logout */}
+        {user && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              paddingLeft: '0.5rem',
+              borderLeft: '1px solid var(--border-subtle)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--bg-muted)',
+                  border: '1px solid var(--border-default)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--primary-500)',
+                }}
+              >
+                <UserIcon size={16} />
+              </div>
+              <div style={{ display: 'none', flexDirection: 'column', gap: '2px' }} className="user-info-text">
+                <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  {user.name}
+                </span>
+                <span
+                  style={{
+                    fontSize: '0.6875rem',
+                    color: 'var(--primary-500)',
+                    fontWeight: 500,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {user.role?.display_name || user.role?.name}
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => logout()}
+              disabled={isLoggingOut}
+              aria-label="Sair do sistema"
+              title="Sair do sistema"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '36px',
+                height: '36px',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'var(--bg-muted)',
+                color: 'var(--text-secondary)',
+                border: '1px solid var(--border-subtle)',
+                transition: 'var(--transition-fast)',
+              }}
+            >
+              <LogOut size={16} />
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );

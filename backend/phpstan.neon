@@ -9,4 +9,6 @@ parameters:
 
     level: 5
 
+    treatPhpDocTypesAsCertain: false
+
     ignoreErrors: []

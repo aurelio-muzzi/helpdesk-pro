@@ -81,6 +81,12 @@ textarea {
 }
 
 /* Responsive Desktop Sidebar */
+@media (min-width: 640px) {
+  .user-info-text {
+    display: flex !important;
+  }
+}
+
 @media (min-width: 1024px) {
   .app-sidebar {
     transform: translateX(0) !important;
