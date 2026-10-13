@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\DepartmentController;
 use App\Http\Controllers\Api\V1\PriorityController;
 use App\Http\Controllers\Api\V1\TeamController;
+use App\Http\Controllers\Api\V1\TicketAttachmentController;
+use App\Http\Controllers\Api\V1\TicketCommentController;
 use App\Http\Controllers\Api\V1\TicketController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,4 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('tickets/{ticket}/assign', [TicketController::class, 'assign']);
     Route::patch('tickets/{ticket}/status', [TicketController::class, 'changeStatus']);
     Route::apiResource('tickets', TicketController::class);
+
+    // Interações e Linha do Tempo (Comentários e Anexos)
+    Route::get('tickets/{ticket}/comments', [TicketCommentController::class, 'index']);
+    Route::post('tickets/{ticket}/comments', [TicketCommentController::class, 'store']);
+    Route::get('tickets/{ticket}/attachments/{attachment}/download', [TicketAttachmentController::class, 'download']);
 });

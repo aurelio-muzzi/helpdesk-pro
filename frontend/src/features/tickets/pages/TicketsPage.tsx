@@ -8,13 +8,13 @@ import {
   AlertCircle,
   FileText,
   User,
-  History,
   X,
   PlayCircle,
 } from 'lucide-react';
 import { useTickets, useChangeTicketStatus } from '../hooks/useTickets';
 import { usePriorities } from '@/features/teams/hooks/useOrganizational';
 import { NewTicketModal } from '../components/NewTicketModal';
+import { TicketTimeline } from '../components/TicketTimeline';
 import type { Ticket, TicketStatusValue } from '../types';
 
 export const TicketsPage: React.FC = () => {
@@ -591,48 +591,8 @@ export const TicketsPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Histórico / Linha do Tempo */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '0.75rem' }}>
-                <History size={16} style={{ color: 'var(--primary-400)' }} />
-                <h4 style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                  Linha do Tempo de Movimentações
-                </h4>
-              </div>
-
-              {selectedTicket.histories && selectedTicket.histories.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  {selectedTicket.histories.map((h) => (
-                    <div
-                      key={h.id}
-                      style={{
-                        padding: '0.75rem',
-                        backgroundColor: 'var(--bg-card)',
-                        borderRadius: 'var(--radius-sm)',
-                        border: '1px solid var(--border-subtle)',
-                        fontSize: '0.8125rem',
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-                        <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
-                          {h.action.toUpperCase()}
-                        </span>
-                        <span>{new Date(h.created_at).toLocaleDateString('pt-BR')}</span>
-                      </div>
-                      {h.comment && (
-                        <p style={{ marginTop: '4px', color: 'var(--text-secondary)' }}>
-                          {h.comment}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-                  Nenhum registro de histórico adicional carregado.
-                </p>
-              )}
-            </div>
+            {/* Linha do Tempo e Interações */}
+            <TicketTimeline ticket={selectedTicket} />
           </div>
         </div>
       )}

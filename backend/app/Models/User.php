@@ -89,6 +89,14 @@ class User extends Authenticatable
         return $this->hasMany(Ticket::class, 'assigned_to');
     }
 
+    /**
+     * @return HasMany<TicketComment, $this>
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(TicketComment::class, 'user_id');
+    }
+
     public function hasRole(UserRole|string $role): bool
     {
         $roleName = $role instanceof UserRole ? $role->value : $role;

@@ -152,6 +152,22 @@ class Ticket extends Model
     }
 
     /**
+     * @return HasMany<TicketComment, $this>
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(TicketComment::class, 'ticket_id')->orderBy('created_at', 'asc');
+    }
+
+    /**
+     * @return HasMany<TicketAttachment, $this>
+     */
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(TicketAttachment::class, 'ticket_id')->orderBy('created_at', 'desc');
+    }
+
+    /**
      * @param  Builder<$this>  $query
      * @return Builder<$this>
      */
