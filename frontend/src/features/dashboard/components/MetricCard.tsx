@@ -61,7 +61,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
           {value}
         </span>
         {subtitle && (
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.375rem' }}>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.375rem' }}>
             {subtitle}
           </p>
         )}

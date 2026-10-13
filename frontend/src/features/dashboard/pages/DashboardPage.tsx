@@ -11,6 +11,7 @@ import {
   RefreshCw,
   TrendingUp,
   Star,
+  Inbox,
 } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useDashboardMetrics, useExportDashboardCsv } from '../hooks/useDashboard';
@@ -250,20 +251,21 @@ export const DashboardPage: React.FC = () => {
 
       {metrics && (
         <>
-          {/* Grid de KPIs Executivos */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '1rem',
-            }}
-          >
+          {/* Grid de KPIs Executivos Proporcional (4 colunas no Desktop) */}
+          <div className="kpi-grid">
             <MetricCard
               title="Total de Chamados"
               value={metrics.summary.total_tickets}
               icon={Ticket}
               color="var(--primary-500)"
               subtitle={`Criados em ${metrics.period.from} a ${metrics.period.to}`}
+            />
+            <MetricCard
+              title="Abertos em Triagem"
+              value={metrics.summary.open_tickets}
+              icon={Inbox}
+              color="#3b82f6"
+              subtitle="Aguardando primeiro atendimento"
             />
             <MetricCard
               title="Em Atendimento"
