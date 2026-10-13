@@ -9,6 +9,7 @@ use App\Http\Requests\Api\V1\Auth\ResetPasswordRequest;
 use App\Http\Requests\Api\V1\Auth\UpdatePasswordRequest;
 use App\Http\Resources\Api\V1\UserResource;
 use App\Models\User;
+use App\Services\AuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +26,14 @@ class AuthController extends Controller
         $remember = (bool) $request->input('remember', false);
 
         if (! Auth::attempt($credentials, $remember)) {
+            AuditLogger::log(
+                event: 'auth.failed_login',
+                description: 'Tentativa de login malsucedida para o e-mail: '.$credentials['email'],
+                auditable: null,
+                oldValues: null,
+                newValues: ['email' => $credentials['email']]
+            );
+
             return response()->json([
                 'success' => false,
                 'message' => 'As credenciais fornecidas estão incorretas.',
@@ -33,6 +42,15 @@ class AuthController extends Controller
 
         /** @var User $user */
         $user = Auth::user();
+
+        AuditLogger::log(
+            event: 'auth.login',
+            description: "Usuário {$user->name} ({$user->email}) autenticado com sucesso.",
+            auditable: $user,
+            oldValues: null,
+            newValues: null,
+            userId: $user->id
+        );
 
         if (! $user->is_active) {
             Auth::guard('web')->logout();
@@ -63,6 +81,15 @@ class AuthController extends Controller
     {
         $user = $request->user();
         if ($user) {
+            AuditLogger::log(
+                event: 'auth.logout',
+                description: "Usuário {$user->name} ({$user->email}) encerrou a sessão.",
+                auditable: $user,
+                oldValues: null,
+                newValues: null,
+                userId: $user->id
+            );
+
             $token = $user->currentAccessToken();
             if ($token instanceof PersonalAccessToken) {
                 $token->delete();
