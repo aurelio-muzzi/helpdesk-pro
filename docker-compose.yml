@@ -49,7 +49,7 @@ services:
       - helpdesk_net
 
   frontend:
-    image: node:20-alpine
+    image: node:22-alpine
     container_name: helpdesk_frontend
     restart: unless-stopped
     working_dir: /app

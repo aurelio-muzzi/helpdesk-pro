@@ -9,6 +9,7 @@ use App\Models\Priority;
 use App\Models\Team;
 use App\Models\Ticket;
 use App\Models\TicketHistory;
+use App\Models\TicketSatisfaction;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -103,6 +104,10 @@ class TicketSeeder extends Seeder
                 'category_id' => $catEmail?->id ?? $catHardware->id,
                 'priority_id' => $prioBaixa?->id ?? $prioAlta->id,
                 'resolved_at' => now()->subDays(1),
+                'satisfaction' => [
+                    'rating' => 5,
+                    'comment' => 'Atendimento excelente e super rápido. Alias e assinatura funcionando perfeitamente!',
+                ],
                 'histories' => [
                     ['action' => 'created', 'comment' => 'Chamado registrado.', 'created_at' => now()->subDays(2)],
                     ['action' => 'status_changed', 'field_name' => 'status', 'old_value' => 'open', 'new_value' => 'resolved', 'comment' => 'Alias configurado no Exchange e testado com êxito.', 'created_at' => now()->subDays(1)],
@@ -121,6 +126,10 @@ class TicketSeeder extends Seeder
                 'priority_id' => $prioMedia?->id ?? $prioAlta->id,
                 'resolved_at' => now()->subDays(5),
                 'closed_at' => now()->subDays(3),
+                'satisfaction' => [
+                    'rating' => 4,
+                    'comment' => 'Acesso liberado e homologado pelo gestor no mesmo dia.',
+                ],
                 'histories' => [
                     ['action' => 'created', 'comment' => 'Chamado registrado.', 'created_at' => now()->subDays(6)],
                     ['action' => 'status_changed', 'field_name' => 'status', 'old_value' => 'open', 'new_value' => 'resolved', 'comment' => 'Perfil configurado.', 'created_at' => now()->subDays(5)],
@@ -133,10 +142,24 @@ class TicketSeeder extends Seeder
             $histories = $data['histories'];
             unset($data['histories']);
 
+            $satisfaction = $data['satisfaction'] ?? null;
+            unset($data['satisfaction']);
+
             $ticket = Ticket::updateOrCreate(
                 ['code' => $data['code']],
                 $data
             );
+
+            if ($satisfaction) {
+                TicketSatisfaction::updateOrCreate(
+                    ['ticket_id' => $ticket->id],
+                    [
+                        'user_id' => $ticket->requester_id,
+                        'rating' => $satisfaction['rating'],
+                        'comment' => $satisfaction['comment'] ?? null,
+                    ]
+                );
+            }
 
             foreach ($histories as $h) {
                 TicketHistory::firstOrCreate(
