@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -70,6 +71,22 @@ class User extends Authenticatable
         return $this->belongsToMany(Team::class, 'team_members')
             ->withPivot('is_leader')
             ->withTimestamps();
+    }
+
+    /**
+     * @return HasMany<Ticket, $this>
+     */
+    public function requestedTickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'requester_id');
+    }
+
+    /**
+     * @return HasMany<Ticket, $this>
+     */
+    public function assignedTickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'assigned_to');
     }
 
     public function hasRole(UserRole|string $role): bool
