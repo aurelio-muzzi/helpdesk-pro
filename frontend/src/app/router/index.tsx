@@ -9,6 +9,7 @@ const LoginPage = lazy(() => import('@/features/auth/pages/LoginPage'));
 const ForgotPasswordPage = lazy(() => import('@/features/auth/pages/ForgotPasswordPage'));
 const DashboardPage = lazy(() => import('@/features/dashboard/pages/DashboardPage'));
 const TicketsPage = lazy(() => import('@/features/tickets/pages/TicketsPage'));
+const TeamsPage = lazy(() => import('@/features/teams/pages/TeamsPage'));
 
 const router = createBrowserRouter([
   // Rotas Públicas
@@ -50,6 +51,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<PageSkeleton />}>
                 <TicketsPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'teams',
+            element: (
+              <Suspense fallback={<PageSkeleton />}>
+                <TeamsPage />
               </Suspense>
             ),
           },
