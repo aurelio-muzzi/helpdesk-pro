@@ -45,6 +45,13 @@ export interface Ticket {
   department?: Department | null;
   category: Category;
   priority: Priority;
+  sla?: {
+    status: 'normal' | 'warning' | 'breached' | 'met';
+    first_response_due_at?: string | null;
+    first_response_at?: string | null;
+    resolution_due_at?: string | null;
+    policy_name?: string | null;
+  };
   resolved_at?: string | null;
   closed_at?: string | null;
   created_at: string;

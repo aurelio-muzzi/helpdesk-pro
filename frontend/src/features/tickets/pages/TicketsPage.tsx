@@ -356,6 +356,7 @@ export const TicketsPage: React.FC = () => {
                 <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>TÍTULO & CATEGORIA</th>
                 <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>STATUS</th>
                 <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>PRIORIDADE</th>
+                <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>SLA</th>
                 <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>SOLICITANTE</th>
                 <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>RESPONSÁVEL</th>
                 <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>AÇÕES</th>
@@ -413,6 +414,23 @@ export const TicketsPage: React.FC = () => {
                     >
                       {ticket.priority.display_name}
                     </span>
+                  </td>
+                  <td style={{ padding: '0.875rem 1rem' }}>
+                    {ticket.sla?.status === 'breached' && (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 700, padding: '2px 8px', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(239, 68, 68, 0.2)', color: '#ef4444' }}>
+                        <Clock size={12} /> Estourado
+                      </span>
+                    )}
+                    {ticket.sla?.status === 'met' && (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
+                        <CheckCircle2 size={12} /> Cumprido
+                      </span>
+                    )}
+                    {(!ticket.sla || ticket.sla.status === 'normal') && (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                        <Clock size={12} /> No prazo
+                      </span>
+                    )}
                   </td>
                   <td style={{ padding: '0.875rem 1rem', fontSize: '0.875rem', color: 'var(--text-primary)' }}>
                     {ticket.requester.name}
