@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\KnowledgeArticleResource;
 use App\Models\KnowledgeArticle;
 use App\Models\User;
+use App\Services\AuditLogger;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -97,6 +98,15 @@ class KnowledgeArticleController extends Controller
 
         $article = KnowledgeArticle::create($validated);
 
+        AuditLogger::log(
+            event: 'article.created',
+            description: "Artigo '{$article->title}' criado por {$user->name}.",
+            auditable: $article,
+            oldValues: null,
+            newValues: ['title' => $article->title],
+            userId: $user->id
+        );
+
         return (new KnowledgeArticleResource($article->load(['category', 'author'])))
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
@@ -137,6 +147,16 @@ class KnowledgeArticleController extends Controller
         }
 
         $article = KnowledgeArticle::findOrFail($id);
+
+        AuditLogger::log(
+            event: 'article.deleted',
+            description: "Artigo '{$article->title}' excluído por {$user->name}.",
+            auditable: $article,
+            oldValues: ['title' => $article->title],
+            newValues: null,
+            userId: $user->id
+        );
+
         $article->delete();
 
         return response()->json(null, Response::HTTP_NO_CONTENT);

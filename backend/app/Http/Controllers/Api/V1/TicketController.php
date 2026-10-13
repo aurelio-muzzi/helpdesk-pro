@@ -13,6 +13,7 @@ use App\Models\Ticket;
 use App\Models\TicketHistory;
 use App\Models\User;
 use App\Notifications\TicketAssignedNotification;
+use App\Services\AuditLogger;
 use App\Services\SlaService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -93,6 +94,15 @@ class TicketController extends Controller
                 'created_at' => now(),
             ]);
 
+            AuditLogger::log(
+                event: 'ticket.created',
+                description: "Chamado {$newTicket->code} ({$newTicket->title}) criado.",
+                auditable: $newTicket,
+                oldValues: null,
+                newValues: ['code' => $newTicket->code, 'title' => $newTicket->title, 'priority_id' => $newTicket->priority_id],
+                userId: $user->id
+            );
+
             return $newTicket->load([
                 'requester',
                 'assignedTo',
@@ -172,6 +182,15 @@ class TicketController extends Controller
                 'comment' => "Chamado reaberto. {$reasonText}",
                 'created_at' => now(),
             ]);
+
+            AuditLogger::log(
+                event: 'ticket.reopened',
+                description: "Chamado {$ticket->code} reaberto. {$reasonText}",
+                auditable: $ticket,
+                oldValues: ['status' => $oldStatus],
+                newValues: ['status' => $newStatus->value, 'reason' => $validated['reason'] ?? null],
+                userId: $user->id
+            );
         });
 
         return new TicketResource($ticket->fresh([
@@ -262,6 +281,15 @@ class TicketController extends Controller
                 'created_at' => now(),
             ]);
 
+            AuditLogger::log(
+                event: 'ticket.assigned',
+                description: "Chamado {$ticket->code} atribuído de '{$oldAssignee}' para '{$newAssignee}'.",
+                auditable: $ticket,
+                oldValues: ['assigned_to' => $oldAssignee],
+                newValues: ['assigned_to' => $newAssignee],
+                userId: $user->id
+            );
+
             if ($assignedToId !== null) {
                 /** @var User|null $assignedUser */
                 $assignedUser = User::find($assignedToId);
@@ -339,6 +367,15 @@ class TicketController extends Controller
                 'comment' => $comment ?? "Status alterado de {$oldStatus->label()} para {$targetStatus->label()}.",
                 'created_at' => now(),
             ]);
+
+            AuditLogger::log(
+                event: 'ticket.status_changed',
+                description: "Status do chamado {$ticket->code} alterado de {$oldStatus->label()} para {$targetStatus->label()}.",
+                auditable: $ticket,
+                oldValues: ['status' => $oldStatus->value],
+                newValues: ['status' => $targetStatus->value],
+                userId: $user->id
+            );
         });
 
         return new TicketResource($ticket->fresh([
@@ -360,6 +397,15 @@ class TicketController extends Controller
         if (! $user->isAdmin()) {
             abort(Response::HTTP_FORBIDDEN, 'Apenas administradores podem excluir chamados.');
         }
+
+        AuditLogger::log(
+            event: 'ticket.deleted',
+            description: "Chamado {$ticket->code} ({$ticket->title}) excluído permanentemente por {$user->name}.",
+            auditable: $ticket,
+            oldValues: ['code' => $ticket->code, 'title' => $ticket->title],
+            newValues: null,
+            userId: $user->id
+        );
 
         $ticket->delete();
 
