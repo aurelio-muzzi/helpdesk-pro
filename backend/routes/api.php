@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\TeamController;
 use App\Http\Controllers\Api\V1\TicketAttachmentController;
 use App\Http\Controllers\Api\V1\TicketCommentController;
 use App\Http\Controllers\Api\V1\TicketController;
+use App\Http\Controllers\Api\V1\TicketSatisfactionController;
 use Illuminate\Support\Facades\Route;
 
 // Rotas de Autenticação
@@ -41,6 +42,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Ciclo de Vida dos Chamados (Tickets Core)
     Route::post('tickets/{ticket}/assign', [TicketController::class, 'assign']);
     Route::patch('tickets/{ticket}/status', [TicketController::class, 'changeStatus']);
+    Route::post('tickets/{ticket}/reopen', [TicketController::class, 'reopen']);
+    Route::get('tickets/{ticket}/satisfaction', [TicketSatisfactionController::class, 'show']);
+    Route::post('tickets/{ticket}/satisfaction', [TicketSatisfactionController::class, 'store']);
     Route::apiResource('tickets', TicketController::class);
 
     // Interações e Linha do Tempo (Comentários e Anexos)

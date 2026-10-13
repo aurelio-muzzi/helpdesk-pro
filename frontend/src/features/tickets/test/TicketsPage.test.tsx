@@ -84,6 +84,14 @@ vi.mock('../hooks/useTickets', () => ({
     mutateAsync: vi.fn(),
     isPending: false,
   }),
+  useRateSatisfaction: () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  }),
+  useReopenTicket: () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  }),
 }));
 
 vi.mock('@/features/teams/hooks/useOrganizational', () => ({

@@ -32,4 +32,13 @@ export const ticketService = {
     const response = await api.patch<ApiResponse<Ticket>>(`/tickets/${id}/status`, payload);
     return response.data.data;
   },
+
+  rateSatisfaction: async (ticketId: number, rating: number, comment?: string): Promise<void> => {
+    await api.post(`/tickets/${ticketId}/satisfaction`, { rating, comment });
+  },
+
+  reopenTicket: async (ticketId: number, reason?: string): Promise<Ticket> => {
+    const response = await api.post<ApiResponse<Ticket>>(`/tickets/${ticketId}/reopen`, { reason });
+    return response.data.data;
+  },
 };

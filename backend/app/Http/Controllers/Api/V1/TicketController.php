@@ -34,6 +34,7 @@ class TicketController extends Controller
             'department',
             'category',
             'priority',
+            'satisfaction',
         ]);
 
         // Scoping por papel de usuário
@@ -123,10 +124,66 @@ class TicketController extends Controller
             'department',
             'category',
             'priority',
+            'satisfaction',
             'histories.user',
         ]);
 
         return new TicketResource($ticket);
+    }
+
+    public function reopen(Request $request, Ticket $ticket): TicketResource
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        if ($user->isRequester() && $ticket->requester_id !== $user->id) {
+            abort(Response::HTTP_FORBIDDEN, 'Você não tem permissão para reabrir este chamado.');
+        }
+
+        if (! in_array($ticket->status, [TicketStatus::RESOLVED, TicketStatus::CLOSED], true)) {
+            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Apenas chamados resolvidos ou fechados podem ser reabertos.');
+        }
+
+        $validated = $request->validate([
+            'reason' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        DB::transaction(function () use ($ticket, $user, $validated): void {
+            $oldStatus = $ticket->status->value;
+            $newStatus = $ticket->assigned_to ? TicketStatus::IN_PROGRESS : TicketStatus::OPEN;
+
+            $ticket->update([
+                'status' => $newStatus,
+                'resolved_at' => null,
+                'closed_at' => null,
+            ]);
+
+            $reasonText = ! empty($validated['reason'])
+                ? "Justificativa: {$validated['reason']}"
+                : 'Chamado reaberto pelo solicitante.';
+
+            TicketHistory::create([
+                'ticket_id' => $ticket->id,
+                'user_id' => $user->id,
+                'action' => 'status_changed',
+                'field_name' => 'status',
+                'old_value' => $oldStatus,
+                'new_value' => $newStatus->value,
+                'comment' => "Chamado reaberto. {$reasonText}",
+                'created_at' => now(),
+            ]);
+        });
+
+        return new TicketResource($ticket->fresh([
+            'requester',
+            'assignedTo',
+            'team',
+            'department',
+            'category',
+            'priority',
+            'satisfaction',
+            'histories.user',
+        ]));
     }
 
     public function update(UpdateTicketRequest $request, Ticket $ticket): TicketResource

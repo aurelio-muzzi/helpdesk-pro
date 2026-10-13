@@ -20,6 +20,9 @@ const mockMetrics: DashboardMetrics = {
     sla_compliance_rate: 87.5,
     avg_first_response_minutes: 25,
     avg_resolution_minutes: 180,
+    avg_csat: 4.8,
+    csat_total_ratings: 18,
+    csat_satisfaction_rate: 94.4,
   },
   tickets_by_status: [
     { status: 'open', label: 'Aberto', color: '#3b82f6', count: 10 },
@@ -111,6 +114,8 @@ describe('DashboardPage Component', () => {
     expect(screen.getByText('87.5%')).toBeInTheDocument();
     expect(screen.getByText('25 min')).toBeInTheDocument();
     expect(screen.getByText('3.0 hrs')).toBeInTheDocument();
+    expect(screen.getByText('Satisfação CSAT')).toBeInTheDocument();
+    expect(screen.getByText('4.8 / 5.0')).toBeInTheDocument();
   });
 
   it('renders chart sections, attendant productivity table, and recent tickets list', () => {
