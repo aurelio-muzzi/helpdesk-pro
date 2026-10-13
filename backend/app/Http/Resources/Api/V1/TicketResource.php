@@ -50,6 +50,12 @@ class TicketResource extends JsonResource
             ],
             'resolved_at' => $this->resolved_at?->toISOString(),
             'closed_at' => $this->closed_at?->toISOString(),
+            'satisfaction' => $this->satisfaction ? [
+                'id' => $this->satisfaction->id,
+                'rating' => $this->satisfaction->rating,
+                'comment' => $this->satisfaction->comment,
+                'created_at' => $this->satisfaction->created_at?->toISOString(),
+            ] : null,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
             'histories' => TicketHistoryResource::collection($this->whenLoaded('histories')),
