@@ -10,19 +10,28 @@ import {
   User,
   X,
   PlayCircle,
+  Star,
+  RotateCcw,
 } from 'lucide-react';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useTickets, useChangeTicketStatus } from '../hooks/useTickets';
 import { usePriorities } from '@/features/teams/hooks/useOrganizational';
 import { NewTicketModal } from '../components/NewTicketModal';
 import { TicketTimeline } from '../components/TicketTimeline';
+import { CsatModal } from '../components/CsatModal';
+import { ReopenTicketModal } from '../components/ReopenTicketModal';
+import { SatisfactionBadge } from '../components/SatisfactionBadge';
 import type { Ticket, TicketStatusValue } from '../types';
 
 export const TicketsPage: React.FC = () => {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [isNewTicketOpen, setIsNewTicketOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const [ratingTicket, setRatingTicket] = useState<Ticket | null>(null);
+  const [reopeningTicket, setReopeningTicket] = useState<Ticket | null>(null);
 
   const { data: tickets, isLoading } = useTickets();
   const { data: priorities } = usePriorities();
@@ -446,7 +455,11 @@ export const TicketsPage: React.FC = () => {
                     )}
                   </td>
                   <td style={{ padding: '0.875rem 1rem' }} onClick={(e) => e.stopPropagation()}>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                      {ticket.satisfaction && (
+                        <SatisfactionBadge satisfaction={ticket.satisfaction} />
+                      )}
+
                       {ticket.status.value === 'open' && (
                         <button
                           onClick={() => handleQuickStatusChange(ticket, 'in_progress')}
@@ -489,6 +502,51 @@ export const TicketsPage: React.FC = () => {
                           <CheckCircle2 size={14} /> Resolver
                         </button>
                       )}
+                      {(ticket.status.value === 'resolved' || ticket.status.value === 'closed') &&
+                        !ticket.satisfaction &&
+                        (user?.id === ticket.requester.id || user?.role?.name === 'admin') && (
+                          <button
+                            onClick={() => setRatingTicket(ticket)}
+                            title="Avaliar atendimento"
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                              border: '1px solid rgba(234, 179, 8, 0.3)',
+                              color: '#eab308',
+                              padding: '4px 8px',
+                              borderRadius: 'var(--radius-sm)',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <Star size={14} /> Avaliar
+                          </button>
+                        )}
+                      {ticket.status.value === 'resolved' &&
+                        (user?.id === ticket.requester.id || user?.role?.name === 'admin') && (
+                          <button
+                            onClick={() => setReopeningTicket(ticket)}
+                            title="Reabrir chamado"
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                              border: '1px solid rgba(249, 115, 22, 0.3)',
+                              color: '#fb923c',
+                              padding: '4px 8px',
+                              borderRadius: 'var(--radius-sm)',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <RotateCcw size={14} /> Reabrir
+                          </button>
+                        )}
                     </div>
                   </td>
                 </tr>
@@ -609,6 +667,71 @@ export const TicketsPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Avaliação CSAT no drawer se houver */}
+            {selectedTicket.satisfaction && (
+              <div style={{ backgroundColor: 'rgba(234, 179, 8, 0.08)', border: '1px solid rgba(234, 179, 8, 0.25)', borderRadius: 'var(--radius-sm)', padding: '0.875rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Avaliação do Cliente</span>
+                  <SatisfactionBadge satisfaction={selectedTicket.satisfaction} />
+                </div>
+                {selectedTicket.satisfaction.comment && (
+                  <p style={{ fontSize: '0.8125rem', color: 'var(--text-primary)', fontStyle: 'italic', marginTop: '0.25rem' }}>
+                    "{selectedTicket.satisfaction.comment}"
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Ações adicionais no drawer (Avaliar / Reabrir) */}
+            {(selectedTicket.status.value === 'resolved' || selectedTicket.status.value === 'closed') && (
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                {!selectedTicket.satisfaction && (user?.id === selectedTicket.requester.id || user?.role?.name === 'admin') && (
+                  <button
+                    onClick={() => setRatingTicket(selectedTicket)}
+                    style={{
+                      flex: 1,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                      padding: '0.625rem 1rem',
+                      borderRadius: 'var(--radius-sm)',
+                      backgroundColor: 'rgba(234, 179, 8, 0.15)',
+                      color: '#eab308',
+                      border: '1px solid rgba(234, 179, 8, 0.3)',
+                      fontWeight: 600,
+                      fontSize: '0.8125rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Star size={16} /> Avaliar Atendimento (CSAT)
+                  </button>
+                )}
+                {selectedTicket.status.value === 'resolved' && (user?.id === selectedTicket.requester.id || user?.role?.name === 'admin') && (
+                  <button
+                    onClick={() => setReopeningTicket(selectedTicket)}
+                    style={{
+                      flex: 1,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                      padding: '0.625rem 1rem',
+                      borderRadius: 'var(--radius-sm)',
+                      backgroundColor: 'rgba(249, 115, 22, 0.15)',
+                      color: '#fb923c',
+                      border: '1px solid rgba(249, 115, 22, 0.3)',
+                      fontWeight: 600,
+                      fontSize: '0.8125rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <RotateCcw size={16} /> Reabrir Chamado
+                  </button>
+                )}
+              </div>
+            )}
+
             {/* Linha do Tempo e Interações */}
             <TicketTimeline ticket={selectedTicket} />
           </div>
@@ -617,6 +740,12 @@ export const TicketsPage: React.FC = () => {
 
       {/* New Ticket Modal */}
       <NewTicketModal isOpen={isNewTicketOpen} onClose={() => setIsNewTicketOpen(false)} />
+
+      {/* CSAT Modal */}
+      <CsatModal ticket={ratingTicket} onClose={() => setRatingTicket(null)} />
+
+      {/* Reopen Ticket Modal */}
+      <ReopenTicketModal ticket={reopeningTicket} onClose={() => setReopeningTicket(null)} />
     </div>
   );
 };
