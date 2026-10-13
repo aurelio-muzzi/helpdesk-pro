@@ -3,7 +3,9 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\DepartmentController;
+use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PriorityController;
+use App\Http\Controllers\Api\V1\SlaPolicyController;
 use App\Http\Controllers\Api\V1\TeamController;
 use App\Http\Controllers\Api\V1\TicketAttachmentController;
 use App\Http\Controllers\Api\V1\TicketCommentController;
@@ -31,6 +33,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('priorities', PriorityController::class);
 
+    // Políticas de SLA
+    Route::apiResource('sla-policies', SlaPolicyController::class);
+
     // Ciclo de Vida dos Chamados (Tickets Core)
     Route::post('tickets/{ticket}/assign', [TicketController::class, 'assign']);
     Route::patch('tickets/{ticket}/status', [TicketController::class, 'changeStatus']);
@@ -40,4 +45,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('tickets/{ticket}/comments', [TicketCommentController::class, 'index']);
     Route::post('tickets/{ticket}/comments', [TicketCommentController::class, 'store']);
     Route::get('tickets/{ticket}/attachments/{attachment}/download', [TicketAttachmentController::class, 'download']);
+
+    // Notificações In-App
+    Route::get('notifications', [NotificationController::class, 'index']);
+    Route::patch('notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('notifications/read-all', [NotificationController::class, 'markAllAsRead']);
 });

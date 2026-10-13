@@ -10,6 +10,7 @@ use App\Models\TicketAttachment;
 use App\Models\TicketComment;
 use App\Models\TicketHistory;
 use App\Models\User;
+use App\Services\SlaService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -102,6 +103,11 @@ class TicketCommentController extends Controller
                     : 'Nova mensagem enviada no chamado.',
                 'created_at' => now(),
             ]);
+
+            // Se for resposta da equipe de atendimento, registra a primeira resposta para o SLA
+            if (! $user->isRequester() && ! $isInternal) {
+                app(SlaService::class)->recordFirstResponse($ticket);
+            }
 
             return $newComment->load(['user.role', 'attachments']);
         });
