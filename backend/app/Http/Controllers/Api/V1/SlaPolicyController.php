@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\SlaPolicyResource;
 use App\Models\SlaPolicy;
 use App\Models\User;
+use App\Services\AuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -40,6 +41,15 @@ class SlaPolicyController extends Controller
 
         $policy = SlaPolicy::create($validated);
 
+        AuditLogger::log(
+            event: 'sla.created',
+            description: "Política de SLA '{$policy->name}' cadastrada no sistema.",
+            auditable: $policy,
+            oldValues: null,
+            newValues: $validated,
+            userId: $user->id
+        );
+
         return (new SlaPolicyResource($policy->load('priority')))
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
@@ -68,7 +78,17 @@ class SlaPolicyController extends Controller
             'is_active' => ['sometimes', 'boolean'],
         ]);
 
+        $oldName = $slaPolicy->name;
         $slaPolicy->update($validated);
+
+        AuditLogger::log(
+            event: 'sla.updated',
+            description: "Política de SLA '{$oldName}' atualizada.",
+            auditable: $slaPolicy,
+            oldValues: ['name' => $oldName],
+            newValues: $validated,
+            userId: $user->id
+        );
 
         return new SlaPolicyResource($slaPolicy->fresh('priority'));
     }
@@ -81,6 +101,15 @@ class SlaPolicyController extends Controller
         if (! $user->isAdmin()) {
             abort(Response::HTTP_FORBIDDEN, 'Apenas administradores podem excluir regras de SLA.');
         }
+
+        AuditLogger::log(
+            event: 'sla.deleted',
+            description: "Política de SLA '{$slaPolicy->name}' excluída por {$user->name}.",
+            auditable: $slaPolicy,
+            oldValues: ['name' => $slaPolicy->name],
+            newValues: null,
+            userId: $user->id
+        );
 
         $slaPolicy->delete();
 
