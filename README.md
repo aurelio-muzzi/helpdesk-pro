@@ -99,7 +99,7 @@ docker compose exec backend php artisan migrate --seed
 
 4. Acesse as aplicações:
 - **Frontend**: [http://localhost:3000](http://localhost:3000)
-- **API Backend**: [http://localhost:8080/api/v1](http://localhost:8080/api/v1)
+- **API Backend**: [http://localhost:8088/api/v1](http://localhost:8088/api/v1)
 
 ---
 
