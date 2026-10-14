@@ -100,12 +100,17 @@ export const Sidebar: React.FC = () => {
             style={{
               alignItems: 'center',
               justifyContent: 'center',
+              minWidth: '40px',
+              minHeight: '40px',
               padding: '6px',
               borderRadius: 'var(--radius-sm)',
               color: 'var(--text-secondary)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
             }}
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
 
@@ -122,6 +127,8 @@ export const Sidebar: React.FC = () => {
                   alignItems: 'center',
                   gap: '0.75rem',
                   padding: '0.625rem 0.875rem',
+                  minHeight: '44px',
+                  boxSizing: 'border-box',
                   borderRadius: 'var(--radius-md)',
                   fontSize: '0.875rem',
                   fontWeight: 500,

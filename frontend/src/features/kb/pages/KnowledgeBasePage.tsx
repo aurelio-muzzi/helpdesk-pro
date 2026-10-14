@@ -66,28 +66,13 @@ export const KnowledgeBasePage: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', paddingBottom: '3rem' }}>
       {/* Hero Banner de Pesquisa e Autoatendimento */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%)',
-          border: '1px solid var(--border-subtle)',
-          borderRadius: 'var(--radius-xl)',
-          padding: '2.5rem 2rem',
-          textAlign: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '1.25rem',
-          boxShadow: 'var(--shadow-md)',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
+      <div className="kb-hero-banner">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-400)', fontSize: '0.875rem', fontWeight: 600 }}>
           <Sparkles size={16} />
           <span>Central de Ajuda & Autoatendimento</span>
         </div>
 
-        <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em', maxWidth: '640px', lineHeight: 1.25 }}>
+        <h1 style={{ fontSize: 'clamp(1.375rem, 4vw, 2rem)', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em', maxWidth: '640px', lineHeight: 1.25 }}>
           Como podemos ajudar você hoje?
         </h1>
         <p style={{ fontSize: '0.9375rem', color: 'var(--text-secondary)', maxWidth: '520px', lineHeight: 1.5 }}>
@@ -111,6 +96,7 @@ export const KnowledgeBasePage: React.FC = () => {
             style={{
               width: '100%',
               height: '48px',
+              minHeight: '48px',
               backgroundColor: 'var(--bg-card)',
               border: '1px solid var(--border-subtle)',
               borderRadius: 'var(--radius-full)',
@@ -118,6 +104,7 @@ export const KnowledgeBasePage: React.FC = () => {
               color: 'var(--text-primary)',
               fontSize: '0.9375rem',
               boxShadow: 'var(--shadow-sm)',
+              boxSizing: 'border-box',
             }}
           />
           <Search
@@ -144,6 +131,8 @@ export const KnowledgeBasePage: React.FC = () => {
                 color: 'var(--text-tertiary)',
                 cursor: 'pointer',
                 fontSize: '0.8125rem',
+                minHeight: '36px',
+                padding: '0 4px',
               }}
             >
               Limpar
@@ -263,6 +252,7 @@ export const KnowledgeBasePage: React.FC = () => {
             fontWeight: 600,
             cursor: 'pointer',
             transition: 'all 0.15s ease',
+            minHeight: '38px',
           }}
         >
           <Layers size={13} />
@@ -289,6 +279,7 @@ export const KnowledgeBasePage: React.FC = () => {
                 fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
+                minHeight: '38px',
               }}
             >
               <span>{cat.name}</span>
@@ -368,13 +359,7 @@ export const KnowledgeBasePage: React.FC = () => {
               </p>
             </div>
           ) : (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-                gap: '1.25rem',
-              }}
-            >
+            <div className="kb-articles-grid">
               {articles.map((article) => (
                 <ArticleCard
                   key={article.id}

@@ -68,6 +68,7 @@ export const NewTicketModal: React.FC<NewTicketModalProps> = ({ isOpen, onClose 
           borderRadius: 'var(--radius-lg)',
           width: '100%',
           maxWidth: '560px',
+          maxHeight: '90vh',
           boxShadow: 'var(--shadow-xl)',
           overflow: 'hidden',
           display: 'flex',
@@ -89,12 +90,17 @@ export const NewTicketModal: React.FC<NewTicketModalProps> = ({ isOpen, onClose 
           </h2>
           <button
             onClick={onClose}
+            aria-label="Fechar"
             style={{
               background: 'none',
               border: 'none',
               color: 'var(--text-secondary)',
               cursor: 'pointer',
-              padding: '4px',
+              minWidth: '40px',
+              minHeight: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <X size={20} />
@@ -102,7 +108,7 @@ export const NewTicketModal: React.FC<NewTicketModalProps> = ({ isOpen, onClose 
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <form onSubmit={handleSubmit} style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto' }}>
           {errorMessage && (
             <div
               style={{
@@ -136,11 +142,13 @@ export const NewTicketModal: React.FC<NewTicketModalProps> = ({ isOpen, onClose 
                 borderRadius: 'var(--radius-sm)',
                 color: 'var(--text-primary)',
                 fontSize: '0.875rem',
+                minHeight: '40px',
+                boxSizing: 'border-box',
               }}
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="form-grid-2col">
             <div>
               <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
                 Categoria *
@@ -157,6 +165,8 @@ export const NewTicketModal: React.FC<NewTicketModalProps> = ({ isOpen, onClose 
                   borderRadius: 'var(--radius-sm)',
                   color: 'var(--text-primary)',
                   fontSize: '0.875rem',
+                  minHeight: '40px',
+                  boxSizing: 'border-box',
                 }}
               >
                 <option value="">Selecione...</option>
@@ -184,6 +194,8 @@ export const NewTicketModal: React.FC<NewTicketModalProps> = ({ isOpen, onClose 
                   borderRadius: 'var(--radius-sm)',
                   color: 'var(--text-primary)',
                   fontSize: '0.875rem',
+                  minHeight: '40px',
+                  boxSizing: 'border-box',
                 }}
               >
                 <option value="">Selecione...</option>
@@ -215,6 +227,7 @@ export const NewTicketModal: React.FC<NewTicketModalProps> = ({ isOpen, onClose 
                 color: 'var(--text-primary)',
                 fontSize: '0.875rem',
                 resize: 'vertical',
+                boxSizing: 'border-box',
               }}
             />
           </div>
@@ -225,6 +238,7 @@ export const NewTicketModal: React.FC<NewTicketModalProps> = ({ isOpen, onClose 
               justifyContent: 'flex-end',
               gap: '0.75rem',
               marginTop: '1rem',
+              flexWrap: 'wrap',
             }}
           >
             <button
@@ -239,6 +253,7 @@ export const NewTicketModal: React.FC<NewTicketModalProps> = ({ isOpen, onClose 
                 fontWeight: 500,
                 fontSize: '0.875rem',
                 cursor: 'pointer',
+                minHeight: '40px',
               }}
             >
               Cancelar
@@ -258,6 +273,7 @@ export const NewTicketModal: React.FC<NewTicketModalProps> = ({ isOpen, onClose 
                 fontWeight: 600,
                 fontSize: '0.875rem',
                 cursor: createTicketMutation.isPending ? 'not-allowed' : 'pointer',
+                minHeight: '40px',
               }}
             >
               <Send size={16} />

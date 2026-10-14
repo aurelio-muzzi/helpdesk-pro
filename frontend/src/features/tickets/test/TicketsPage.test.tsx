@@ -131,13 +131,16 @@ describe('TicketsPage Component', () => {
     expect(screen.getAllByText('Em Atendimento').length).toBeGreaterThan(0);
   });
 
-  it('renders ticket rows with protocol codes and titles', () => {
-    renderWithProviders(<TicketsPage />);
+  it('renders ticket rows with protocol codes and titles on both mobile cards and desktop table', () => {
+    const { container } = renderWithProviders(<TicketsPage />);
 
-    expect(screen.getByText('HD-2026-00001')).toBeInTheDocument();
-    expect(screen.getByText('Notebook não liga')).toBeInTheDocument();
-    expect(screen.getByText('HD-2026-00002')).toBeInTheDocument();
-    expect(screen.getByText('Erro de VPN')).toBeInTheDocument();
+    expect(screen.getAllByText('HD-2026-00001').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Notebook não liga').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('HD-2026-00002').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Erro de VPN').length).toBeGreaterThan(0);
+
+    expect(container.querySelector('.ticket-mobile-view')).toBeInTheDocument();
+    expect(container.querySelector('.ticket-desktop-view')).toBeInTheDocument();
   });
 
   it('filters tickets when searching by code or title', () => {
@@ -146,7 +149,7 @@ describe('TicketsPage Component', () => {
     const searchInput = screen.getByPlaceholderText(/Buscar por código, título ou solicitante/i);
     fireEvent.change(searchInput, { target: { value: 'Notebook' } });
 
-    expect(screen.getByText('Notebook não liga')).toBeInTheDocument();
+    expect(screen.getAllByText('Notebook não liga').length).toBeGreaterThan(0);
     expect(screen.queryByText('Erro de VPN')).not.toBeInTheDocument();
   });
 

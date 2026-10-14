@@ -273,8 +273,8 @@ export const TicketTimeline: React.FC<TicketTimelineProps> = ({ ticket }) => {
               </div>
             )}
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
                 <label
                   style={{
                     display: 'inline-flex',
@@ -283,6 +283,8 @@ export const TicketTimeline: React.FC<TicketTimelineProps> = ({ ticket }) => {
                     fontSize: '0.8125rem',
                     color: 'var(--text-secondary)',
                     cursor: 'pointer',
+                    minHeight: '38px',
+                    padding: '4px 6px',
                   }}
                 >
                   <Paperclip size={16} />
@@ -305,6 +307,7 @@ export const TicketTimeline: React.FC<TicketTimelineProps> = ({ ticket }) => {
                       color: isInternal ? '#f59e0b' : 'var(--text-secondary)',
                       cursor: 'pointer',
                       fontWeight: isInternal ? 600 : 400,
+                      minHeight: '38px',
                     }}
                   >
                     <input
@@ -333,6 +336,7 @@ export const TicketTimeline: React.FC<TicketTimelineProps> = ({ ticket }) => {
                   fontWeight: 600,
                   fontSize: '0.8125rem',
                   cursor: addCommentMutation.isPending ? 'not-allowed' : 'pointer',
+                  minHeight: '38px',
                 }}
               >
                 <Send size={14} />

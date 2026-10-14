@@ -70,7 +70,7 @@ const ArticleFormDialog: React.FC<ArticleFormDialogProps> = ({ article, onClose 
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 50,
-        padding: '1.5rem',
+        padding: '1rem',
       }}
     >
       <div
@@ -90,7 +90,7 @@ const ArticleFormDialog: React.FC<ArticleFormDialogProps> = ({ article, onClose 
         {/* Header */}
         <div
           style={{
-            padding: '1.25rem 1.5rem',
+            padding: '1rem 1.25rem',
             borderBottom: '1px solid var(--border-subtle)',
             display: 'flex',
             alignItems: 'center',
@@ -104,7 +104,18 @@ const ArticleFormDialog: React.FC<ArticleFormDialogProps> = ({ article, onClose 
             type="button"
             onClick={onClose}
             aria-label="Fechar formulário"
-            style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--text-secondary)',
+              cursor: 'pointer',
+              minWidth: '40px',
+              minHeight: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 'var(--radius-sm)',
+            }}
           >
             <X size={18} />
           </button>
@@ -145,7 +156,8 @@ const ArticleFormDialog: React.FC<ArticleFormDialogProps> = ({ article, onClose 
                 required
                 style={{
                   width: '100%',
-                  height: '40px',
+                  minHeight: '42px',
+                  boxSizing: 'border-box',
                   backgroundColor: 'var(--bg-muted)',
                   border: '1px solid var(--border-subtle)',
                   borderRadius: 'var(--radius-md)',
@@ -166,7 +178,8 @@ const ArticleFormDialog: React.FC<ArticleFormDialogProps> = ({ article, onClose 
                 onChange={(e) => setCategoryId(e.target.value)}
                 style={{
                   width: '100%',
-                  height: '40px',
+                  minHeight: '42px',
+                  boxSizing: 'border-box',
                   backgroundColor: 'var(--bg-muted)',
                   border: '1px solid var(--border-subtle)',
                   borderRadius: 'var(--radius-md)',
@@ -196,7 +209,8 @@ const ArticleFormDialog: React.FC<ArticleFormDialogProps> = ({ article, onClose 
                 placeholder="Breve descrição exibida no catálogo de pesquisa..."
                 style={{
                   width: '100%',
-                  height: '40px',
+                  minHeight: '42px',
+                  boxSizing: 'border-box',
                   backgroundColor: 'var(--bg-muted)',
                   border: '1px solid var(--border-subtle)',
                   borderRadius: 'var(--radius-md)',
@@ -220,6 +234,7 @@ const ArticleFormDialog: React.FC<ArticleFormDialogProps> = ({ article, onClose 
                 required
                 style={{
                   width: '100%',
+                  boxSizing: 'border-box',
                   backgroundColor: 'var(--bg-muted)',
                   border: '1px solid var(--border-subtle)',
                   borderRadius: 'var(--radius-md)',
@@ -259,13 +274,14 @@ const ArticleFormDialog: React.FC<ArticleFormDialogProps> = ({ article, onClose 
           {/* Footer Ações */}
           <div
             style={{
-              padding: '1.25rem 1.5rem',
+              padding: '1rem 1.25rem',
               backgroundColor: 'var(--bg-muted)',
               borderTop: '1px solid var(--border-subtle)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'flex-end',
               gap: '0.75rem',
+              flexWrap: 'wrap',
             }}
           >
             <button
@@ -273,6 +289,7 @@ const ArticleFormDialog: React.FC<ArticleFormDialogProps> = ({ article, onClose 
               onClick={onClose}
               disabled={isSaving}
               style={{
+                minHeight: '38px',
                 padding: '0.5rem 1rem',
                 backgroundColor: 'transparent',
                 border: '1px solid var(--border-subtle)',
@@ -289,6 +306,7 @@ const ArticleFormDialog: React.FC<ArticleFormDialogProps> = ({ article, onClose 
               type="submit"
               disabled={isSaving}
               style={{
+                minHeight: '38px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.375rem',

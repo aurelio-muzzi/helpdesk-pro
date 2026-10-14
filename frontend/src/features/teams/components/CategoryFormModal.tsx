@@ -138,6 +138,8 @@ const CategoryFormContent: React.FC<CategoryFormContentProps> = ({
             color: 'var(--text-muted)',
             cursor: 'pointer',
             padding: '0.25rem',
+            minWidth: '38px',
+            minHeight: '38px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -354,6 +356,7 @@ const CategoryFormContent: React.FC<CategoryFormContentProps> = ({
             disabled={isSaving}
             style={{
               padding: '0.5rem 1rem',
+              minHeight: '40px',
               borderRadius: 'var(--radius-md)',
               border: '1px solid var(--border-subtle)',
               backgroundColor: 'var(--bg-card)',
@@ -371,8 +374,10 @@ const CategoryFormContent: React.FC<CategoryFormContentProps> = ({
             style={{
               display: 'inline-flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '0.375rem',
               padding: '0.5rem 1.25rem',
+              minHeight: '40px',
               borderRadius: 'var(--radius-md)',
               border: 'none',
               backgroundColor: 'var(--primary-600)',

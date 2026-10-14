@@ -9,7 +9,7 @@ export const AppLayout: React.FC = () => {
       <Sidebar />
       <div className="app-main-content" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
         <Navbar />
-        <main style={{ flex: 1, padding: '1.5rem', maxWidth: '1440px', width: '100%', margin: '0 auto' }}>
+        <main className="app-main-container" style={{ flex: 1, maxWidth: '1440px', width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
           <Outlet />
         </main>
       </div>
