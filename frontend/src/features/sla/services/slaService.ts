@@ -21,6 +21,10 @@ export const slaService = {
     return response.data.data;
   },
 
+  deletePolicy: async (id: number): Promise<void> => {
+    await api.delete(`/sla-policies/${id}`);
+  },
+
   getNotifications: async (): Promise<NotificationResponse> => {
     const response = await api.get<NotificationResponse>('/notifications');
     return response.data;

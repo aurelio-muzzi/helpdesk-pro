@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import SlaPoliciesPage from '../pages/SlaPoliciesPage';
@@ -29,6 +29,28 @@ const mockPolicies: SlaPolicy[] = [
 vi.mock('../hooks/useSla', () => ({
   useSlaPolicies: () => ({
     data: mockPolicies,
+    isLoading: false,
+  }),
+  useCreateSlaPolicy: () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  }),
+  useUpdateSlaPolicy: () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  }),
+  useDeleteSlaPolicy: () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  }),
+}));
+
+vi.mock('@/features/teams/hooks/useOrganizational', () => ({
+  usePriorities: () => ({
+    data: [
+      { id: 1, name: 'urgente', display_name: 'Urgente', description: null, color: '#ef4444', order: 4, is_active: true, created_at: '', updated_at: '' },
+      { id: 2, name: 'media', display_name: 'Média', description: null, color: '#3b82f6', order: 2, is_active: true, created_at: '', updated_at: '' },
+    ],
     isLoading: false,
   }),
 }));
@@ -65,5 +87,26 @@ describe('SlaPoliciesPage Component', () => {
     expect(screen.getByText('SLA Padrão / Médio')).toBeInTheDocument();
     expect(screen.getByText('4h')).toBeInTheDocument();
     expect(screen.getByText('24h (1 dia)')).toBeInTheDocument();
+  });
+
+  it('opens creation modal when clicking Nova Política de SLA button', () => {
+    renderWithProviders(<SlaPoliciesPage />);
+
+    const newBtn = screen.getByRole('button', { name: /Nova Política de SLA/i });
+    fireEvent.click(newBtn);
+
+    expect(screen.getByRole('heading', { name: /Nova Política de SLA/i })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Ex: SLA Alta Severidade/i)).toBeInTheDocument();
+  });
+
+  it('opens confirmation modal when clicking delete button on policy card', () => {
+    renderWithProviders(<SlaPoliciesPage />);
+
+    const deleteBtns = screen.getAllByTitle(/Excluir política de SLA/i);
+    expect(deleteBtns.length).toBeGreaterThan(0);
+    fireEvent.click(deleteBtns[0]);
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Excluir Política de SLA/i })).toBeInTheDocument();
   });
 });

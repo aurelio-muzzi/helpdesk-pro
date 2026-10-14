@@ -69,6 +69,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('categories/{category}', [CategoryController::class, 'show']);
     Route::get('priorities', [PriorityController::class, 'index']);
     Route::get('priorities/{priority}', [PriorityController::class, 'show']);
+    Route::get('sla-policies', [SlaPolicyController::class, 'index']);
+    Route::get('sla-policies/{sla_policy}', [SlaPolicyController::class, 'show']);
 
     // Gestão Organizacional, Usuários e Políticas de SLA (Exclusivo Admin e Gerentes)
     Route::middleware('role:admin,manager')->group(function () {
@@ -98,7 +100,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('priorities/{priority}', [PriorityController::class, 'update']);
         Route::delete('priorities/{priority}', [PriorityController::class, 'destroy']);
 
-        Route::apiResource('sla-policies', SlaPolicyController::class);
+        Route::post('sla-policies', [SlaPolicyController::class, 'store']);
+        Route::put('sla-policies/{sla_policy}', [SlaPolicyController::class, 'update']);
+        Route::patch('sla-policies/{sla_policy}', [SlaPolicyController::class, 'update']);
+        Route::delete('sla-policies/{sla_policy}', [SlaPolicyController::class, 'destroy']);
     });
 
     // Ciclo de Vida dos Chamados (Tickets Core)
