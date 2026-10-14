@@ -170,7 +170,7 @@ const CategoryFormContent: React.FC<CategoryFormContentProps> = ({
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {/* Linha 1: Nome e Slug */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '0.75rem' }}>
             <div>
               <label
                 style={{
@@ -237,7 +237,7 @@ const CategoryFormContent: React.FC<CategoryFormContentProps> = ({
           </div>
 
           {/* Linha 2: Departamento e Status */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '0.75rem', alignItems: 'center' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '0.75rem', alignItems: 'center' }}>
             <div>
               <label
                 style={{
