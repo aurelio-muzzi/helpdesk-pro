@@ -184,13 +184,7 @@ export const TicketsPage: React.FC = () => {
       </div>
 
       {/* KPI Cards */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '1rem',
-        }}
-      >
+      <div className="kpi-grid">
         <div
           style={{
             backgroundColor: 'var(--bg-card)',
@@ -339,9 +333,11 @@ export const TicketsPage: React.FC = () => {
             borderRadius: 'var(--radius-sm)',
             padding: '0.5rem 0.75rem',
             flex: '1 1 240px',
+            minHeight: '40px',
+            boxSizing: 'border-box',
           }}
         >
-          <Search size={16} style={{ color: 'var(--text-muted)' }} />
+          <Search size={16} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
           <input
             type="text"
             placeholder="Buscar por código, título ou solicitante..."
@@ -359,8 +355,8 @@ export const TicketsPage: React.FC = () => {
         </div>
 
         {/* Status Filter */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Filter size={16} style={{ color: 'var(--text-muted)' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: '1 1 160px' }}>
+          <Filter size={16} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -371,6 +367,8 @@ export const TicketsPage: React.FC = () => {
               padding: '0.5rem 0.75rem',
               color: 'var(--text-primary)',
               fontSize: '0.875rem',
+              minHeight: '40px',
+              width: '100%',
             }}
           >
             <option value="all">Todos os Status</option>
@@ -384,87 +382,88 @@ export const TicketsPage: React.FC = () => {
         </div>
 
         {/* Priority Filter */}
-        <select
-          value={priorityFilter}
-          onChange={(e) => setPriorityFilter(e.target.value)}
-          style={{
-            backgroundColor: 'var(--bg-input)',
-            border: '1px solid var(--border-default)',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0.5rem 0.75rem',
-            color: 'var(--text-primary)',
-            fontSize: '0.875rem',
-          }}
-        >
-          <option value="all">Todas as Prioridades</option>
-          {priorities?.map((p) => (
-            <option key={p.id} value={String(p.id)}>
-              {p.display_name}
-            </option>
-          ))}
-        </select>
+        <div style={{ flex: '1 1 160px' }}>
+          <select
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value)}
+            style={{
+              backgroundColor: 'var(--bg-input)',
+              border: '1px solid var(--border-default)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '0.5rem 0.75rem',
+              color: 'var(--text-primary)',
+              fontSize: '0.875rem',
+              minHeight: '40px',
+              width: '100%',
+            }}
+          >
+            <option value="all">Todas as Prioridades</option>
+            {priorities?.map((p) => (
+              <option key={p.id} value={String(p.id)}>
+                {p.display_name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {/* Ticket List Table */}
-      <div
-        style={{
-          backgroundColor: 'var(--bg-card)',
-          border: '1px solid var(--border-subtle)',
-          borderRadius: 'var(--radius-md)',
-          overflow: 'hidden',
-        }}
-      >
-        {isLoading ? (
-          <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-            Carregando chamados...
-          </div>
-        ) : filteredTickets.length === 0 ? (
-          <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-            Nenhum chamado encontrado com os filtros selecionados.
-          </div>
-        ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-muted)' }}>
-                <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>CÓDIGO</th>
-                <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>TÍTULO & CATEGORIA</th>
-                <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>STATUS</th>
-                <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>PRIORIDADE</th>
-                <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>SLA</th>
-                <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>SOLICITANTE</th>
-                <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>RESPONSÁVEL</th>
-                <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>AÇÕES</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTickets.map((ticket) => (
-                <tr
-                  key={ticket.id}
-                  style={{
-                    borderBottom: '1px solid var(--border-subtle)',
-                    cursor: 'pointer',
-                    transition: 'background-color var(--transition-fast)',
-                  }}
-                  onClick={() => setSelectedTicket(ticket)}
-                >
-                  <td style={{ padding: '0.875rem 1rem', fontFamily: 'monospace', fontWeight: 600, color: 'var(--primary-400)', whiteSpace: 'nowrap' }}>
+      {/* Ticket List View (Mobile Cards & Desktop Table) */}
+      {isLoading ? (
+        <div
+          style={{
+            backgroundColor: 'var(--bg-card)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: 'var(--radius-md)',
+            padding: '3rem',
+            textAlign: 'center',
+            color: 'var(--text-secondary)',
+          }}
+        >
+          Carregando chamados...
+        </div>
+      ) : filteredTickets.length === 0 ? (
+        <div
+          style={{
+            backgroundColor: 'var(--bg-card)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: 'var(--radius-md)',
+            padding: '3rem',
+            textAlign: 'center',
+            color: 'var(--text-secondary)',
+          }}
+        >
+          Nenhum chamado encontrado com os filtros selecionados.
+        </div>
+      ) : (
+        <>
+          {/* Mobile Card List (< 768px) */}
+          <div className="ticket-mobile-view">
+            {filteredTickets.map((ticket) => (
+              <div
+                key={ticket.id}
+                onClick={() => setSelectedTicket(ticket)}
+                style={{
+                  backgroundColor: 'var(--bg-card)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '1rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                  boxShadow: 'var(--shadow-sm)',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.15s ease',
+                }}
+              >
+                {/* Header: Code & Badges */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '0.8125rem', color: 'var(--primary-400)' }}>
                     {ticket.code}
-                  </td>
-                  <td style={{ padding: '0.875rem 1rem' }}>
-                    <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.875rem' }}>
-                      {ticket.title}
-                    </div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                      {ticket.category.name}
-                    </div>
-                  </td>
-                  <td style={{ padding: '0.875rem 1rem' }}>
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
                     <span
                       style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        fontSize: '0.75rem',
+                        fontSize: '0.6875rem',
                         fontWeight: 600,
                         padding: '2px 8px',
                         borderRadius: 'var(--radius-full)',
@@ -474,11 +473,9 @@ export const TicketsPage: React.FC = () => {
                     >
                       {ticket.status.label}
                     </span>
-                  </td>
-                  <td style={{ padding: '0.875rem 1rem' }}>
                     <span
                       style={{
-                        fontSize: '0.75rem',
+                        fontSize: '0.6875rem',
                         fontWeight: 700,
                         padding: '2px 8px',
                         borderRadius: 'var(--radius-sm)',
@@ -488,138 +485,396 @@ export const TicketsPage: React.FC = () => {
                     >
                       {ticket.priority.display_name}
                     </span>
-                  </td>
-                  <td style={{ padding: '0.875rem 1rem' }}>
+                  </div>
+                </div>
+
+                {/* Title & Category */}
+                <div>
+                  <h4 style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0, lineHeight: 1.35 }}>
+                    {ticket.title}
+                  </h4>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px', display: 'inline-block' }}>
+                    {ticket.category.name}
+                  </span>
+                </div>
+
+                {/* Info Bar: Solicitante & SLA */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    fontSize: '0.75rem',
+                    color: 'var(--text-secondary)',
+                    paddingTop: '0.5rem',
+                    borderTop: '1px solid var(--border-subtle)',
+                    flexWrap: 'wrap',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <User size={13} style={{ color: 'var(--primary-400)' }} />
+                    <strong style={{ color: 'var(--text-primary)' }}>{ticket.requester.name}</strong>
+                  </span>
+
+                  <div>
                     {ticket.sla?.status === 'breached' && (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 700, padding: '2px 8px', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(239, 68, 68, 0.2)', color: '#ef4444' }}>
-                        <Clock size={12} /> Estourado
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700, color: '#ef4444' }}>
+                        <Clock size={12} /> SLA Estourado
                       </span>
                     )}
                     {ticket.sla?.status === 'met' && (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
-                        <CheckCircle2 size={12} /> Cumprido
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 600, color: '#10b981' }}>
+                        <CheckCircle2 size={12} /> SLA Cumprido
                       </span>
                     )}
                     {(!ticket.sla || ticket.sla.status === 'normal') && (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--text-secondary)' }}>
                         <Clock size={12} /> No prazo
                       </span>
                     )}
-                  </td>
-                  <td style={{ padding: '0.875rem 1rem', fontSize: '0.875rem', color: 'var(--text-primary)' }}>
-                    {ticket.requester.name}
-                  </td>
-                  <td style={{ padding: '0.875rem 1rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                    {ticket.assigned_to ? (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <User size={14} style={{ color: 'var(--primary-400)' }} />
-                        {ticket.assigned_to.name}
-                      </span>
-                    ) : (
-                      <span style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>Não atribuído</span>
-                    )}
-                  </td>
-                  <td style={{ padding: '0.875rem 1rem' }} onClick={(e) => e.stopPropagation()}>
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                      {ticket.satisfaction && (
-                        <SatisfactionBadge satisfaction={ticket.satisfaction} />
-                      )}
+                  </div>
+                </div>
 
-                      {isStaff && ticket.status.value === 'open' && (
+                {/* Action Buttons */}
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '0.5rem',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    paddingTop: '0.5rem',
+                    borderTop: '1px solid var(--border-subtle)',
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTicket(ticket)}
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: 'var(--primary-400)',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '4px 0',
+                    }}
+                  >
+                    Ver Linha do Tempo →
+                  </button>
+
+                  <div style={{ display: 'flex', gap: '0.375rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                    {ticket.satisfaction && (
+                      <SatisfactionBadge satisfaction={ticket.satisfaction} />
+                    )}
+
+                    {isStaff && ticket.status.value === 'open' && (
+                      <button
+                        onClick={() => handleQuickStatusChange(ticket, 'in_progress')}
+                        title="Iniciar atendimento"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                          border: '1px solid rgba(139, 92, 246, 0.3)',
+                          color: '#a78bfa',
+                          padding: '6px 10px',
+                          borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          minHeight: '36px',
+                        }}
+                      >
+                        <PlayCircle size={14} /> Atender
+                      </button>
+                    )}
+                    {isStaff && ticket.status.value === 'in_progress' && (
+                      <button
+                        onClick={() => handleQuickStatusChange(ticket, 'resolved')}
+                        title="Marcar como resolvido"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                          border: '1px solid rgba(16, 185, 129, 0.3)',
+                          color: '#34d399',
+                          padding: '6px 10px',
+                          borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          minHeight: '36px',
+                        }}
+                      >
+                        <CheckCircle2 size={14} /> Resolver
+                      </button>
+                    )}
+                    {(ticket.status.value === 'resolved' || ticket.status.value === 'closed') &&
+                      !ticket.satisfaction &&
+                      (user?.id === ticket.requester.id || user?.role?.name === 'admin') && (
                         <button
-                          onClick={() => handleQuickStatusChange(ticket, 'in_progress')}
-                          title="Iniciar atendimento"
+                          onClick={() => setRatingTicket(ticket)}
+                          title="Avaliar atendimento"
                           style={{
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '4px',
-                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                            border: '1px solid rgba(139, 92, 246, 0.3)',
-                            color: '#a78bfa',
-                            padding: '4px 8px',
+                            backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                            border: '1px solid rgba(234, 179, 8, 0.3)',
+                            color: '#eab308',
+                            padding: '6px 10px',
                             borderRadius: 'var(--radius-sm)',
                             fontSize: '0.75rem',
                             fontWeight: 600,
                             cursor: 'pointer',
+                            minHeight: '36px',
                           }}
                         >
-                          <PlayCircle size={14} /> Atender
+                          <Star size={14} /> Avaliar
                         </button>
                       )}
-                      {isStaff && ticket.status.value === 'in_progress' && (
+                    {ticket.status.value === 'resolved' &&
+                      (user?.id === ticket.requester.id || user?.role?.name === 'admin') && (
                         <button
-                          onClick={() => handleQuickStatusChange(ticket, 'resolved')}
-                          title="Marcar como resolvido"
+                          onClick={() => setReopeningTicket(ticket)}
+                          title="Reabrir chamado"
                           style={{
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '4px',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            border: '1px solid rgba(16, 185, 129, 0.3)',
-                            color: '#34d399',
-                            padding: '4px 8px',
+                            backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                            border: '1px solid rgba(249, 115, 22, 0.3)',
+                            color: '#fb923c',
+                            padding: '6px 10px',
                             borderRadius: 'var(--radius-sm)',
                             fontSize: '0.75rem',
                             fontWeight: 600,
                             cursor: 'pointer',
+                            minHeight: '36px',
                           }}
                         >
-                          <CheckCircle2 size={14} /> Resolver
+                          <RotateCcw size={14} /> Reabrir
                         </button>
                       )}
-                      {(ticket.status.value === 'resolved' || ticket.status.value === 'closed') &&
-                        !ticket.satisfaction &&
-                        (user?.id === ticket.requester.id || user?.role?.name === 'admin') && (
-                          <button
-                            onClick={() => setRatingTicket(ticket)}
-                            title="Avaliar atendimento"
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                              backgroundColor: 'rgba(234, 179, 8, 0.1)',
-                              border: '1px solid rgba(234, 179, 8, 0.3)',
-                              color: '#eab308',
-                              padding: '4px 8px',
-                              borderRadius: 'var(--radius-sm)',
-                              fontSize: '0.75rem',
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                            }}
-                          >
-                            <Star size={14} /> Avaliar
-                          </button>
-                        )}
-                      {ticket.status.value === 'resolved' &&
-                        (user?.id === ticket.requester.id || user?.role?.name === 'admin') && (
-                          <button
-                            onClick={() => setReopeningTicket(ticket)}
-                            title="Reabrir chamado"
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                              backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                              border: '1px solid rgba(249, 115, 22, 0.3)',
-                              color: '#fb923c',
-                              padding: '4px 8px',
-                              borderRadius: 'var(--radius-sm)',
-                              fontSize: '0.75rem',
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                            }}
-                          >
-                            <RotateCcw size={14} /> Reabrir
-                          </button>
-                        )}
-                    </div>
-                  </td>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table (>= 768px) */}
+          <div
+            className="ticket-desktop-view"
+            style={{
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: 'var(--radius-md)',
+              overflow: 'hidden',
+            }}
+          >
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-muted)' }}>
+                  <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>CÓDIGO</th>
+                  <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>TÍTULO & CATEGORIA</th>
+                  <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>STATUS</th>
+                  <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>PRIORIDADE</th>
+                  <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>SLA</th>
+                  <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>SOLICITANTE</th>
+                  <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>RESPONSÁVEL</th>
+                  <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>AÇÕES</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+              </thead>
+              <tbody>
+                {filteredTickets.map((ticket) => (
+                  <tr
+                    key={ticket.id}
+                    style={{
+                      borderBottom: '1px solid var(--border-subtle)',
+                      cursor: 'pointer',
+                      transition: 'background-color var(--transition-fast)',
+                    }}
+                    onClick={() => setSelectedTicket(ticket)}
+                  >
+                    <td style={{ padding: '0.875rem 1rem', fontFamily: 'monospace', fontWeight: 600, color: 'var(--primary-400)', whiteSpace: 'nowrap' }}>
+                      {ticket.code}
+                    </td>
+                    <td style={{ padding: '0.875rem 1rem' }}>
+                      <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.875rem' }}>
+                        {ticket.title}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                        {ticket.category.name}
+                      </div>
+                    </td>
+                    <td style={{ padding: '0.875rem 1rem' }}>
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          padding: '2px 8px',
+                          borderRadius: 'var(--radius-full)',
+                          backgroundColor: `${ticket.status.color}20`,
+                          color: ticket.status.color,
+                        }}
+                      >
+                        {ticket.status.label}
+                      </span>
+                    </td>
+                    <td style={{ padding: '0.875rem 1rem' }}>
+                      <span
+                        style={{
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          padding: '2px 8px',
+                          borderRadius: 'var(--radius-sm)',
+                          backgroundColor: `${ticket.priority.color}22`,
+                          color: ticket.priority.color,
+                        }}
+                      >
+                        {ticket.priority.display_name}
+                      </span>
+                    </td>
+                    <td style={{ padding: '0.875rem 1rem' }}>
+                      {ticket.sla?.status === 'breached' && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 700, padding: '2px 8px', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(239, 68, 68, 0.2)', color: '#ef4444' }}>
+                          <Clock size={12} /> Estourado
+                        </span>
+                      )}
+                      {ticket.sla?.status === 'met' && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
+                          <CheckCircle2 size={12} /> Cumprido
+                        </span>
+                      )}
+                      {(!ticket.sla || ticket.sla.status === 'normal') && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                          <Clock size={12} /> No prazo
+                        </span>
+                      )}
+                    </td>
+                    <td style={{ padding: '0.875rem 1rem', fontSize: '0.875rem', color: 'var(--text-primary)' }}>
+                      {ticket.requester.name}
+                    </td>
+                    <td style={{ padding: '0.875rem 1rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                      {ticket.assigned_to ? (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <User size={14} style={{ color: 'var(--primary-400)' }} />
+                          {ticket.assigned_to.name}
+                        </span>
+                      ) : (
+                        <span style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>Não atribuído</span>
+                      )}
+                    </td>
+                    <td style={{ padding: '0.875rem 1rem' }} onClick={(e) => e.stopPropagation()}>
+                      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                        {ticket.satisfaction && (
+                          <SatisfactionBadge satisfaction={ticket.satisfaction} />
+                        )}
+
+                        {isStaff && ticket.status.value === 'open' && (
+                          <button
+                            onClick={() => handleQuickStatusChange(ticket, 'in_progress')}
+                            title="Iniciar atendimento"
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                              border: '1px solid rgba(139, 92, 246, 0.3)',
+                              color: '#a78bfa',
+                              padding: '4px 8px',
+                              borderRadius: 'var(--radius-sm)',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <PlayCircle size={14} /> Atender
+                          </button>
+                        )}
+                        {isStaff && ticket.status.value === 'in_progress' && (
+                          <button
+                            onClick={() => handleQuickStatusChange(ticket, 'resolved')}
+                            title="Marcar como resolvido"
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                              border: '1px solid rgba(16, 185, 129, 0.3)',
+                              color: '#34d399',
+                              padding: '4px 8px',
+                              borderRadius: 'var(--radius-sm)',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <CheckCircle2 size={14} /> Resolver
+                          </button>
+                        )}
+                        {(ticket.status.value === 'resolved' || ticket.status.value === 'closed') &&
+                          !ticket.satisfaction &&
+                          (user?.id === ticket.requester.id || user?.role?.name === 'admin') && (
+                            <button
+                              onClick={() => setRatingTicket(ticket)}
+                              title="Avaliar atendimento"
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                                border: '1px solid rgba(234, 179, 8, 0.3)',
+                                color: '#eab308',
+                                padding: '4px 8px',
+                                borderRadius: 'var(--radius-sm)',
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              <Star size={14} /> Avaliar
+                            </button>
+                          )}
+                        {ticket.status.value === 'resolved' &&
+                          (user?.id === ticket.requester.id || user?.role?.name === 'admin') && (
+                            <button
+                              onClick={() => setReopeningTicket(ticket)}
+                              title="Reabrir chamado"
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                                border: '1px solid rgba(249, 115, 22, 0.3)',
+                                color: '#fb923c',
+                                padding: '4px 8px',
+                                borderRadius: 'var(--radius-sm)',
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              <RotateCcw size={14} /> Reabrir
+                            </button>
+                          )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
       {/* Ticket Detail Drawer */}
       {selectedTicket && (
@@ -635,16 +890,16 @@ export const TicketsPage: React.FC = () => {
           onClick={() => setSelectedTicket(null)}
         >
           <div
+            className="ticket-drawer-container"
             style={{
-              width: '100%',
-              maxWidth: '540px',
+              height: '100%',
               backgroundColor: 'var(--bg-surface)',
               borderLeft: '1px solid var(--border-default)',
-              padding: '1.5rem',
               display: 'flex',
               flexDirection: 'column',
               gap: '1.25rem',
               overflowY: 'auto',
+              boxSizing: 'border-box',
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -659,7 +914,8 @@ export const TicketsPage: React.FC = () => {
               </div>
               <button
                 onClick={() => setSelectedTicket(null)}
-                style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '6px' }}
+                aria-label="Fechar detalhes"
               >
                 <X size={20} />
               </button>
@@ -713,7 +969,7 @@ export const TicketsPage: React.FC = () => {
             </div>
 
             {/* Solicitante & Atendente */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-grid-2col">
               <div style={{ backgroundColor: 'var(--bg-card)', padding: '0.875rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Solicitante</span>
                 <p style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px' }}>
@@ -820,7 +1076,7 @@ export const TicketsPage: React.FC = () => {
           style={{
             position: 'fixed',
             top: '80px',
-            right: '24px',
+            right: '1rem',
             zIndex: 60,
             backgroundColor: 'var(--bg-surface)',
             border: '1px solid rgba(16, 185, 129, 0.4)',
@@ -830,7 +1086,9 @@ export const TicketsPage: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             gap: '0.875rem',
+            width: 'calc(100vw - 2rem)',
             maxWidth: '420px',
+            boxSizing: 'border-box',
           }}
         >
           <div
