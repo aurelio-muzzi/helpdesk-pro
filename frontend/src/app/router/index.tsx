@@ -15,6 +15,17 @@ const KnowledgeBasePage = lazy(() => import('@/features/kb/pages/KnowledgeBasePa
 const AuditLogsPage = lazy(() => import('@/features/audit/pages/AuditLogsPage'));
 const SettingsPage = lazy(() => import('@/features/settings/pages/SettingsPage'));
 
+import { useAuth } from '@/features/auth/hooks/useAuth';
+
+// Rota inteligente para Dashboard (solicitantes são direcionados diretamente a Chamados)
+const DashboardRoute: React.FC = () => {
+  const { user } = useAuth();
+  if (user?.role?.name === 'requester') {
+    return <Navigate to="/tickets" replace />;
+  }
+  return <DashboardPage />;
+};
+
 const router = createBrowserRouter([
   // Rotas Públicas
   {
@@ -46,7 +57,7 @@ const router = createBrowserRouter([
             index: true,
             element: (
               <Suspense fallback={<PageSkeleton />}>
-                <DashboardPage />
+                <DashboardRoute />
               </Suspense>
             ),
           },

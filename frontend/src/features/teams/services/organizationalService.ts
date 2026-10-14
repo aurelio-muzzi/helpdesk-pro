@@ -54,6 +54,15 @@ export const organizationalService = {
     return response.data.data;
   },
 
+  updateCategory: async (id: number, payload: Partial<CreateCategoryPayload>): Promise<Category> => {
+    const response = await api.put<ApiResponse<Category>>(`/categories/${id}`, payload);
+    return response.data.data;
+  },
+
+  deleteCategory: async (id: number): Promise<void> => {
+    await api.delete(`/categories/${id}`);
+  },
+
   // Prioridades
   getPriorities: async (): Promise<Priority[]> => {
     const response = await api.get<ApiResponse<Priority[]>>('/priorities');

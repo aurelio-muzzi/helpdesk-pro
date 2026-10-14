@@ -61,6 +61,9 @@ vi.mock('../hooks/useOrganizational', () => ({
   useCreateTeam: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useUpdateTeam: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useSyncTeamMembers: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useCreateCategory: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useUpdateCategory: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useDeleteCategory: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useCategories: () => ({
     data: [
       {
@@ -174,6 +177,19 @@ describe('TeamsPage Component', () => {
 
     expect(screen.getByText('Hardware & Equipamentos')).toBeInTheDocument();
     expect(screen.getByText('hardware-equipamentos')).toBeInTheDocument();
+  });
+
+  it('opens category creation modal when clicking Nova Categoria on categories tab', () => {
+    renderWithProviders(<TeamsPage />);
+
+    const catTab = screen.getByRole('button', { name: /Categorias/i });
+    fireEvent.click(catTab);
+
+    const newCatBtn = screen.getByRole('button', { name: /Nova Categoria/i });
+    fireEvent.click(newCatBtn);
+
+    expect(screen.getByRole('heading', { name: /Nova Categoria/i })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Ex: Hardware & Periféricos/i)).toBeInTheDocument();
   });
 
   it('switches to priorities tab and displays SLA priority badges', () => {

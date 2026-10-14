@@ -26,7 +26,11 @@ export function useAuth() {
     mutationFn: (credentials: LoginCredentials) => authService.login(credentials),
     onSuccess: (loggedUser) => {
       queryClient.setQueryData(AUTH_QUERY_KEY, loggedUser);
-      navigate('/');
+      if (loggedUser.role?.name === 'requester') {
+        navigate('/tickets');
+      } else {
+        navigate('/');
+      }
     },
   });
 

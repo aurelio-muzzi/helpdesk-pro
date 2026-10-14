@@ -13,10 +13,19 @@ export const TICKET_KEYS = {
   detail: (id: number) => ['tickets', 'detail', id] as const,
 };
 
-export const useTickets = (params?: TicketFilterParams) => {
+export interface UseTicketsOptions {
+  refetchInterval?: number | false;
+  enabled?: boolean;
+}
+
+export const useTickets = (params?: TicketFilterParams, options?: UseTicketsOptions) => {
   return useQuery({
     queryKey: TICKET_KEYS.list(params),
     queryFn: () => ticketService.getTickets(params),
+    refetchInterval: options?.refetchInterval ?? 3500,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
+    enabled: options?.enabled ?? true,
   });
 };
 
@@ -25,6 +34,8 @@ export const useTicket = (id: number) => {
     queryKey: TICKET_KEYS.detail(id),
     queryFn: () => ticketService.getTicket(id),
     enabled: Boolean(id),
+    refetchInterval: 5000,
+    refetchIntervalInBackground: false,
   });
 };
 
