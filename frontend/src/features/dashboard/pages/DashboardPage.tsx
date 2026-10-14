@@ -46,7 +46,7 @@ export const DashboardPage: React.FC = () => {
     department_id: departmentId ? Number(departmentId) : undefined,
   };
 
-  const { data: metrics, isLoading, isError, refetch, isFetching } = useDashboardMetrics(filters);
+  const { data: metrics, isLoading, isError, refetch } = useDashboardMetrics(filters);
   const { data: departments } = useDepartments();
   const exportMutation = useExportDashboardCsv();
 
@@ -151,28 +151,6 @@ export const DashboardPage: React.FC = () => {
               />
             </div>
           )}
-
-          {/* Botão de Atualizar */}
-          <button
-            type="button"
-            onClick={() => refetch()}
-            disabled={isFetching}
-            title="Atualizar dados"
-            style={{
-              height: '36px',
-              width: '36px',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--bg-card)',
-              color: 'var(--text-secondary)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: isFetching ? 'not-allowed' : 'pointer',
-            }}
-          >
-            <RefreshCw size={16} className={isFetching ? 'animate-spin' : ''} />
-          </button>
 
           {/* Botão Exportar CSV (Exclusivo Gerência e Admin) */}
           {isManagerOrAdmin && (

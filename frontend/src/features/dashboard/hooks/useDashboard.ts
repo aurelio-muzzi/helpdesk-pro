@@ -6,8 +6,8 @@ export const useDashboardMetrics = (filters: DashboardFilters = { period: '7d' }
   return useQuery<DashboardMetrics>({
     queryKey: ['dashboard-metrics', filters],
     queryFn: () => dashboardService.getMetrics(filters),
-    staleTime: 1000 * 60 * 2,
-    refetchOnWindowFocus: false,
+    staleTime: 1000 * 30,
+    refetchInterval: 30000,
   });
 };
 
