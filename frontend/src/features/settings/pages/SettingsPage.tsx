@@ -110,12 +110,10 @@ export const SettingsPage: React.FC = () => {
 
       {/* Tabs */}
       <div
+        className="admin-tabs-nav"
         style={{
-          display: 'flex',
-          gap: '0.5rem',
           borderBottom: '1px solid var(--border-subtle)',
           paddingBottom: '0.5rem',
-          overflowX: 'auto',
         }}
       >
         {tabs.map((tab) => {
@@ -130,6 +128,7 @@ export const SettingsPage: React.FC = () => {
                 alignItems: 'center',
                 gap: '0.5rem',
                 padding: '0.625rem 1rem',
+                minHeight: '40px',
                 borderRadius: 'var(--radius-md)',
                 border: 'none',
                 backgroundColor: isActive ? 'var(--primary-600)' : 'transparent',
@@ -157,7 +156,7 @@ export const SettingsPage: React.FC = () => {
               backgroundColor: 'var(--bg-card)',
               border: '1px solid var(--border-subtle)',
               borderRadius: 'var(--radius-lg)',
-              padding: '1.75rem',
+              padding: 'clamp(1rem, 3vw, 1.75rem)',
               display: 'flex',
               flexDirection: 'column',
               gap: '1.5rem',
@@ -167,7 +166,7 @@ export const SettingsPage: React.FC = () => {
               Identificação & Localização
             </h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+            <div className="admin-grid-settings">
               <div>
                 <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
                   Nome da Aplicação
@@ -273,7 +272,7 @@ export const SettingsPage: React.FC = () => {
               backgroundColor: 'var(--bg-card)',
               border: '1px solid var(--border-subtle)',
               borderRadius: 'var(--radius-lg)',
-              padding: '1.75rem',
+              padding: 'clamp(1rem, 3vw, 1.75rem)',
               display: 'flex',
               flexDirection: 'column',
               gap: '1.5rem',
@@ -283,7 +282,7 @@ export const SettingsPage: React.FC = () => {
               Parâmetros de SLA & Ciclo de Atendimento
             </h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+            <div className="admin-grid-settings">
               <div>
                 <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
                   Horário de Início do Expediente
@@ -369,7 +368,7 @@ export const SettingsPage: React.FC = () => {
               backgroundColor: 'var(--bg-card)',
               border: '1px solid var(--border-subtle)',
               borderRadius: 'var(--radius-lg)',
-              padding: '1.75rem',
+              padding: 'clamp(1rem, 3vw, 1.75rem)',
               display: 'flex',
               flexDirection: 'column',
               gap: '1.5rem',
@@ -379,7 +378,7 @@ export const SettingsPage: React.FC = () => {
               Políticas de Autenticação & Trilha de Auditoria
             </h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+            <div className="admin-grid-settings">
               <div>
                 <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
                   Tempo Limite da Sessão (Minutos)
@@ -462,7 +461,7 @@ export const SettingsPage: React.FC = () => {
               backgroundColor: 'var(--bg-card)',
               border: '1px solid var(--border-subtle)',
               borderRadius: 'var(--radius-lg)',
-              padding: '1.75rem',
+              padding: 'clamp(1rem, 3vw, 1.75rem)',
               display: 'flex',
               flexDirection: 'column',
               gap: '1.5rem',
@@ -472,7 +471,7 @@ export const SettingsPage: React.FC = () => {
               Canais de Notificação & Servidor de E-mail
             </h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+            <div className="admin-grid-settings">
               <div>
                 <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
                   Driver de E-mail
@@ -575,7 +574,7 @@ export const SettingsPage: React.FC = () => {
               backgroundColor: 'var(--bg-card)',
               border: '1px solid var(--border-subtle)',
               borderRadius: 'var(--radius-lg)',
-              padding: '1.75rem',
+              padding: 'clamp(1rem, 3vw, 1.75rem)',
               display: 'flex',
               flexDirection: 'column',
               gap: '1.5rem',
@@ -600,6 +599,7 @@ export const SettingsPage: React.FC = () => {
                   color: 'var(--text-primary)',
                   cursor: 'pointer',
                   fontWeight: 600,
+                  minHeight: '44px',
                 }}
               >
                 <Moon size={20} style={{ color: '#a78bfa' }} />
@@ -620,6 +620,7 @@ export const SettingsPage: React.FC = () => {
                   color: 'var(--text-primary)',
                   cursor: 'pointer',
                   fontWeight: 600,
+                  minHeight: '44px',
                 }}
               >
                 <Sun size={20} style={{ color: '#f59e0b' }} />
@@ -636,10 +637,12 @@ export const SettingsPage: React.FC = () => {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '0.5rem',
               backgroundColor: 'var(--primary-600)',
               color: '#ffffff',
               padding: '0.625rem 1.5rem',
+              minHeight: '42px',
               borderRadius: 'var(--radius-md)',
               fontWeight: 600,
               fontSize: '0.875rem',

@@ -155,7 +155,11 @@ const SlaPolicyFormContent: React.FC<SlaPolicyFormContentProps> = ({
           onClick={onClose}
           aria-label="Fechar modal"
           style={{
-            padding: '5px',
+            minWidth: '38px',
+            minHeight: '38px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             borderRadius: 'var(--radius-sm)',
             color: 'var(--text-secondary)',
             cursor: 'pointer',
@@ -185,7 +189,7 @@ const SlaPolicyFormContent: React.FC<SlaPolicyFormContentProps> = ({
         )}
 
         {/* Linha 1: Nome da Política + Prioridade Vinculada */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '0.875rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '0.875rem' }}>
           {/* Nome */}
           <div>
             <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
@@ -363,6 +367,7 @@ const SlaPolicyFormContent: React.FC<SlaPolicyFormContentProps> = ({
             disabled={isSaving}
             style={{
               padding: '0.5rem 1.125rem',
+              minHeight: '40px',
               borderRadius: 'var(--radius-md)',
               fontSize: '0.8125rem',
               fontWeight: 600,
@@ -379,6 +384,7 @@ const SlaPolicyFormContent: React.FC<SlaPolicyFormContentProps> = ({
             disabled={isSaving}
             style={{
               padding: '0.5rem 1.375rem',
+              minHeight: '40px',
               borderRadius: 'var(--radius-md)',
               fontSize: '0.8125rem',
               fontWeight: 600,

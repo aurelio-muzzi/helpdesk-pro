@@ -21,7 +21,7 @@ export const AuditDetailsModal: React.FC<AuditDetailsModalProps> = ({ log, onClo
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 50,
-        padding: '1.5rem',
+        padding: '1rem',
       }}
       onClick={onClose}
     >
@@ -83,6 +83,12 @@ export const AuditDetailsModal: React.FC<AuditDetailsModalProps> = ({ log, onClo
               border: 'none',
               color: 'var(--text-secondary)',
               cursor: 'pointer',
+              minWidth: '38px',
+              minHeight: '38px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 'var(--radius-sm)',
             }}
           >
             <X size={18} />
@@ -267,6 +273,7 @@ export const AuditDetailsModal: React.FC<AuditDetailsModalProps> = ({ log, onClo
             onClick={onClose}
             style={{
               padding: '0.5rem 1.25rem',
+              minHeight: '40px',
               backgroundColor: 'var(--bg-muted)',
               border: '1px solid var(--border-subtle)',
               borderRadius: 'var(--radius-md)',

@@ -179,7 +179,7 @@ export const AuditLogsPage: React.FC = () => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
           gap: '1rem',
         }}
       >
@@ -460,7 +460,8 @@ export const AuditLogsPage: React.FC = () => {
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
                             border: '1px solid rgba(59, 130, 246, 0.3)',
                             color: '#3b82f6',
-                            padding: '4px 8px',
+                            padding: '0.375rem 0.625rem',
+                            minHeight: '34px',
                             borderRadius: 'var(--radius-sm)',
                             fontSize: '0.75rem',
                             fontWeight: 600,
@@ -487,6 +488,8 @@ export const AuditLogsPage: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '0.75rem',
               backgroundColor: 'var(--bg-muted)',
             }}
           >
@@ -503,8 +506,9 @@ export const AuditLogsPage: React.FC = () => {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '2px',
-                  padding: '4px 8px',
+                  gap: '4px',
+                  padding: '0.375rem 0.625rem',
+                  minHeight: '36px',
                   borderRadius: 'var(--radius-sm)',
                   border: '1px solid var(--border-subtle)',
                   backgroundColor: 'var(--bg-card)',
@@ -512,6 +516,7 @@ export const AuditLogsPage: React.FC = () => {
                   cursor: meta.current_page <= 1 ? 'not-allowed' : 'pointer',
                   opacity: meta.current_page <= 1 ? 0.5 : 1,
                   fontSize: '0.75rem',
+                  fontWeight: 500,
                 }}
               >
                 <ChevronLeft size={14} /> Anterior
@@ -529,8 +534,9 @@ export const AuditLogsPage: React.FC = () => {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '2px',
-                  padding: '4px 8px',
+                  gap: '4px',
+                  padding: '0.375rem 0.625rem',
+                  minHeight: '36px',
                   borderRadius: 'var(--radius-sm)',
                   border: '1px solid var(--border-subtle)',
                   backgroundColor: 'var(--bg-card)',
@@ -538,6 +544,7 @@ export const AuditLogsPage: React.FC = () => {
                   cursor: meta.current_page >= meta.last_page ? 'not-allowed' : 'pointer',
                   opacity: meta.current_page >= meta.last_page ? 0.5 : 1,
                   fontSize: '0.75rem',
+                  fontWeight: 500,
                 }}
               >
                 Próxima <ChevronRight size={14} />

@@ -114,7 +114,7 @@ export const SlaPoliciesPage: React.FC = () => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
           gap: '1rem',
         }}
       >
@@ -216,7 +216,7 @@ export const SlaPoliciesPage: React.FC = () => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))',
           gap: '1.25rem',
         }}
       >
@@ -281,14 +281,17 @@ export const SlaPoliciesPage: React.FC = () => {
                   <button
                     onClick={() => handleOpenEditModal(policy)}
                     title="Editar política de SLA"
+                    aria-label="Editar política de SLA"
                     style={{
                       background: 'none',
                       border: 'none',
                       color: 'var(--text-secondary)',
                       cursor: 'pointer',
-                      padding: '4px',
+                      minWidth: '36px',
+                      minHeight: '36px',
                       display: 'flex',
                       alignItems: 'center',
+                      justifyContent: 'center',
                       borderRadius: 'var(--radius-sm)',
                     }}
                   >
@@ -298,14 +301,17 @@ export const SlaPoliciesPage: React.FC = () => {
                   <button
                     onClick={() => handleOpenDeleteModal(policy)}
                     title="Excluir política de SLA"
+                    aria-label="Excluir política de SLA"
                     style={{
                       background: 'none',
                       border: 'none',
                       color: 'var(--danger)',
                       cursor: 'pointer',
-                      padding: '4px',
+                      minWidth: '36px',
+                      minHeight: '36px',
                       display: 'flex',
                       alignItems: 'center',
+                      justifyContent: 'center',
                       borderRadius: 'var(--radius-sm)',
                     }}
                   >

@@ -121,7 +121,11 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
           onClick={onClose}
           aria-label="Fechar modal"
           style={{
-            padding: '6px',
+            minWidth: '38px',
+            minHeight: '38px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             borderRadius: 'var(--radius-sm)',
             color: 'var(--text-secondary)',
             cursor: 'pointer',
@@ -155,13 +159,14 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
           <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
             Adicionar Atendente ou Usuário à Equipe
           </label>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <select
               value={selectedUserId}
               onChange={(e) => setSelectedUserId(Number(e.target.value))}
               style={{
-                flex: 1,
+                flex: '1 1 200px',
                 padding: '0.625rem 0.75rem',
+                minHeight: '40px',
                 borderRadius: 'var(--radius-md)',
                 border: '1px solid var(--border-default)',
                 backgroundColor: 'var(--bg-canvas)',
@@ -185,8 +190,10 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '0.375rem',
                 padding: '0.625rem 1rem',
+                minHeight: '40px',
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: selectedUserId ? 'var(--primary-600)' : 'var(--bg-card-hover)',
                 color: selectedUserId ? '#ffffff' : 'var(--text-muted)',
@@ -272,8 +279,10 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
                         type="button"
                         onClick={() => handleToggleLeader(member.user_id)}
                         title={member.is_leader ? 'Remover liderança' : 'Definir como líder da equipe'}
+                        aria-label={member.is_leader ? 'Remover liderança' : 'Definir como líder da equipe'}
                         style={{
-                          padding: '6px 10px',
+                          padding: '0.375rem 0.625rem',
+                          minHeight: '36px',
                           borderRadius: 'var(--radius-sm)',
                           border: '1px solid var(--border-subtle)',
                           backgroundColor: member.is_leader ? 'rgba(234, 179, 8, 0.1)' : 'var(--bg-canvas)',
@@ -295,12 +304,16 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
                         onClick={() => handleRemoveMember(member.user_id)}
                         aria-label="Remover membro"
                         style={{
-                          padding: '6px',
+                          minWidth: '36px',
+                          minHeight: '36px',
                           borderRadius: 'var(--radius-sm)',
                           border: 'none',
                           backgroundColor: 'transparent',
                           color: 'var(--danger)',
                           cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
                         <Trash2 size={16} />
@@ -331,6 +344,7 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
           disabled={syncMembersMutation.isPending}
           style={{
             padding: '0.625rem 1.25rem',
+            minHeight: '40px',
             borderRadius: 'var(--radius-md)',
             fontSize: '0.875rem',
             fontWeight: 600,
@@ -347,7 +361,12 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
           onClick={handleSave}
           disabled={syncMembersMutation.isPending}
           style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
             padding: '0.625rem 1.5rem',
+            minHeight: '40px',
             borderRadius: 'var(--radius-md)',
             fontSize: '0.875rem',
             fontWeight: 600,

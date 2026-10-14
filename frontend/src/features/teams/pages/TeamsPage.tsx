@@ -203,13 +203,7 @@ export const TeamsPage: React.FC = () => {
       </div>
 
       {/* KPI Cards */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
-          gap: '1rem',
-        }}
-      >
+      <div className="admin-kpi-grid">
         <div
           style={{
             backgroundColor: 'var(--bg-card)',
@@ -378,7 +372,7 @@ export const TeamsPage: React.FC = () => {
           paddingBottom: '0.75rem',
         }}
       >
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <div className="admin-tabs-nav" style={{ flex: '1 1 auto', borderBottom: 'none', paddingBottom: 0 }}>
           <button
             onClick={() => setActiveTab('teams')}
             style={{
@@ -386,6 +380,8 @@ export const TeamsPage: React.FC = () => {
               alignItems: 'center',
               gap: '0.5rem',
               padding: '0.5rem 1rem',
+              minHeight: '40px',
+              whiteSpace: 'nowrap',
               borderRadius: 'var(--radius-md)',
               fontSize: '0.875rem',
               fontWeight: 600,
@@ -406,6 +402,8 @@ export const TeamsPage: React.FC = () => {
               alignItems: 'center',
               gap: '0.5rem',
               padding: '0.5rem 1rem',
+              minHeight: '40px',
+              whiteSpace: 'nowrap',
               borderRadius: 'var(--radius-md)',
               fontSize: '0.875rem',
               fontWeight: 600,
@@ -426,6 +424,8 @@ export const TeamsPage: React.FC = () => {
               alignItems: 'center',
               gap: '0.5rem',
               padding: '0.5rem 1rem',
+              minHeight: '40px',
+              whiteSpace: 'nowrap',
               borderRadius: 'var(--radius-md)',
               fontSize: '0.875rem',
               fontWeight: 600,
@@ -446,6 +446,8 @@ export const TeamsPage: React.FC = () => {
               alignItems: 'center',
               gap: '0.5rem',
               padding: '0.5rem 1rem',
+              minHeight: '40px',
+              whiteSpace: 'nowrap',
               borderRadius: 'var(--radius-md)',
               fontSize: '0.875rem',
               fontWeight: 600,
@@ -466,6 +468,8 @@ export const TeamsPage: React.FC = () => {
               alignItems: 'center',
               gap: '0.5rem',
               padding: '0.5rem 1rem',
+              minHeight: '40px',
+              whiteSpace: 'nowrap',
               borderRadius: 'var(--radius-md)',
               fontSize: '0.875rem',
               fontWeight: 600,
@@ -490,7 +494,9 @@ export const TeamsPage: React.FC = () => {
             border: '1px solid var(--border-default)',
             borderRadius: 'var(--radius-sm)',
             padding: '0.4rem 0.75rem',
-            minWidth: '240px',
+            minWidth: '200px',
+            flex: '1 1 200px',
+            minHeight: '40px',
           }}
         >
           <Search size={16} style={{ color: 'var(--text-muted)' }} />
@@ -523,7 +529,7 @@ export const TeamsPage: React.FC = () => {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))',
                 gap: '1.25rem',
               }}
             >
@@ -583,14 +589,18 @@ export const TeamsPage: React.FC = () => {
                             setIsTeamModalOpen(true);
                           }}
                           title="Editar equipe"
+                          aria-label="Editar equipe"
                           style={{
                             background: 'none',
                             border: 'none',
                             color: 'var(--text-muted)',
                             cursor: 'pointer',
-                            padding: '2px',
+                            minWidth: '36px',
+                            minHeight: '36px',
                             display: 'flex',
                             alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: 'var(--radius-sm)',
                           }}
                         >
                           <Edit2 size={15} />
@@ -630,6 +640,8 @@ export const TeamsPage: React.FC = () => {
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px',
+                          minHeight: '36px',
+                          padding: '0.25rem 0.5rem',
                         }}
                       >
                         <Settings2 size={14} />
@@ -644,14 +656,7 @@ export const TeamsPage: React.FC = () => {
 
           {/* TAB 2: USERS */}
           {activeTab === 'users' && (
-            <div
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-md)',
-                overflow: 'hidden',
-              }}
-            >
+            <div className="admin-table-container">
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-muted)' }}>
@@ -796,14 +801,7 @@ export const TeamsPage: React.FC = () => {
 
           {/* TAB 3: DEPARTMENTS */}
           {activeTab === 'departments' && (
-            <div
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-md)',
-                overflow: 'hidden',
-              }}
-            >
+            <div className="admin-table-container">
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-muted)' }}>
@@ -856,14 +854,7 @@ export const TeamsPage: React.FC = () => {
 
           {/* TAB 4: CATEGORIES */}
           {activeTab === 'categories' && (
-            <div
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-md)',
-                overflow: 'hidden',
-              }}
-            >
+            <div className="admin-table-container">
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-muted)' }}>
@@ -924,6 +915,8 @@ export const TeamsPage: React.FC = () => {
                                 border: 'none',
                                 cursor: 'pointer',
                                 fontWeight: 500,
+                                minHeight: '36px',
+                                padding: '0.25rem 0.5rem',
                               }}
                               title="Editar categoria"
                             >
@@ -945,6 +938,8 @@ export const TeamsPage: React.FC = () => {
                                 border: 'none',
                                 cursor: 'pointer',
                                 fontWeight: 500,
+                                minHeight: '36px',
+                                padding: '0.25rem 0.5rem',
                               }}
                               title="Excluir categoria"
                             >
@@ -966,7 +961,7 @@ export const TeamsPage: React.FC = () => {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 260px), 1fr))',
                 gap: '1.25rem',
               }}
             >

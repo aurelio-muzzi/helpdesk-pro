@@ -128,7 +128,11 @@ const TeamFormContent: React.FC<TeamFormContentProps> = ({
           onClick={onClose}
           aria-label="Fechar modal"
           style={{
-            padding: '6px',
+            minWidth: '38px',
+            minHeight: '38px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             borderRadius: 'var(--radius-sm)',
             color: 'var(--text-secondary)',
             cursor: 'pointer',
@@ -268,6 +272,7 @@ const TeamFormContent: React.FC<TeamFormContentProps> = ({
             disabled={isSaving}
             style={{
               padding: '0.625rem 1.25rem',
+              minHeight: '40px',
               borderRadius: 'var(--radius-md)',
               fontSize: '0.875rem',
               fontWeight: 600,
@@ -284,6 +289,7 @@ const TeamFormContent: React.FC<TeamFormContentProps> = ({
             disabled={isSaving}
             style={{
               padding: '0.625rem 1.5rem',
+              minHeight: '40px',
               borderRadius: 'var(--radius-md)',
               fontSize: '0.875rem',
               fontWeight: 600,
