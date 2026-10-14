@@ -35,6 +35,16 @@ export const useUpdateSlaPolicy = () => {
   });
 };
 
+export const useDeleteSlaPolicy = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => slaService.deletePolicy(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SLA_KEYS.policies });
+    },
+  });
+};
+
 export const useNotifications = () => {
   return useQuery({
     queryKey: SLA_KEYS.notifications,

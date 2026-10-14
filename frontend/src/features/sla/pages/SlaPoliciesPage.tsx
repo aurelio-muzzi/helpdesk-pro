@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ShieldAlert,
   Clock,
@@ -7,8 +7,13 @@ import {
   Plus,
   AlertTriangle,
   Zap,
+  Edit2,
+  Trash2,
 } from 'lucide-react';
-import { useSlaPolicies } from '../hooks/useSla';
+import { useSlaPolicies, useDeleteSlaPolicy } from '../hooks/useSla';
+import { SlaPolicyFormModal } from '../components/SlaPolicyFormModal';
+import { ConfirmDeleteModal } from '@/components/feedback/ConfirmDeleteModal';
+import type { SlaPolicy } from '../types';
 
 const formatMinutes = (minutes: number): string => {
   if (minutes < 60) {
@@ -28,8 +33,47 @@ const formatMinutes = (minutes: number): string => {
 
 export const SlaPoliciesPage: React.FC = () => {
   const { data: policies, isLoading } = useSlaPolicies();
+  const deletePolicyMutation = useDeleteSlaPolicy();
+
+  // Modais de criação / edição e exclusão
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [policyToEdit, setPolicyToEdit] = useState<SlaPolicy | null>(null);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [policyToDelete, setPolicyToDelete] = useState<SlaPolicy | null>(null);
 
   const activeCount = policies?.filter((p) => p.is_active).length ?? 0;
+
+  // Encontrar o menor tempo de primeira resposta para o KPI
+  const fastestResponseMinutes = policies && policies.length > 0
+    ? Math.min(...policies.map((p) => p.first_response_time_minutes))
+    : 15;
+
+  const handleOpenCreateModal = () => {
+    setPolicyToEdit(null);
+    setIsFormModalOpen(true);
+  };
+
+  const handleOpenEditModal = (policy: SlaPolicy) => {
+    setPolicyToEdit(policy);
+    setIsFormModalOpen(true);
+  };
+
+  const handleOpenDeleteModal = (policy: SlaPolicy) => {
+    setPolicyToDelete(policy);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!policyToDelete) return;
+    try {
+      await deletePolicyMutation.mutateAsync(policyToDelete.id);
+      setIsDeleteModalOpen(false);
+      setPolicyToDelete(null);
+    } catch {
+      // Erro tratado pelo react-query
+    }
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -45,6 +89,7 @@ export const SlaPoliciesPage: React.FC = () => {
         </div>
 
         <button
+          onClick={handleOpenCreateModal}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -130,7 +175,7 @@ export const SlaPoliciesPage: React.FC = () => {
               Resposta Mais Rápida
             </span>
             <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              15 min
+              {formatMinutes(fastestResponseMinutes)}
             </h3>
           </div>
         </div>
@@ -181,7 +226,7 @@ export const SlaPoliciesPage: React.FC = () => {
           </div>
         ) : !policies || policies.length === 0 ? (
           <div style={{ gridColumn: '1 / -1', padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-            Nenhuma política de SLA cadastrada.
+            Nenhuma política de SLA cadastrada. Clique em "Nova Política de SLA" para configurar parâmetros.
           </div>
         ) : (
           policies.map((policy) => (
@@ -194,42 +239,83 @@ export const SlaPoliciesPage: React.FC = () => {
                 padding: '1.25rem',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '1rem',
-                borderLeft: `4px solid ${policy.priority.color}`,
+                gap: '0.875rem',
+                borderLeft: `4px solid ${policy.priority?.color || 'var(--primary-500)'}`,
               }}
             >
+              {/* Card Header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
                   <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                     {policy.name}
                   </h3>
-                  <span
+                  {policy.priority && (
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        marginTop: '4px',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: 'var(--radius-sm)',
+                        backgroundColor: `${policy.priority.color}22`,
+                        color: policy.priority.color,
+                      }}
+                    >
+                      Prioridade {policy.priority.display_name}
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  {policy.is_active ? (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: '#10b981' }}>
+                      <CheckCircle2 size={14} /> Ativo
+                    </span>
+                  ) : (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: '#ef4444' }}>
+                      <XCircle size={14} /> Inativo
+                    </span>
+                  )}
+
+                  <button
+                    onClick={() => handleOpenEditModal(policy)}
+                    title="Editar política de SLA"
                     style={{
-                      display: 'inline-block',
-                      marginTop: '4px',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      padding: '2px 8px',
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--text-secondary)',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
                       borderRadius: 'var(--radius-sm)',
-                      backgroundColor: `${policy.priority.color}22`,
-                      color: policy.priority.color,
                     }}
                   >
-                    Prioridade {policy.priority.display_name}
-                  </span>
+                    <Edit2 size={15} />
+                  </button>
+
+                  <button
+                    onClick={() => handleOpenDeleteModal(policy)}
+                    title="Excluir política de SLA"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--danger)',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      borderRadius: 'var(--radius-sm)',
+                    }}
+                  >
+                    <Trash2 size={15} />
+                  </button>
                 </div>
-                {policy.is_active ? (
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: '#10b981' }}>
-                    <CheckCircle2 size={14} /> Ativo
-                  </span>
-                ) : (
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: '#ef4444' }}>
-                    <XCircle size={14} /> Inativo
-                  </span>
-                )}
               </div>
 
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.5, flex: 1 }}>
+              {/* Descrição */}
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.4, flex: 1 }}>
                 {policy.description || 'Sem descrição cadastrada.'}
               </p>
 
@@ -266,6 +352,30 @@ export const SlaPoliciesPage: React.FC = () => {
           ))
         )}
       </div>
+
+      {/* Modal de Criação / Edição de Política de SLA */}
+      <SlaPolicyFormModal
+        isOpen={isFormModalOpen}
+        onClose={() => {
+          setIsFormModalOpen(false);
+          setPolicyToEdit(null);
+        }}
+        policyToEdit={policyToEdit}
+      />
+
+      {/* Modal de Confirmação de Exclusão */}
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setPolicyToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        title="Excluir Política de SLA"
+        itemName={policyToDelete?.name}
+        itemType="esta política de SLA"
+        isLoading={deletePolicyMutation.isPending}
+      />
     </div>
   );
 };
