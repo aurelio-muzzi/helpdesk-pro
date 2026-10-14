@@ -34,6 +34,7 @@ export const useCreateTicket = () => {
     mutationFn: (payload: CreateTicketPayload) => ticketService.createTicket(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: TICKET_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-metrics'] });
     },
   });
 };
@@ -46,6 +47,7 @@ export const useAssignTicket = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: TICKET_KEYS.all });
       queryClient.invalidateQueries({ queryKey: TICKET_KEYS.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-metrics'] });
     },
   });
 };
@@ -58,6 +60,7 @@ export const useChangeTicketStatus = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: TICKET_KEYS.all });
       queryClient.invalidateQueries({ queryKey: TICKET_KEYS.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-metrics'] });
     },
   });
 };
@@ -70,6 +73,7 @@ export const useRateSatisfaction = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: TICKET_KEYS.all });
       queryClient.invalidateQueries({ queryKey: TICKET_KEYS.detail(variables.ticketId) });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-metrics'] });
     },
   });
 };
@@ -82,6 +86,7 @@ export const useReopenTicket = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: TICKET_KEYS.all });
       queryClient.invalidateQueries({ queryKey: TICKET_KEYS.detail(variables.ticketId) });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-metrics'] });
     },
   });
 };
