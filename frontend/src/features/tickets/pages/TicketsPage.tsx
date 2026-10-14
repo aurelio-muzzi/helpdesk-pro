@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   Plus,
   Search,
@@ -12,6 +12,7 @@ import {
   PlayCircle,
   Star,
   RotateCcw,
+  Bell,
 } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useTickets, useChangeTicketStatus } from '../hooks/useTickets';
@@ -35,10 +36,38 @@ export const TicketsPage: React.FC = () => {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [ratingTicket, setRatingTicket] = useState<Ticket | null>(null);
   const [reopeningTicket, setReopeningTicket] = useState<Ticket | null>(null);
+  const [liveTicketAlert, setLiveTicketAlert] = useState<Ticket | null>(null);
+
+  const prevTicketIdsRef = useRef<Set<number> | null>(null);
 
   const { data: tickets, isLoading } = useTickets();
   const { data: priorities } = usePriorities();
   const changeStatusMutation = useChangeTicketStatus();
+
+  // Detecção de novos chamados registrados em tempo real
+  useEffect(() => {
+    if (!tickets) return;
+
+    const currentIds = new Set(tickets.map((t) => t.id));
+
+    if (prevTicketIdsRef.current !== null && isStaff) {
+      const newTickets = tickets.filter((t) => !prevTicketIdsRef.current?.has(t.id));
+      if (newTickets.length > 0) {
+        const latest = newTickets[0];
+        setTimeout(() => setLiveTicketAlert(latest), 0);
+      }
+    }
+
+    prevTicketIdsRef.current = currentIds;
+  }, [tickets, isStaff]);
+
+  useEffect(() => {
+    if (!liveTicketAlert) return;
+    const timer = setTimeout(() => {
+      setLiveTicketAlert(null);
+    }, 6000);
+    return () => clearTimeout(timer);
+  }, [liveTicketAlert]);
 
   // Filtros aplicados
   const filteredTickets = useMemo(() => {
@@ -91,9 +120,40 @@ export const TicketsPage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-            {isRequester ? 'Meus Chamados de Suporte' : 'Central de Chamados'}
-          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              {isRequester ? 'Meus Chamados de Suporte' : 'Central de Chamados'}
+            </h1>
+            {isStaff && (
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '3px 10px',
+                  borderRadius: 'var(--radius-full)',
+                  backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  color: '#34d399',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.02em',
+                }}
+              >
+                <span
+                  style={{
+                    width: '7px',
+                    height: '7px',
+                    borderRadius: '50%',
+                    backgroundColor: '#10b981',
+                    boxShadow: '0 0 6px #10b981',
+                    display: 'inline-block',
+                  }}
+                />
+                Tempo Real Ativo
+              </span>
+            )}
+          </div>
           <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
             {isRequester
               ? 'Acompanhe o andamento dos seus tickets, responda aos atendentes e avalie o serviço.'
@@ -751,6 +811,112 @@ export const TicketsPage: React.FC = () => {
 
       {/* Reopen Ticket Modal */}
       <ReopenTicketModal ticket={reopeningTicket} onClose={() => setReopeningTicket(null)} />
+
+      {/* Toast Notificação de Novo Chamado em Tempo Real */}
+      {liveTicketAlert && (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            position: 'fixed',
+            top: '80px',
+            right: '24px',
+            zIndex: 60,
+            backgroundColor: 'var(--bg-surface)',
+            border: '1px solid rgba(16, 185, 129, 0.4)',
+            borderRadius: 'var(--radius-lg)',
+            padding: '1rem 1.25rem',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.875rem',
+            maxWidth: '420px',
+          }}
+        >
+          <div
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: 'var(--radius-md)',
+              backgroundColor: 'rgba(16, 185, 129, 0.15)',
+              color: '#34d399',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <Bell size={18} />
+          </div>
+
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399', textTransform: 'uppercase' }}>
+                Novo Chamado Recebido
+              </span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>• Agora</span>
+            </div>
+            <div
+              style={{
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                color: 'var(--text-primary)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                marginTop: '2px',
+              }}
+            >
+              <span style={{ fontFamily: 'monospace', color: 'var(--primary-400)', marginRight: '6px' }}>
+                {liveTicketAlert.code}
+              </span>
+              {liveTicketAlert.title}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+              Solicitante: <strong>{liveTicketAlert.requester.name}</strong>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedTicket(liveTicketAlert);
+                setLiveTicketAlert(null);
+              }}
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                color: 'var(--primary-400)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                border: '1px solid rgba(59, 130, 246, 0.3)',
+                padding: '4px 8px',
+                borderRadius: 'var(--radius-sm)',
+                cursor: 'pointer',
+              }}
+            >
+              Abrir
+            </button>
+            <button
+              type="button"
+              onClick={() => setLiveTicketAlert(null)}
+              aria-label="Fechar notificação"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-muted)',
+                cursor: 'pointer',
+                padding: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

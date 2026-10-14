@@ -152,7 +152,7 @@ export const KnowledgeBasePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Toolbar: Filtros por Categoria e Botão Novo Artigo */}
+      {/* Barra de Ações Superior (Alinhamento e Ações) */}
       <div
         style={{
           display: 'flex',
@@ -162,57 +162,27 @@ export const KnowledgeBasePage: React.FC = () => {
           gap: '1rem',
         }}
       >
-        {/* Pills de Categoria */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={() => setSelectedCategory(null)}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+          <Layers size={18} style={{ color: 'var(--primary-400)' }} />
+          <span style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+            Categorias de Conhecimento
+          </span>
+          <span
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.375rem',
-              padding: '0.375rem 0.875rem',
+              fontSize: '0.75rem',
+              color: 'var(--text-secondary)',
+              backgroundColor: 'var(--bg-card)',
+              padding: '2px 8px',
               borderRadius: 'var(--radius-full)',
               border: '1px solid var(--border-subtle)',
-              backgroundColor: selectedCategory === null ? 'var(--primary-500)' : 'var(--bg-card)',
-              color: selectedCategory === null ? '#ffffff' : 'var(--text-secondary)',
-              fontSize: '0.8125rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.15s ease',
             }}
           >
-            <Layers size={13} />
-            <span>Todos os Artigos</span>
-          </button>
-
-          {categories?.map((cat) => {
-            const isSelected = selectedCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => setSelectedCategory(isSelected ? null : cat.id)}
-                style={{
-                  padding: '0.375rem 0.875rem',
-                  borderRadius: 'var(--radius-full)',
-                  border: '1px solid var(--border-subtle)',
-                  backgroundColor: isSelected ? 'var(--primary-500)' : 'var(--bg-card)',
-                  color: isSelected ? '#ffffff' : 'var(--text-secondary)',
-                  fontSize: '0.8125rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                {cat.name}
-              </button>
-            );
-          })}
+            {articles?.length ?? 0} {articles?.length === 1 ? 'artigo' : 'artigos'}
+          </span>
         </div>
 
-        {/* Ações da Direita: Filtro Interno (se Staff) e Botão Criar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+        {/* Ações da Direita */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', flexWrap: 'wrap' }}>
           {isStaff && (
             <button
               type="button"
@@ -221,7 +191,7 @@ export const KnowledgeBasePage: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.375rem',
-                padding: '0.375rem 0.875rem',
+                padding: '0.45rem 0.875rem',
                 borderRadius: 'var(--radius-md)',
                 border: '1px solid var(--border-subtle)',
                 backgroundColor: showInternalOnly ? 'rgba(192, 132, 252, 0.15)' : 'var(--bg-card)',
@@ -229,6 +199,7 @@ export const KnowledgeBasePage: React.FC = () => {
                 fontSize: '0.8125rem',
                 fontWeight: 600,
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
               <Lock size={13} />
@@ -244,15 +215,16 @@ export const KnowledgeBasePage: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.375rem',
-                padding: '0.5rem 1rem',
+                padding: '0.45rem 1rem',
                 borderRadius: 'var(--radius-md)',
-                backgroundColor: 'var(--primary-500)',
+                backgroundColor: 'var(--primary-600)',
                 border: 'none',
                 color: '#ffffff',
                 fontSize: '0.8125rem',
                 fontWeight: 600,
                 cursor: 'pointer',
                 boxShadow: 'var(--shadow-sm)',
+                transition: 'all 0.15s ease',
               }}
             >
               <Plus size={15} />
@@ -260,6 +232,69 @@ export const KnowledgeBasePage: React.FC = () => {
             </button>
           )}
         </div>
+      </div>
+
+      {/* Container de Chips de Categorias sem barra de rolagem */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '0.5rem',
+          padding: '0.75rem 1rem',
+          backgroundColor: 'var(--bg-card)',
+          borderRadius: 'var(--radius-lg)',
+          border: '1px solid var(--border-subtle)',
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setSelectedCategory(null)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.375rem',
+            padding: '0.375rem 0.875rem',
+            borderRadius: 'var(--radius-full)',
+            border: selectedCategory === null ? '1px solid var(--primary-500)' : '1px solid var(--border-subtle)',
+            backgroundColor: selectedCategory === null ? 'var(--primary-500)' : 'var(--bg-surface)',
+            color: selectedCategory === null ? '#ffffff' : 'var(--text-secondary)',
+            fontSize: '0.8125rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          <Layers size={13} />
+          <span>Todos os Artigos</span>
+        </button>
+
+        {categories?.map((cat) => {
+          const isSelected = selectedCategory === cat.id;
+          return (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => setSelectedCategory(isSelected ? null : cat.id)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.375rem',
+                padding: '0.375rem 0.875rem',
+                borderRadius: 'var(--radius-full)',
+                border: isSelected ? '1px solid var(--primary-500)' : '1px solid var(--border-subtle)',
+                backgroundColor: isSelected ? 'var(--primary-500)' : 'var(--bg-surface)',
+                color: isSelected ? '#ffffff' : 'var(--text-secondary)',
+                fontSize: '0.8125rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <span>{cat.name}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Estados de Carregamento e Erro */}

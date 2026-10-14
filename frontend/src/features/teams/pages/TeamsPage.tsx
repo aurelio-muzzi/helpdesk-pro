@@ -12,6 +12,7 @@ import {
   Shield,
   Edit2,
   Settings2,
+  Trash2,
 } from 'lucide-react';
 import {
   useDepartments,
@@ -19,11 +20,14 @@ import {
   useCategories,
   usePriorities,
   useUsers,
+  useDeleteCategory,
 } from '../hooks/useOrganizational';
 import { UserFormModal } from '../components/UserFormModal';
 import { TeamFormModal } from '../components/TeamFormModal';
+import { CategoryFormModal } from '../components/CategoryFormModal';
 import { ManageTeamMembersModal } from '../components/ManageTeamMembersModal';
-import type { Team, UserItem } from '../types';
+import { ConfirmDeleteModal } from '@/components/feedback/ConfirmDeleteModal';
+import type { Team, UserItem, Category } from '../types';
 
 type ActiveTab = 'teams' | 'users' | 'departments' | 'categories' | 'priorities';
 
@@ -40,6 +44,13 @@ export const TeamsPage: React.FC = () => {
 
   const [isManageMembersOpen, setIsManageMembersOpen] = useState(false);
   const [selectedTeamForMembers, setSelectedTeamForMembers] = useState<Team | null>(null);
+
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null);
+
+  const [isDeleteCategoryModalOpen, setIsDeleteCategoryModalOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const deleteCategoryMutation = useDeleteCategory();
 
   // Queries
   const { data: departments, isLoading: loadingDepts } = useDepartments();
@@ -86,6 +97,9 @@ export const TeamsPage: React.FC = () => {
     if (activeTab === 'users') {
       setUserToEdit(null);
       setIsUserModalOpen(true);
+    } else if (activeTab === 'categories') {
+      setCategoryToEdit(null);
+      setIsCategoryModalOpen(true);
     } else {
       setTeamToEdit(null);
       setIsTeamModalOpen(true);
@@ -857,12 +871,13 @@ export const TeamsPage: React.FC = () => {
                     <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>SLUG IDENTIFICADOR</th>
                     <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>DEPARTAMENTO</th>
                     <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>STATUS</th>
+                    <th style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, textAlign: 'right' }}>AÇÕES</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredCategories.length === 0 ? (
                     <tr>
-                      <td colSpan={4} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                      <td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
                         Nenhuma categoria cadastrada.
                       </td>
                     </tr>
@@ -891,6 +906,52 @@ export const TeamsPage: React.FC = () => {
                           >
                             {cat.is_active ? 'Ativa' : 'Inativa'}
                           </span>
+                        </td>
+                        <td style={{ padding: '0.875rem 1rem', textAlign: 'right' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                            <button
+                              onClick={() => {
+                                setCategoryToEdit(cat);
+                                setIsCategoryModalOpen(true);
+                              }}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                fontSize: '0.8125rem',
+                                color: 'var(--primary-400)',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontWeight: 500,
+                              }}
+                              title="Editar categoria"
+                            >
+                              <Edit2 size={14} />
+                              Editar
+                            </button>
+                            <button
+                              onClick={() => {
+                                setCategoryToDelete(cat);
+                                setIsDeleteCategoryModalOpen(true);
+                              }}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                fontSize: '0.8125rem',
+                                color: '#ef4444',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontWeight: 500,
+                              }}
+                              title="Excluir categoria"
+                            >
+                              <Trash2 size={14} />
+                              Excluir
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -987,6 +1048,34 @@ export const TeamsPage: React.FC = () => {
           setSelectedTeamForMembers(null);
         }}
         team={selectedTeamForMembers}
+      />
+
+      <CategoryFormModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => {
+          setIsCategoryModalOpen(false);
+          setCategoryToEdit(null);
+        }}
+        categoryToEdit={categoryToEdit}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteCategoryModalOpen}
+        onClose={() => {
+          setIsDeleteCategoryModalOpen(false);
+          setCategoryToDelete(null);
+        }}
+        onConfirm={async () => {
+          if (categoryToDelete) {
+            await deleteCategoryMutation.mutateAsync(categoryToDelete.id);
+            setIsDeleteCategoryModalOpen(false);
+            setCategoryToDelete(null);
+          }
+        }}
+        title="Excluir Categoria"
+        itemName={categoryToDelete?.name}
+        itemType="esta categoria"
+        isLoading={deleteCategoryMutation.isPending}
       />
     </div>
   );

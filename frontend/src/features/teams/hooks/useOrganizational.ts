@@ -94,6 +94,27 @@ export const useCreateCategory = () => {
   });
 };
 
+export const useUpdateCategory = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: Partial<CreateCategoryPayload> }) =>
+      organizationalService.updateCategory(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ORGANIZATIONAL_KEYS.categories });
+    },
+  });
+};
+
+export const useDeleteCategory = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => organizationalService.deleteCategory(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ORGANIZATIONAL_KEYS.categories });
+    },
+  });
+};
+
 export const useCreatePriority = () => {
   const queryClient = useQueryClient();
   return useMutation({

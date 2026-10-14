@@ -15,7 +15,7 @@ interface NavItem {
 }
 
 const navigationItems: NavItem[] = [
-  { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+  { name: 'Dashboard', path: '/', icon: LayoutDashboard, roles: ['admin', 'manager', 'agent'] },
   { name: 'Chamados', path: '/tickets', icon: Ticket },
   { name: 'Base de Conhecimento', path: '/kb', icon: BookOpen },
   { name: 'Equipes & Usuários', path: '/teams', icon: Users, roles: ['admin', 'manager'] },
