@@ -34,7 +34,13 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const currentMemberIds = members.map((m) => m.user_id);
-  const availableUsers = allUsers.filter((u) => !currentMemberIds.includes(u.id));
+  // Equipes de atendimento são compostas exclusivamente por agentes, gerentes ou administradores (solicitantes são excluídos)
+  const availableUsers = allUsers.filter(
+    (u) =>
+      !currentMemberIds.includes(u.id) &&
+      u.role?.name &&
+      ['agent', 'manager', 'admin'].includes(u.role.name)
+  );
 
   const handleAddMember = () => {
     if (!selectedUserId) return;
@@ -157,14 +163,17 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
         {/* Adicionar Membro */}
         <div>
           <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
-            Adicionar Atendente ou Usuário à Equipe
+            Adicionar Atendente à Equipe
           </label>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', width: '100%' }}>
             <select
               value={selectedUserId}
               onChange={(e) => setSelectedUserId(Number(e.target.value))}
               style={{
                 flex: '1 1 200px',
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
                 padding: '0.625rem 0.75rem',
                 minHeight: '40px',
                 borderRadius: 'var(--radius-md)',
@@ -175,10 +184,10 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
                 outline: 'none',
               }}
             >
-              <option value="">Selecione um usuário para adicionar...</option>
+              <option value="">Selecione um atendente para adicionar...</option>
               {availableUsers.map((u) => (
                 <option key={u.id} value={u.id}>
-                  {u.name} ({u.email}) - {u.role?.display_name || 'Usuário'}
+                  {u.name} - {u.role?.display_name || 'Atendente'} ({u.email})
                 </option>
               ))}
             </select>

@@ -427,7 +427,7 @@ export const SlaPolicyFormModal: React.FC<SlaPolicyFormModalProps> = ({
       }}
     >
       <SlaPolicyFormContent
-        key={policyToEdit?.id ?? 'create'}
+        key={`${policyToEdit?.id ?? 'create'}-${priorities[0]?.id ?? 'none'}`}
         policyToEdit={policyToEdit}
         onClose={onClose}
         priorities={priorities}
