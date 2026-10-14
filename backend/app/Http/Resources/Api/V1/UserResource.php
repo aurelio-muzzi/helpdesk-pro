@@ -26,6 +26,7 @@ class UserResource extends JsonResource
             'avatar_url' => $this->avatar_url,
             'is_active' => $this->is_active,
             'role' => new RoleResource($this->whenLoaded('role')),
+            'teams' => TeamResource::collection($this->whenLoaded('teams')),
             'permissions' => $this->whenLoaded('role', function () {
                 $role = $this->role;
 
