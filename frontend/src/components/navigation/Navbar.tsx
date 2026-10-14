@@ -66,6 +66,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <header
+      className="app-navbar"
       style={{
         height: '64px',
         backgroundColor: 'var(--bg-surface)',
@@ -73,7 +74,6 @@ export const Navbar: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '0 1.5rem',
         position: 'sticky',
         top: 0,
         zIndex: 20,
@@ -87,12 +87,17 @@ export const Navbar: React.FC = () => {
           style={{
             alignItems: 'center',
             justifyContent: 'center',
+            minWidth: '40px',
+            minHeight: '40px',
             padding: '8px',
             borderRadius: 'var(--radius-sm)',
             color: 'var(--text-secondary)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
           }}
         >
-          <Menu size={20} />
+          <Menu size={22} />
         </button>
       </div>
 
@@ -104,8 +109,10 @@ export const Navbar: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '36px',
-            height: '36px',
+            minWidth: '40px',
+            minHeight: '40px',
+            width: '40px',
+            height: '40px',
             borderRadius: 'var(--radius-md)',
             backgroundColor: 'var(--bg-muted)',
             color: 'var(--text-primary)',
@@ -128,8 +135,10 @@ export const Navbar: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '36px',
-                height: '36px',
+                minWidth: '40px',
+                minHeight: '40px',
+                width: '40px',
+                height: '40px',
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: isNotificationsOpen ? 'var(--bg-card-hover)' : 'var(--bg-muted)',
                 color: openCount > 0 ? 'var(--text-primary)' : 'var(--text-secondary)',
@@ -169,7 +178,7 @@ export const Navbar: React.FC = () => {
                   position: 'absolute',
                   top: '46px',
                   right: 0,
-                  width: '360px',
+                  width: 'min(360px, calc(100vw - 2rem))',
                   backgroundColor: 'var(--bg-surface)',
                   border: '1px solid var(--border-default)',
                   borderRadius: 'var(--radius-lg)',
@@ -403,8 +412,10 @@ export const Navbar: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '36px',
-                height: '36px',
+                minWidth: '40px',
+                minHeight: '40px',
+                width: '40px',
+                height: '40px',
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: 'var(--bg-muted)',
                 color: 'var(--text-secondary)',

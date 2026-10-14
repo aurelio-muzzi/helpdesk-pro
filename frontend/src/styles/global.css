@@ -98,9 +98,25 @@ textarea {
 .mobile-nav-toggle,
 .mobile-sidebar-close {
   display: flex !important;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.app-navbar {
+  padding: 0 1rem !important;
+}
+
+.app-main-container {
+  padding: 1rem 0.75rem !important;
 }
 
 @media (min-width: 640px) {
+  .app-navbar {
+    padding: 0 1.5rem !important;
+  }
+  .app-main-container {
+    padding: 1.5rem !important;
+  }
   .user-info-text {
     display: flex !important;
   }
