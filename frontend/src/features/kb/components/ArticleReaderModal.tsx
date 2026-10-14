@@ -46,7 +46,7 @@ export const ArticleReaderModal: React.FC<ArticleReaderModalProps> = ({ article,
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 50,
-        padding: '1.5rem',
+        padding: '1rem',
       }}
     >
       <div
@@ -66,7 +66,7 @@ export const ArticleReaderModal: React.FC<ArticleReaderModalProps> = ({ article,
         {/* Header do Leitor */}
         <div
           style={{
-            padding: '1.25rem 1.75rem',
+            padding: '1.25rem',
             borderBottom: '1px solid var(--border-subtle)',
             display: 'flex',
             alignItems: 'flex-start',
@@ -74,7 +74,7 @@ export const ArticleReaderModal: React.FC<ArticleReaderModalProps> = ({ article,
             gap: '1rem',
           }}
         >
-          <div>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
               <span
                 style={{
@@ -108,11 +108,11 @@ export const ArticleReaderModal: React.FC<ArticleReaderModalProps> = ({ article,
               )}
             </div>
 
-            <h2 style={{ fontSize: '1.375rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.3 }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.3 }}>
               {article.title}
             </h2>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.5rem', flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                 <UserIcon size={12} /> {article.author.name}
               </span>
@@ -134,7 +134,11 @@ export const ArticleReaderModal: React.FC<ArticleReaderModalProps> = ({ article,
               border: 'none',
               color: 'var(--text-secondary)',
               cursor: 'pointer',
-              padding: '0.25rem',
+              minWidth: '40px',
+              minHeight: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <X size={20} />
@@ -191,6 +195,7 @@ export const ArticleReaderModal: React.FC<ArticleReaderModalProps> = ({ article,
                   alignItems: 'center',
                   gap: '0.375rem',
                   padding: '0.5rem 0.875rem',
+                  minHeight: '38px',
                   backgroundColor: 'var(--bg-card)',
                   border: '1px solid var(--border-subtle)',
                   borderRadius: 'var(--radius-md)',
@@ -214,6 +219,7 @@ export const ArticleReaderModal: React.FC<ArticleReaderModalProps> = ({ article,
                   alignItems: 'center',
                   gap: '0.375rem',
                   padding: '0.5rem 0.875rem',
+                  minHeight: '38px',
                   backgroundColor: 'var(--bg-card)',
                   border: '1px solid var(--border-subtle)',
                   borderRadius: 'var(--radius-md)',

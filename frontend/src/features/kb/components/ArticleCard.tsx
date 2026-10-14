@@ -154,15 +154,21 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
                   type="button"
                   onClick={() => onEdit(article)}
                   title="Editar artigo"
+                  aria-label="Editar artigo"
                   style={{
                     background: 'none',
                     border: 'none',
                     color: 'var(--text-secondary)',
                     cursor: 'pointer',
-                    padding: '0.25rem',
+                    minWidth: '36px',
+                    minHeight: '36px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 'var(--radius-sm)',
                   }}
                 >
-                  <Edit2 size={14} />
+                  <Edit2 size={15} />
                 </button>
               )}
               {onDelete && (
@@ -170,15 +176,21 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
                   type="button"
                   onClick={() => onDelete(article)}
                   title="Excluir artigo"
+                  aria-label="Excluir artigo"
                   style={{
                     background: 'none',
                     border: 'none',
                     color: 'var(--danger)',
                     cursor: 'pointer',
-                    padding: '0.25rem',
+                    minWidth: '36px',
+                    minHeight: '36px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 'var(--radius-sm)',
                   }}
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={15} />
                 </button>
               )}
             </>
@@ -195,13 +207,15 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               border: 'none',
               color: 'var(--primary-400)',
               fontWeight: 600,
-              fontSize: '0.75rem',
+              fontSize: '0.8125rem',
               cursor: 'pointer',
-              padding: '0.25rem 0.375rem',
+              minHeight: '36px',
+              padding: '0.375rem 0.625rem',
+              borderRadius: 'var(--radius-sm)',
             }}
           >
             <span>Ler</span>
-            <ArrowRight size={13} />
+            <ArrowRight size={14} />
           </button>
         </div>
       </div>
