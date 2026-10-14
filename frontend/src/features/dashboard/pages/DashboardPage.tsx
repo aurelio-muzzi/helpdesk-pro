@@ -93,7 +93,7 @@ export const DashboardPage: React.FC = () => {
               const isActive = period === p;
               const label = p === '7d' ? '7 Dias' : p === '30d' ? '30 Dias' : '90 Dias';
               return (
-                <button
+                    <button
                   key={p}
                   type="button"
                   onClick={() => setPeriod(p)}
@@ -107,6 +107,7 @@ export const DashboardPage: React.FC = () => {
                     borderRadius: 'var(--radius-sm)',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
+                    minHeight: '38px',
                   }}
                 >
                   {label}
@@ -122,7 +123,8 @@ export const DashboardPage: React.FC = () => {
                 value={departmentId}
                 onChange={(e) => setDepartmentId(e.target.value)}
                 style={{
-                  height: '36px',
+                  height: '38px',
+                  minHeight: '38px',
                   backgroundColor: 'var(--bg-card)',
                   color: 'var(--text-primary)',
                   border: '1px solid var(--border-subtle)',
@@ -159,7 +161,8 @@ export const DashboardPage: React.FC = () => {
               onClick={handleExport}
               disabled={exportMutation.isPending}
               style={{
-                height: '36px',
+                height: '38px',
+                minHeight: '38px',
                 backgroundColor: 'var(--bg-card)',
                 border: '1px solid var(--border-subtle)',
                 color: 'var(--text-primary)',
@@ -292,23 +295,9 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {/* Gráficos Principais: Volume ao Longo do Tempo & Distribuição por Status */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-              gap: '1.25rem',
-            }}
-          >
+          <div className="dashboard-chart-grid-2col">
             {/* Volume Diário */}
-            <div
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '1.5rem',
-                boxShadow: 'var(--shadow-sm)',
-              }}
-            >
+            <div className="dashboard-card">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
                 <div>
                   <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
@@ -324,15 +313,7 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* Status Donut */}
-            <div
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '1.5rem',
-                boxShadow: 'var(--shadow-sm)',
-              }}
-            >
+            <div className="dashboard-card">
               <div style={{ marginBottom: '1.25rem' }}>
                 <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   Distribuição por Status
@@ -346,23 +327,9 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {/* Gráficos Secundários: Departamentos & Prioridades */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-              gap: '1.25rem',
-            }}
-          >
+          <div className="dashboard-chart-grid-2col">
             {/* Departamentos */}
-            <div
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '1.5rem',
-                boxShadow: 'var(--shadow-sm)',
-              }}
-            >
+            <div className="dashboard-card">
               <div style={{ marginBottom: '1.25rem' }}>
                 <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   Chamados por Departamento
@@ -375,15 +342,7 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* Prioridades */}
-            <div
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '1.5rem',
-                boxShadow: 'var(--shadow-sm)',
-              }}
-            >
+            <div className="dashboard-card">
               <div style={{ marginBottom: '1.25rem' }}>
                 <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   Chamados por Severidade / Prioridade
@@ -397,24 +356,10 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {/* Produtividade de Atendentes & Chamados Recentes */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: isStaff ? 'repeat(auto-fit, minmax(380px, 1fr))' : '1fr',
-              gap: '1.25rem',
-            }}
-          >
+          <div className="dashboard-chart-grid-2col">
             {/* Ranking de Atendentes (Apenas Staff) */}
             {isStaff && (
-              <div
-                style={{
-                  backgroundColor: 'var(--bg-card)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '1.5rem',
-                  boxShadow: 'var(--shadow-sm)',
-                }}
-              >
+              <div className="dashboard-card">
                 <div style={{ marginBottom: '1.25rem' }}>
                   <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                     Produtividade da Equipe de Suporte
@@ -428,15 +373,7 @@ export const DashboardPage: React.FC = () => {
             )}
 
             {/* Chamados Recentes */}
-            <div
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '1.5rem',
-                boxShadow: 'var(--shadow-sm)',
-              }}
-            >
+            <div className="dashboard-card">
               <div style={{ marginBottom: '1.25rem' }}>
                 <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   Últimos Chamados Registrados

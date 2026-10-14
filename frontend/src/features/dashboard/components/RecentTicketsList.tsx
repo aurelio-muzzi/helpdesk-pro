@@ -40,6 +40,8 @@ export const RecentTicketsList: React.FC<RecentTicketsListProps> = ({ data }) =>
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '0.75rem',
               padding: '0.875rem 1rem',
               backgroundColor: 'var(--bg-muted)',
               borderRadius: 'var(--radius-md)',
@@ -47,8 +49,8 @@ export const RecentTicketsList: React.FC<RecentTicketsListProps> = ({ data }) =>
               transition: 'background-color 0.15s ease',
             }}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: '1 1 240px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <span
                   style={{
                     fontSize: '0.75rem',
@@ -65,7 +67,7 @@ export const RecentTicketsList: React.FC<RecentTicketsListProps> = ({ data }) =>
                   {ticket.title}
                 </span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--text-tertiary)', flexWrap: 'wrap' }}>
                 <span>Solicitante: <strong>{ticket.requester_name}</strong></span>
                 <span>•</span>
                 <span>Atendente: <strong>{ticket.assigned_name || 'Não atribuído'}</strong></span>
@@ -74,7 +76,7 @@ export const RecentTicketsList: React.FC<RecentTicketsListProps> = ({ data }) =>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <span
                 style={{
                   fontSize: '0.6875rem',
