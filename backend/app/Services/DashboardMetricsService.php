@@ -23,7 +23,7 @@ class DashboardMetricsService
      */
     public function getMetrics(User $user, array $filters = []): array
     {
-        $cacheKey = 'dashboard_metrics:u' . $user->id . ':' . md5(serialize($filters));
+        $cacheKey = 'dashboard_metrics:u'.$user->id.':'.md5(serialize($filters));
 
         return Cache::remember($cacheKey, 30, function () use ($user, $filters): array {
             [$dateFrom, $dateTo] = $this->resolveDateRange($filters);

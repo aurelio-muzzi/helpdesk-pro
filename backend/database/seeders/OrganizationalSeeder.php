@@ -80,10 +80,18 @@ class OrganizationalSeeder extends Seeder
         // Service Desk L1
         if ($teamL1) {
             $l1Members = [];
-            if ($manager) $l1Members[$manager->id] = ['is_leader' => true];
-            if ($agentBeatriz) $l1Members[$agentBeatriz->id] = ['is_leader' => false];
-            if ($agentMariana) $l1Members[$agentMariana->id] = ['is_leader' => false];
-            if ($agentCarlos) $l1Members[$agentCarlos->id] = ['is_leader' => false];
+            if ($manager) {
+                $l1Members[$manager->id] = ['is_leader' => true];
+            }
+            if ($agentBeatriz) {
+                $l1Members[$agentBeatriz->id] = ['is_leader' => false];
+            }
+            if ($agentMariana) {
+                $l1Members[$agentMariana->id] = ['is_leader' => false];
+            }
+            if ($agentCarlos) {
+                $l1Members[$agentCarlos->id] = ['is_leader' => false];
+            }
 
             $teamL1->users()->syncWithoutDetaching($l1Members);
         }
@@ -91,8 +99,12 @@ class OrganizationalSeeder extends Seeder
         // Suporte Avançado L2
         if ($teamL2) {
             $l2Members = [];
-            if ($agentRafael) $l2Members[$agentRafael->id] = ['is_leader' => true];
-            if ($agentMariana) $l2Members[$agentMariana->id] = ['is_leader' => false];
+            if ($agentRafael) {
+                $l2Members[$agentRafael->id] = ['is_leader' => true];
+            }
+            if ($agentMariana) {
+                $l2Members[$agentMariana->id] = ['is_leader' => false];
+            }
 
             $teamL2->users()->syncWithoutDetaching($l2Members);
         }
@@ -100,8 +112,12 @@ class OrganizationalSeeder extends Seeder
         // Infraestrutura Cloud
         if ($teamInfra) {
             $infraMembers = [];
-            if ($agentLucas) $infraMembers[$agentLucas->id] = ['is_leader' => true];
-            if ($agentBeatriz) $infraMembers[$agentBeatriz->id] = ['is_leader' => false];
+            if ($agentLucas) {
+                $infraMembers[$agentLucas->id] = ['is_leader' => true];
+            }
+            if ($agentBeatriz) {
+                $infraMembers[$agentBeatriz->id] = ['is_leader' => false];
+            }
 
             $teamInfra->users()->syncWithoutDetaching($infraMembers);
         }
@@ -109,8 +125,12 @@ class OrganizationalSeeder extends Seeder
         // Segurança da Informação
         if ($teamSec) {
             $secMembers = [];
-            if ($agentLucas) $secMembers[$agentLucas->id] = ['is_leader' => true];
-            if ($manager) $secMembers[$manager->id] = ['is_leader' => false];
+            if ($agentLucas) {
+                $secMembers[$agentLucas->id] = ['is_leader' => true];
+            }
+            if ($manager) {
+                $secMembers[$manager->id] = ['is_leader' => false];
+            }
 
             $teamSec->users()->syncWithoutDetaching($secMembers);
         }
