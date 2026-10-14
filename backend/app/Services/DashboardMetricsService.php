@@ -7,7 +7,6 @@ use App\Enums\UserRole;
 use App\Models\Department;
 use App\Models\Priority;
 use App\Models\Ticket;
-use App\Models\TicketSatisfaction;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -262,7 +261,9 @@ class DashboardMetricsService
 
         // Satisfação do Cliente (CSAT) consolidado via agregação SQL
         $ticketIds = (clone $query)->select('id');
-        $csatRow = TicketSatisfaction::whereIn('ticket_id', $ticketIds)
+        /** @var object{total_ratings?: int|string|null, avg_rating?: float|string|null, satisfied_count?: int|string|null}|null $csatRow */
+        $csatRow = DB::table('ticket_satisfactions')
+            ->whereIn('ticket_id', $ticketIds)
             ->selectRaw('
                 COUNT(*) as total_ratings,
                 AVG(rating) as avg_rating,
@@ -270,10 +271,18 @@ class DashboardMetricsService
             ')
             ->first();
 
-        $totalCsat = (int) ($csatRow?->total_ratings ?? 0);
-        $avgCsat = $totalCsat > 0 ? round((float) $csatRow?->avg_rating, 1) : null;
-        $satisfiedCount = (int) ($csatRow?->satisfied_count ?? 0);
-        $csatSatisfactionRate = $totalCsat > 0 ? round(($satisfiedCount / $totalCsat) * 100, 1) : 100.0;
+        $totalCsat = 0;
+        $avgCsat = null;
+        $csatSatisfactionRate = 100.0;
+
+        if ($csatRow !== null) {
+            $totalCsat = (int) ($csatRow->total_ratings ?? 0);
+            $avgCsat = $totalCsat > 0 && $csatRow->avg_rating !== null
+                ? round((float) $csatRow->avg_rating, 1)
+                : null;
+            $satisfiedCount = (int) ($csatRow->satisfied_count ?? 0);
+            $csatSatisfactionRate = $totalCsat > 0 ? round(($satisfiedCount / $totalCsat) * 100, 1) : 100.0;
+        }
 
         return [
             'total_tickets' => $total,
