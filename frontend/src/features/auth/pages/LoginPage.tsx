@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
-import { LogIn, AlertCircle, ShieldCheck } from 'lucide-react';
+import { LogIn, AlertCircle } from 'lucide-react';
 import { loginSchema, type LoginFormData } from '../schemas/authSchemas';
 import { useAuth } from '../hooks/useAuth';
+import { BrandIcon } from '@/components/common/BrandIcon';
 import type { AxiosError } from 'axios';
 import type { ApiErrorResponse } from '@/lib/axios';
 
@@ -69,19 +70,13 @@ export const LoginPage: React.FC = () => {
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div
             style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--bg-muted)',
-              color: 'var(--primary-500)',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
               marginBottom: '1rem',
-              border: '1px solid var(--border-default)',
             }}
           >
-            <ShieldCheck size={26} />
+            <BrandIcon size={52} />
           </div>
           <h1
             style={{

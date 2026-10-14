@@ -14,7 +14,6 @@ use App\Models\TicketComment;
 use App\Models\TicketHistory;
 use App\Models\TicketSatisfaction;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class TicketSeeder extends Seeder

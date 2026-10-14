@@ -84,7 +84,7 @@ services:
       MYSQL_PASSWORD: helpdesk_secret
       MYSQL_ROOT_PASSWORD: root_secret_password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf

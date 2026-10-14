@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="100%" height="100%" fill="none">
+  <defs>
+    <!-- Gradiente do Fundo (Azul Tecnológico HelpDesk Pro) -->
+    <linearGradient id="hdp-icon-bg" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="60%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+
+    <!-- Gradiente dos Elementos de Atendimento -->
+    <linearGradient id="hdp-icon-accent" x1="12" y1="10" x2="36" y2="38" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#e0f2fe" />
+    </linearGradient>
+
+    <!-- Glow & Sombra Suave -->
+    <filter id="hdp-icon-shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-color="#0f172a" flood-opacity="0.32" />
+    </filter>
+  </defs>
+
+  <!-- Fundo Squircle com Borda Translúcida -->
+  <rect x="3" y="3" width="42" height="42" rx="11" fill="url(#hdp-icon-bg)" />
+  <rect x="3" y="3" width="42" height="42" rx="11" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1.5" />
+
+  <!-- Arco Superior do Headset de Suporte -->
+  <path d="M11.5 24C11.5 16.5 17 10.5 24 10.5C31 10.5 36.5 16.5 36.5 24" 
+        stroke="url(#hdp-icon-accent)" 
+        stroke-width="3" 
+        stroke-linecap="round" />
+
+  <!-- Almofadas / Fones Laterais -->
+  <rect x="9" y="21.5" width="4.5" height="8" rx="2.25" fill="url(#hdp-icon-accent)" />
+  <rect x="34.5" y="21.5" width="4.5" height="8" rx="2.25" fill="url(#hdp-icon-accent)" />
+
+  <!-- Haste do Microfone de Atendimento -->
+  <path d="M35.5 27.5V30.5C35.5 32.5 33.8 34.2 31.8 34.2H28.5" 
+        stroke="url(#hdp-icon-accent)" 
+        stroke-width="2.2" 
+        stroke-linecap="round" />
+  <circle cx="27" cy="34.2" r="1.8" fill="#38bdf8" />
+
+  <!-- Balão Central de Chamados (Ticket / Chat) -->
+  <g filter="url(#hdp-icon-shadow)">
+    <path d="M17 17.5C17 15.8 18.3 14.5 20 14.5H28C29.7 14.5 31 15.8 31 17.5V24C31 25.7 29.7 27 28 27H22L18.5 30V27C17.6 27 17 26.3 17 25.5V17.5Z" 
+          fill="#ffffff" />
+    <!-- Linhas Indicadoras de Chamado / Resolução -->
+    <path d="M20.5 19.5H27.5" stroke="#2563eb" stroke-width="2" stroke-linecap="round" />
+    <path d="M20.5 23H25" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" />
+  </g>
+</svg>

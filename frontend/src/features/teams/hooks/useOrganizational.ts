@@ -19,6 +19,8 @@ export const useDepartments = () => {
   return useQuery({
     queryKey: ORGANIZATIONAL_KEYS.departments,
     queryFn: () => organizationalService.getDepartments(),
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 30,
   });
 };
 
@@ -26,6 +28,8 @@ export const useTeams = () => {
   return useQuery({
     queryKey: ORGANIZATIONAL_KEYS.teams,
     queryFn: () => organizationalService.getTeams(),
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 30,
   });
 };
 
@@ -33,6 +37,8 @@ export const useCategories = () => {
   return useQuery({
     queryKey: ORGANIZATIONAL_KEYS.categories,
     queryFn: () => organizationalService.getCategories(),
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 30,
   });
 };
 
@@ -40,6 +46,8 @@ export const usePriorities = () => {
   return useQuery({
     queryKey: ORGANIZATIONAL_KEYS.priorities,
     queryFn: () => organizationalService.getPriorities(),
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 30,
   });
 };
 
