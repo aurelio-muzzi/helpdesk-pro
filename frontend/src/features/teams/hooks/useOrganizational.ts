@@ -6,6 +6,8 @@ import type {
   SyncTeamMembersPayload,
   CreateCategoryPayload,
   CreatePriorityPayload,
+  CreateUserPayload,
+  UpdateUserPayload,
 } from '../types';
 
 export const ORGANIZATIONAL_KEYS = {
@@ -98,6 +100,66 @@ export const useCreatePriority = () => {
     mutationFn: (payload: CreatePriorityPayload) => organizationalService.createPriority(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ORGANIZATIONAL_KEYS.priorities });
+    },
+  });
+};
+
+export const useUsers = (params?: { search?: string; role_id?: number; team_id?: number }) => {
+  return useQuery({
+    queryKey: ['users', params],
+    queryFn: () => organizationalService.getUsers(params),
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useRoles = () => {
+  return useQuery({
+    queryKey: ['roles'],
+    queryFn: () => organizationalService.getRoles(),
+    staleTime: 1000 * 60 * 30,
+  });
+};
+
+export const useCreateUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CreateUserPayload) => organizationalService.createUser(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ORGANIZATIONAL_KEYS.teams });
+    },
+  });
+};
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: UpdateUserPayload }) =>
+      organizationalService.updateUser(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ORGANIZATIONAL_KEYS.teams });
+    },
+  });
+};
+
+export const useUpdateTeam = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: Partial<CreateTeamPayload> }) =>
+      organizationalService.updateTeam(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ORGANIZATIONAL_KEYS.teams });
+    },
+  });
+};
+
+export const useDeleteTeam = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => organizationalService.deleteTeam(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ORGANIZATIONAL_KEYS.teams });
     },
   });
 };

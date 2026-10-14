@@ -67,9 +67,6 @@ export interface CreateTeamPayload {
   is_active?: boolean;
 }
 
-export interface SyncTeamMembersPayload {
-  user_ids: number[];
-}
 
 export interface CreateCategoryPayload {
   department_id?: number;
@@ -86,4 +83,50 @@ export interface CreatePriorityPayload {
   order: number;
   color: string;
   is_active?: boolean;
+}
+
+export interface Role {
+  id: number;
+  name: string;
+  display_name: string;
+  description?: string | null;
+}
+
+export interface UserItem {
+  id: number;
+  name: string;
+  email: string;
+  avatar_url?: string | null;
+  is_active: boolean;
+  role?: Role | null;
+  teams?: Team[];
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CreateUserPayload {
+  name: string;
+  email: string;
+  password: string;
+  role_id: number;
+  is_active?: boolean;
+  team_ids?: number[];
+}
+
+export interface UpdateUserPayload {
+  name?: string;
+  email?: string;
+  password?: string;
+  role_id?: number;
+  is_active?: boolean;
+  team_ids?: number[];
+}
+
+export interface SyncTeamMemberItem {
+  user_id: number;
+  is_leader?: boolean;
+}
+
+export interface SyncTeamMembersPayload {
+  members: SyncTeamMemberItem[];
 }

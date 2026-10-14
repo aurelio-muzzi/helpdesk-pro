@@ -26,6 +26,41 @@ vi.mock('../hooks/useOrganizational', () => ({
     ],
     isLoading: false,
   }),
+  useUsers: () => ({
+    data: [
+      {
+        id: 1,
+        name: 'Carlos Solicitante',
+        email: 'carlos@empresa.com',
+        is_active: true,
+        role: { id: 4, name: 'requester', display_name: 'Solicitante' },
+        teams: [],
+      },
+      {
+        id: 2,
+        name: 'Agente Silva',
+        email: 'agente@local',
+        is_active: true,
+        role: { id: 3, name: 'agent', display_name: 'Agente de Suporte' },
+        teams: [{ id: 1, name: 'Suporte N1' }],
+      },
+    ],
+    isLoading: false,
+  }),
+  useRoles: () => ({
+    data: [
+      { id: 1, name: 'admin', display_name: 'Administrador' },
+      { id: 2, name: 'manager', display_name: 'Gerente' },
+      { id: 3, name: 'agent', display_name: 'Agente de Suporte' },
+      { id: 4, name: 'requester', display_name: 'Solicitante' },
+    ],
+    isLoading: false,
+  }),
+  useCreateUser: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useUpdateUser: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useCreateTeam: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useUpdateTeam: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useSyncTeamMembers: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useCategories: () => ({
     data: [
       {
@@ -82,6 +117,7 @@ describe('TeamsPage Component', () => {
 
     expect(screen.getByRole('heading', { name: /Estrutura Organizacional/i })).toBeInTheDocument();
     expect(screen.getByText('Equipes Ativas')).toBeInTheDocument();
+    expect(screen.getByText('Usuários Registrados')).toBeInTheDocument();
     expect(screen.getAllByText(/Departamentos/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Categorias/i).length).toBeGreaterThan(0);
     expect(screen.getByText('Prioridades SLA')).toBeInTheDocument();
@@ -93,6 +129,31 @@ describe('TeamsPage Component', () => {
     expect(screen.getByText('Suporte N1')).toBeInTheDocument();
     expect(screen.getByText(/Primeiro nível de atendimento/i)).toBeInTheDocument();
     expect(screen.getByText(/1 membros/i)).toBeInTheDocument();
+  });
+
+  it('switches to users tab and displays registered users list including company requesters', () => {
+    renderWithProviders(<TeamsPage />);
+
+    const usersTab = screen.getByRole('button', { name: /Usuários/i });
+    fireEvent.click(usersTab);
+
+    expect(screen.getByText('Carlos Solicitante')).toBeInTheDocument();
+    expect(screen.getByText('carlos@empresa.com')).toBeInTheDocument();
+    expect(screen.getByText('Agente Silva')).toBeInTheDocument();
+    expect(screen.getByText('agente@local')).toBeInTheDocument();
+  });
+
+  it('opens user creation modal when clicking Novo Usuário button on users tab', () => {
+    renderWithProviders(<TeamsPage />);
+
+    const usersTab = screen.getByRole('button', { name: /Usuários/i });
+    fireEvent.click(usersTab);
+
+    const newUserButton = screen.getByRole('button', { name: /Novo Usuário/i });
+    fireEvent.click(newUserButton);
+
+    expect(screen.getByRole('heading', { name: /Novo Usuário/i })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Ex: Beatriz Lima ou João da Silva/i)).toBeInTheDocument();
   });
 
   it('switches to departments tab and displays departments list', () => {

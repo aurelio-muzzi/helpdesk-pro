@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\TicketAttachmentController;
 use App\Http\Controllers\Api\V1\TicketCommentController;
 use App\Http\Controllers\Api\V1\TicketController;
 use App\Http\Controllers\Api\V1\TicketSatisfactionController;
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Informações e status da API (/api/v1)
@@ -56,7 +57,10 @@ Route::prefix('auth')->group(function () {
 
 // Rotas Protegidas de Domínio Organizacional e Chamados
 Route::middleware('auth:sanctum')->group(function () {
-    // Leitura Organizacional (dropdowns e telas)
+    // Leitura Organizacional e Usuários (dropdowns e telas)
+    Route::get('users', [UserController::class, 'index']);
+    Route::get('users/{user}', [UserController::class, 'show']);
+    Route::get('roles', [UserController::class, 'roles']);
     Route::get('departments', [DepartmentController::class, 'index']);
     Route::get('departments/{department}', [DepartmentController::class, 'show']);
     Route::get('teams', [TeamController::class, 'index']);
@@ -66,8 +70,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('priorities', [PriorityController::class, 'index']);
     Route::get('priorities/{priority}', [PriorityController::class, 'show']);
 
-    // Gestão Organizacional e Políticas de SLA (Exclusivo Admin e Gerentes)
+    // Gestão Organizacional, Usuários e Políticas de SLA (Exclusivo Admin e Gerentes)
     Route::middleware('role:admin,manager')->group(function () {
+        Route::post('users', [UserController::class, 'store']);
+        Route::put('users/{user}', [UserController::class, 'update']);
+        Route::patch('users/{user}', [UserController::class, 'update']);
+        Route::delete('users/{user}', [UserController::class, 'destroy']);
+
         Route::post('departments', [DepartmentController::class, 'store']);
         Route::put('departments/{department}', [DepartmentController::class, 'update']);
         Route::patch('departments/{department}', [DepartmentController::class, 'update']);

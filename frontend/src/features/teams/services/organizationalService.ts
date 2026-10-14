@@ -9,6 +9,10 @@ import type {
   SyncTeamMembersPayload,
   CreateCategoryPayload,
   CreatePriorityPayload,
+  UserItem,
+  CreateUserPayload,
+  UpdateUserPayload,
+  Role,
 } from '../types';
 
 export const organizationalService = {
@@ -59,5 +63,35 @@ export const organizationalService = {
   createPriority: async (payload: CreatePriorityPayload): Promise<Priority> => {
     const response = await api.post<ApiResponse<Priority>>('/priorities', payload);
     return response.data.data;
+  },
+
+  // Usuários e Perfis
+  getUsers: async (params?: { search?: string; role_id?: number; team_id?: number }): Promise<UserItem[]> => {
+    const response = await api.get<ApiResponse<UserItem[]>>('/users', { params });
+    return response.data.data;
+  },
+
+  createUser: async (payload: CreateUserPayload): Promise<UserItem> => {
+    const response = await api.post<ApiResponse<UserItem>>('/users', payload);
+    return response.data.data;
+  },
+
+  updateUser: async (id: number, payload: UpdateUserPayload): Promise<UserItem> => {
+    const response = await api.put<ApiResponse<UserItem>>(`/users/${id}`, payload);
+    return response.data.data;
+  },
+
+  getRoles: async (): Promise<Role[]> => {
+    const response = await api.get<ApiResponse<Role[]>>('/roles');
+    return response.data.data;
+  },
+
+  updateTeam: async (id: number, payload: Partial<CreateTeamPayload>): Promise<Team> => {
+    const response = await api.put<ApiResponse<Team>>(`/teams/${id}`, payload);
+    return response.data.data;
+  },
+
+  deleteTeam: async (id: number): Promise<void> => {
+    await api.delete(`/teams/${id}`);
   },
 };
