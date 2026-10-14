@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Ticket, Users, Settings, X, ShieldAlert, BookOpen, ShieldCheck } from 'lucide-react';
 import { useSidebarStore } from '@/stores/useSidebarStore';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { BrandIcon } from '@/components/common/BrandIcon';
 
 import type { UserRole } from '@/features/auth/types';
 
@@ -77,14 +78,26 @@ export const Sidebar: React.FC = () => {
             borderBottom: '1px solid var(--border-subtle)',
           }}
         >
-          <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)' }}>
-            Navegação
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+            <BrandIcon size={26} />
+            <span
+              style={{
+                fontWeight: 700,
+                fontSize: '1.125rem',
+                letterSpacing: '-0.02em',
+                background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              HelpDesk Pro
+            </span>
+          </div>
           <button
+            className="mobile-sidebar-close"
             onClick={closeMobile}
             aria-label="Fechar menu"
             style={{
-              display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               padding: '6px',
@@ -152,18 +165,18 @@ export const Sidebar: React.FC = () => {
                     user.role?.name === 'admin'
                       ? 'rgba(239, 68, 68, 0.15)'
                       : user.role?.name === 'manager'
-                      ? 'rgba(59, 130, 246, 0.15)'
-                      : user.role?.name === 'agent'
-                      ? 'rgba(16, 185, 129, 0.15)'
-                      : 'rgba(245, 158, 11, 0.15)',
+                        ? 'rgba(59, 130, 246, 0.15)'
+                        : user.role?.name === 'agent'
+                          ? 'rgba(16, 185, 129, 0.15)'
+                          : 'rgba(245, 158, 11, 0.15)',
                   color:
                     user.role?.name === 'admin'
                       ? '#ef4444'
                       : user.role?.name === 'manager'
-                      ? '#3b82f6'
-                      : user.role?.name === 'agent'
-                      ? '#10b981'
-                      : '#f59e0b',
+                        ? '#3b82f6'
+                        : user.role?.name === 'agent'
+                          ? '#10b981'
+                          : '#f59e0b',
                 }}
               >
                 {user.role?.display_name || user.role?.name}

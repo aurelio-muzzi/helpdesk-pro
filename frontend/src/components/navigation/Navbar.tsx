@@ -32,12 +32,12 @@ export const Navbar: React.FC = () => {
         zIndex: 20,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
         <button
+          className="mobile-nav-toggle"
           onClick={toggleMobile}
           aria-label="Abrir menu"
           style={{
-            display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             padding: '8px',
@@ -47,34 +47,6 @@ export const Navbar: React.FC = () => {
         >
           <Menu size={20} />
         </button>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span
-            style={{
-              fontWeight: 700,
-              fontSize: '1.125rem',
-              letterSpacing: '-0.02em',
-              background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            HelpDesk Pro
-          </span>
-          <span
-            style={{
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              backgroundColor: 'var(--bg-muted)',
-              color: 'var(--primary-500)',
-              padding: '2px 8px',
-              borderRadius: 'var(--radius-full)',
-              border: '1px solid var(--border-subtle)',
-            }}
-          >
-            v1.0
-          </span>
-        </div>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -258,10 +230,10 @@ export const Navbar: React.FC = () => {
                       user.role?.name === 'admin'
                         ? '#ef4444'
                         : user.role?.name === 'manager'
-                        ? '#3b82f6'
-                        : user.role?.name === 'agent'
-                        ? '#10b981'
-                        : '#f59e0b',
+                          ? '#3b82f6'
+                          : user.role?.name === 'agent'
+                            ? '#10b981'
+                            : '#f59e0b',
                   }}
                 >
                   {user.role?.display_name || user.role?.name}

@@ -11,6 +11,8 @@ use App\Models\TicketSatisfaction;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DashboardMetricsService
@@ -21,44 +23,48 @@ class DashboardMetricsService
      */
     public function getMetrics(User $user, array $filters = []): array
     {
-        [$dateFrom, $dateTo] = $this->resolveDateRange($filters);
+        $cacheKey = 'dashboard_metrics:u' . $user->id . ':' . md5(serialize($filters));
 
-        $query = $this->buildBaseQuery($user, $filters, $dateFrom, $dateTo);
+        return Cache::remember($cacheKey, 30, function () use ($user, $filters): array {
+            [$dateFrom, $dateTo] = $this->resolveDateRange($filters);
 
-        // 1. Sumário de KPIs
-        $summary = $this->calculateSummary(clone $query);
+            $query = $this->buildBaseQuery($user, $filters, $dateFrom, $dateTo);
 
-        // 2. Chamados por Status
-        $byStatus = $this->calculateByStatus(clone $query);
+            // 1. Sumário de KPIs
+            $summary = $this->calculateSummary(clone $query);
 
-        // 3. Chamados por Prioridade
-        $byPriority = $this->calculateByPriority(clone $query);
+            // 2. Chamados por Status
+            $byStatus = $this->calculateByStatus(clone $query);
 
-        // 4. Chamados por Departamento
-        $byDepartment = $this->calculateByDepartment(clone $query);
+            // 3. Chamados por Prioridade
+            $byPriority = $this->calculateByPriority(clone $query);
 
-        // 5. Volume ao longo do tempo (diário)
-        $volumeOverTime = $this->calculateVolumeOverTime(clone $query, $dateFrom, $dateTo);
+            // 4. Chamados por Departamento
+            $byDepartment = $this->calculateByDepartment(clone $query);
 
-        // 6. Produtividade por Atendente
-        $agentPerformance = $this->calculateAgentPerformance(clone $query);
+            // 5. Volume ao longo do tempo (diário)
+            $volumeOverTime = $this->calculateVolumeOverTime(clone $query, $dateFrom, $dateTo);
 
-        // 7. Chamados Recentes
-        $recentTickets = $this->getRecentTickets(clone $query);
+            // 6. Produtividade por Atendente
+            $agentPerformance = $this->calculateAgentPerformance(clone $query);
 
-        return [
-            'period' => [
-                'from' => $dateFrom->toDateString(),
-                'to' => $dateTo->toDateString(),
-            ],
-            'summary' => $summary,
-            'tickets_by_status' => $byStatus,
-            'tickets_by_priority' => $byPriority,
-            'tickets_by_department' => $byDepartment,
-            'volume_over_time' => $volumeOverTime,
-            'agent_performance' => $agentPerformance,
-            'recent_tickets' => $recentTickets,
-        ];
+            // 7. Chamados Recentes
+            $recentTickets = $this->getRecentTickets(clone $query);
+
+            return [
+                'period' => [
+                    'from' => $dateFrom->toDateString(),
+                    'to' => $dateTo->toDateString(),
+                ],
+                'summary' => $summary,
+                'tickets_by_status' => $byStatus,
+                'tickets_by_priority' => $byPriority,
+                'tickets_by_department' => $byDepartment,
+                'volume_over_time' => $volumeOverTime,
+                'agent_performance' => $agentPerformance,
+                'recent_tickets' => $recentTickets,
+            ];
+        });
     }
 
     /**
@@ -207,48 +213,66 @@ class DashboardMetricsService
      */
     private function calculateSummary(Builder $query): array
     {
-        $total = (int) (clone $query)->count();
-        $open = (int) (clone $query)->where('status', TicketStatus::OPEN->value)->count();
-        $inProgress = (int) (clone $query)->where('status', TicketStatus::IN_PROGRESS->value)->count();
-        $pending = (int) (clone $query)->where('status', TicketStatus::PENDING->value)->count();
-        $resolved = (int) (clone $query)->where('status', TicketStatus::RESOLVED->value)->count();
-        $closed = (int) (clone $query)->where('status', TicketStatus::CLOSED->value)->count();
-        $cancelled = (int) (clone $query)->where('status', TicketStatus::CANCELLED->value)->count();
+        $statusCounts = (clone $query)
+            ->selectRaw('status, COUNT(*) as aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
 
-        $slaBreached = (int) (clone $query)->where('sla_status', 'breached')->count();
-        $slaWithin = (int) (clone $query)->where('sla_status', 'within_sla')->count();
+        $open = (int) ($statusCounts[TicketStatus::OPEN->value] ?? 0);
+        $inProgress = (int) ($statusCounts[TicketStatus::IN_PROGRESS->value] ?? 0);
+        $pending = (int) ($statusCounts[TicketStatus::PENDING->value] ?? 0);
+        $resolved = (int) ($statusCounts[TicketStatus::RESOLVED->value] ?? 0);
+        $closed = (int) ($statusCounts[TicketStatus::CLOSED->value] ?? 0);
+        $cancelled = (int) ($statusCounts[TicketStatus::CANCELLED->value] ?? 0);
+        $total = array_sum($statusCounts->toArray());
+
+        $slaCounts = (clone $query)
+            ->selectRaw('sla_status, COUNT(*) as aggregate')
+            ->groupBy('sla_status')
+            ->pluck('aggregate', 'sla_status');
+
+        $slaBreached = (int) ($slaCounts['breached'] ?? 0);
+        $slaWithin = (int) ($slaCounts['within_sla'] ?? 0);
         $slaEvaluated = $slaBreached + $slaWithin;
         $slaComplianceRate = $slaEvaluated > 0
             ? round(($slaWithin / $slaEvaluated) * 100, 1)
             : 100.0;
 
-        // Tempo médio de primeira resposta (MTTA)
-        $firstResponses = (clone $query)
+        // Tempo médio de primeira resposta (MTTA) via banco de dados
+        $isMysql = DB::connection()->getDriverName() === 'mysql';
+        $mttaDiff = $isMysql
+            ? 'TIMESTAMPDIFF(MINUTE, created_at, first_response_at)'
+            : '(strftime("%s", first_response_at) - strftime("%s", created_at)) / 60.0';
+        $mttrDiff = $isMysql
+            ? 'TIMESTAMPDIFF(MINUTE, created_at, resolved_at)'
+            : '(strftime("%s", resolved_at) - strftime("%s", created_at)) / 60.0';
+
+        $avgFirstResponseMinutes = (clone $query)
             ->whereNotNull('first_response_at')
-            ->get(['created_at', 'first_response_at']);
+            ->selectRaw("AVG({$mttaDiff}) as avg_mtta")
+            ->value('avg_mtta');
+        $avgFirstResponseMinutes = $avgFirstResponseMinutes !== null ? round((float) $avgFirstResponseMinutes, 1) : null;
 
-        $avgFirstResponseMinutes = $firstResponses->isEmpty()
-            ? null
-            : round((float) $firstResponses->avg(function (Ticket $t): float {
-                return (float) Carbon::parse($t->created_at)->diffInMinutes(Carbon::parse($t->first_response_at));
-            }), 1);
-
-        // Tempo médio de resolução (MTTR)
-        $resolutions = (clone $query)
+        // Tempo médio de resolução (MTTR) via banco de dados
+        $avgResolutionMinutes = (clone $query)
             ->whereNotNull('resolved_at')
-            ->get(['created_at', 'resolved_at']);
+            ->selectRaw("AVG({$mttrDiff}) as avg_mttr")
+            ->value('avg_mttr');
+        $avgResolutionMinutes = $avgResolutionMinutes !== null ? round((float) $avgResolutionMinutes, 1) : null;
 
-        $avgResolutionMinutes = $resolutions->isEmpty()
-            ? null
-            : round((float) $resolutions->avg(function (Ticket $t): float {
-                return (float) Carbon::parse($t->created_at)->diffInMinutes(Carbon::parse($t->resolved_at));
-            }), 1);
+        // Satisfação do Cliente (CSAT) consolidado via agregação SQL
+        $ticketIds = (clone $query)->select('id');
+        $csatRow = TicketSatisfaction::whereIn('ticket_id', $ticketIds)
+            ->selectRaw('
+                COUNT(*) as total_ratings,
+                AVG(rating) as avg_rating,
+                SUM(CASE WHEN rating >= 4 THEN 1 ELSE 0 END) as satisfied_count
+            ')
+            ->first();
 
-        // Satisfação do Cliente (CSAT)
-        $satisfactions = TicketSatisfaction::whereIn('ticket_id', (clone $query)->select('id'))->get();
-        $totalCsat = $satisfactions->count();
-        $avgCsat = $totalCsat > 0 ? round((float) $satisfactions->avg('rating'), 1) : null;
-        $satisfiedCount = $satisfactions->where('rating', '>=', 4)->count();
+        $totalCsat = (int) ($csatRow?->total_ratings ?? 0);
+        $avgCsat = $totalCsat > 0 ? round((float) $csatRow?->avg_rating, 1) : null;
+        $satisfiedCount = (int) ($csatRow?->satisfied_count ?? 0);
         $csatSatisfactionRate = $totalCsat > 0 ? round(($satisfiedCount / $totalCsat) * 100, 1) : 100.0;
 
         return [

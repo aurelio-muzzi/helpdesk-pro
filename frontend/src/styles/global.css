@@ -80,7 +80,12 @@ textarea {
   background: var(--text-muted);
 }
 
-/* Responsive Desktop Sidebar */
+/* Responsive Desktop Sidebar & Navigation Controls */
+.mobile-nav-toggle,
+.mobile-sidebar-close {
+  display: flex !important;
+}
+
 @media (min-width: 640px) {
   .user-info-text {
     display: flex !important;
@@ -93,6 +98,10 @@ textarea {
   }
   .app-main-content {
     margin-left: 260px;
+  }
+  .mobile-nav-toggle,
+  .mobile-sidebar-close {
+    display: none !important;
   }
 }
 

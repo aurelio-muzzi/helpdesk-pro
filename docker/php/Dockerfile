@@ -23,6 +23,10 @@ RUN pecl install redis && docker-php-ext-enable redis
 # Instala Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copia configurações de performance para o PHP
+COPY docker/php/opcache.ini $PHP_INI_DIR/conf.d/opcache.ini
+COPY docker/php/custom.ini $PHP_INI_DIR/conf.d/custom.ini
+
 # Configuração de usuário e diretório de trabalho
 WORKDIR /var/www/backend
 
