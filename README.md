@@ -1,4 +1,4 @@
-# HelpDesk Pro — Enterprise Service Desk & Issue Tracking SaaS
+# HelpDesk Pro — Enterprise Service Desk & Issue Tracking System
 
 [![Backend Tests](https://img.shields.io/badge/PHPUnit-67%20Passed-brightgreen.svg)](file:///c:/Projeto/helpdesk-pro/backend)
 [![Frontend Tests](https://img.shields.io/badge/Vitest-34%20Passed-brightgreen.svg)](file:///c:/Projeto/helpdesk-pro/frontend)

@@ -1,23 +1,25 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   Plus,
-  Search,
-  Filter,
   CheckCircle2,
   Clock,
   AlertCircle,
   FileText,
   User,
+  UserCheck,
+  ArrowRightLeft,
   X,
   PlayCircle,
   Star,
   RotateCcw,
   Bell,
 } from 'lucide-react';
+import { FilterBar, SearchInput, FilterSelect } from '@/components/common/FilterBar';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useTickets, useChangeTicketStatus } from '../hooks/useTickets';
-import { usePriorities } from '@/features/teams/hooks/useOrganizational';
+import { useTickets, useChangeTicketStatus, useAssignTicket } from '../hooks/useTickets';
+import { usePriorities, useUsers } from '@/features/teams/hooks/useOrganizational';
 import { NewTicketModal } from '../components/NewTicketModal';
+import { TransferTicketModal } from '../components/TransferTicketModal';
 import { TicketTimeline } from '../components/TicketTimeline';
 import { CsatModal } from '../components/CsatModal';
 import { ReopenTicketModal } from '../components/ReopenTicketModal';
@@ -32,17 +34,21 @@ export const TicketsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [assigneeFilter, setAssigneeFilter] = useState<string>('all');
   const [isNewTicketOpen, setIsNewTicketOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [ratingTicket, setRatingTicket] = useState<Ticket | null>(null);
   const [reopeningTicket, setReopeningTicket] = useState<Ticket | null>(null);
+  const [transferringTicket, setTransferringTicket] = useState<Ticket | null>(null);
   const [liveTicketAlert, setLiveTicketAlert] = useState<Ticket | null>(null);
 
   const prevTicketIdsRef = useRef<Set<number> | null>(null);
 
   const { data: tickets, isLoading } = useTickets();
   const { data: priorities } = usePriorities();
+  const { data: users } = useUsers();
   const changeStatusMutation = useChangeTicketStatus();
+  const assignTicketMutation = useAssignTicket();
 
   // Detecção de novos chamados registrados em tempo real
   useEffect(() => {
@@ -69,6 +75,23 @@ export const TicketsPage: React.FC = () => {
     return () => clearTimeout(timer);
   }, [liveTicketAlert]);
 
+  // Lista de responsáveis únicos combinando usuários cadastrados e tickets existentes
+  const assignees = useMemo(() => {
+    const map = new Map<number, { id: number; name: string }>();
+
+    users?.forEach((u) => {
+      map.set(u.id, { id: u.id, name: u.name });
+    });
+
+    tickets?.forEach((t) => {
+      if (t.assigned_to) {
+        map.set(t.assigned_to.id, { id: t.assigned_to.id, name: t.assigned_to.name });
+      }
+    });
+
+    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [users, tickets]);
+
   // Filtros aplicados
   const filteredTickets = useMemo(() => {
     return (tickets || []).filter((ticket) => {
@@ -83,9 +106,14 @@ export const TicketsPage: React.FC = () => {
       const matchesPriority =
         priorityFilter === 'all' || String(ticket.priority.id) === priorityFilter;
 
-      return matchesSearch && matchesStatus && matchesPriority;
+      const matchesAssignee =
+        assigneeFilter === 'all' ||
+        (assigneeFilter === 'unassigned' && !ticket.assigned_to) ||
+        (ticket.assigned_to && String(ticket.assigned_to.id) === assigneeFilter);
+
+      return matchesSearch && matchesStatus && matchesPriority && matchesAssignee;
     });
-  }, [tickets, searchTerm, statusFilter, priorityFilter]);
+  }, [tickets, searchTerm, statusFilter, priorityFilter, assigneeFilter]);
 
   // Contadores para os KPIs
   const counts = useMemo(() => {
@@ -112,6 +140,41 @@ export const TicketsPage: React.FC = () => {
       }
     } catch {
       alert('Não foi possível realizar essa transição de status.');
+    }
+  };
+
+  const handleAssignToMe = async (ticket: Ticket) => {
+    if (!user) return;
+    try {
+      const isReassigning = ticket.assigned_to && ticket.assigned_to.id !== user.id;
+      const comment = isReassigning
+        ? `Atendimento assumido por ${user.name} (anteriormente com ${ticket.assigned_to?.name}).`
+        : `Atendimento assumido por ${user.name}.`;
+
+      await assignTicketMutation.mutateAsync({
+        id: ticket.id,
+        payload: {
+          assigned_to: user.id,
+          comment,
+        },
+      });
+
+      if (selectedTicket?.id === ticket.id) {
+        setSelectedTicket((prev) =>
+          prev
+            ? {
+                ...prev,
+                assigned_to: { id: user.id, name: user.name, email: user.email },
+                status:
+                  prev.status.value === 'open'
+                    ? { ...prev.status, value: 'in_progress', label: 'Em Atendimento', color: '#8b5cf6' }
+                    : prev.status,
+              }
+            : null
+        );
+      }
+    } catch {
+      alert('Não foi possível assumir este chamado.');
     }
   };
 
@@ -311,101 +374,56 @@ export const TicketsPage: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '0.75rem',
-          flexWrap: 'wrap',
-          backgroundColor: 'var(--bg-card)',
-          padding: '1rem',
-          borderRadius: 'var(--radius-md)',
-          border: '1px solid var(--border-subtle)',
-          alignItems: 'center',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            backgroundColor: 'var(--bg-input)',
-            border: '1px solid var(--border-default)',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0.5rem 0.75rem',
-            flex: '1 1 240px',
-            minHeight: '40px',
-            boxSizing: 'border-box',
-          }}
-        >
-          <Search size={16} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
-          <input
-            type="text"
-            placeholder="Buscar por código, título ou solicitante..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              outline: 'none',
-              width: '100%',
-              fontSize: '0.875rem',
-              color: 'var(--text-primary)',
-            }}
-          />
-        </div>
+      <FilterBar>
+        <SearchInput
+          placeholder="Buscar por código, título ou solicitante..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
 
         {/* Status Filter */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: '1 1 160px' }}>
-          <Filter size={16} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            style={{
-              backgroundColor: 'var(--bg-input)',
-              border: '1px solid var(--border-default)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '0.5rem 0.75rem',
-              color: 'var(--text-primary)',
-              fontSize: '0.875rem',
-              minHeight: '40px',
-              width: '100%',
-            }}
-          >
-            <option value="all">Todos os Status</option>
-            <option value="open">Aberto</option>
-            <option value="in_progress">Em Atendimento</option>
-            <option value="pending">Pendente</option>
-            <option value="resolved">Resolvido</option>
-            <option value="closed">Fechado</option>
-            <option value="cancelled">Cancelado</option>
-          </select>
-        </div>
+        <FilterSelect
+          icon={true}
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="all">Todos os Status</option>
+          <option value="open">Aberto</option>
+          <option value="in_progress">Em Atendimento</option>
+          <option value="pending">Pendente</option>
+          <option value="resolved">Resolvido</option>
+          <option value="closed">Fechado</option>
+          <option value="cancelled">Cancelado</option>
+        </FilterSelect>
 
         {/* Priority Filter */}
-        <div style={{ flex: '1 1 160px' }}>
-          <select
-            value={priorityFilter}
-            onChange={(e) => setPriorityFilter(e.target.value)}
-            style={{
-              backgroundColor: 'var(--bg-input)',
-              border: '1px solid var(--border-default)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '0.5rem 0.75rem',
-              color: 'var(--text-primary)',
-              fontSize: '0.875rem',
-              minHeight: '40px',
-              width: '100%',
-            }}
-          >
-            <option value="all">Todas as Prioridades</option>
-            {priorities?.map((p) => (
-              <option key={p.id} value={String(p.id)}>
-                {p.display_name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+        <FilterSelect
+          value={priorityFilter}
+          onChange={(e) => setPriorityFilter(e.target.value)}
+        >
+          <option value="all">Todas as Prioridades</option>
+          {priorities?.map((p) => (
+            <option key={p.id} value={String(p.id)}>
+              {p.display_name}
+            </option>
+          ))}
+        </FilterSelect>
+
+        {/* Assignee Filter */}
+        <FilterSelect
+          icon={<User size={16} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />}
+          value={assigneeFilter}
+          onChange={(e) => setAssigneeFilter(e.target.value)}
+        >
+          <option value="all">Todos os Responsáveis</option>
+          <option value="unassigned">Não Atribuído</option>
+          {assignees.map((a) => (
+            <option key={a.id} value={String(a.id)}>
+              {a.name}
+            </option>
+          ))}
+        </FilterSelect>
+      </FilterBar>
 
       {/* Ticket List View (Mobile Cards & Desktop Table) */}
       {isLoading ? (
@@ -572,8 +590,8 @@ export const TicketsPage: React.FC = () => {
 
                     {isStaff && ticket.status.value === 'open' && (
                       <button
-                        onClick={() => handleQuickStatusChange(ticket, 'in_progress')}
-                        title="Iniciar atendimento"
+                        onClick={() => handleAssignToMe(ticket)}
+                        title="Iniciar atendimento e assumir chamado"
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
@@ -590,6 +608,28 @@ export const TicketsPage: React.FC = () => {
                         }}
                       >
                         <PlayCircle size={14} /> Atender
+                      </button>
+                    )}
+                    {isStaff && ticket.status.value === 'in_progress' && ticket.assigned_to?.id !== user?.id && (
+                      <button
+                        onClick={() => handleAssignToMe(ticket)}
+                        title="Assumir este chamado para você"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          backgroundColor: 'rgba(59, 130, 246, 0.12)',
+                          border: '1px solid rgba(59, 130, 246, 0.35)',
+                          color: '#60a5fa',
+                          padding: '6px 10px',
+                          borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          minHeight: '36px',
+                        }}
+                      >
+                        <UserCheck size={14} /> Assumir
                       </button>
                     )}
                     {isStaff && ticket.status.value === 'in_progress' && (
@@ -781,8 +821,8 @@ export const TicketsPage: React.FC = () => {
 
                         {isStaff && ticket.status.value === 'open' && (
                           <button
-                            onClick={() => handleQuickStatusChange(ticket, 'in_progress')}
-                            title="Iniciar atendimento"
+                            onClick={() => handleAssignToMe(ticket)}
+                            title="Iniciar atendimento e assumir chamado"
                             style={{
                               display: 'inline-flex',
                               alignItems: 'center',
@@ -798,6 +838,27 @@ export const TicketsPage: React.FC = () => {
                             }}
                           >
                             <PlayCircle size={14} /> Atender
+                          </button>
+                        )}
+                        {isStaff && ticket.status.value === 'in_progress' && ticket.assigned_to?.id !== user?.id && (
+                          <button
+                            onClick={() => handleAssignToMe(ticket)}
+                            title="Assumir este chamado para você"
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              backgroundColor: 'rgba(59, 130, 246, 0.12)',
+                              border: '1px solid rgba(59, 130, 246, 0.35)',
+                              color: '#60a5fa',
+                              padding: '4px 8px',
+                              borderRadius: 'var(--radius-sm)',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <UserCheck size={14} /> Assumir
                           </button>
                         )}
                         {isStaff && ticket.status.value === 'in_progress' && (
@@ -985,6 +1046,54 @@ export const TicketsPage: React.FC = () => {
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   {selectedTicket.assigned_to?.email ?? '—'}
                 </span>
+
+                {isStaff && !selectedTicket.status.is_final && (
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.625rem', flexWrap: 'wrap' }}>
+                    {selectedTicket.assigned_to?.id !== user?.id && (
+                      <button
+                        type="button"
+                        onClick={() => handleAssignToMe(selectedTicket)}
+                        disabled={assignTicketMutation.isPending}
+                        title="Assumir este chamado para você"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                          border: '1px solid rgba(59, 130, 246, 0.4)',
+                          color: '#60a5fa',
+                          padding: '4px 8px',
+                          borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <UserCheck size={13} /> Assumir Atendimento
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setTransferringTicket(selectedTicket)}
+                      title="Transferir ou reatribuir para outro membro da equipe"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                        border: '1px solid rgba(139, 92, 246, 0.4)',
+                        color: '#a78bfa',
+                        padding: '4px 8px',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <ArrowRightLeft size={13} /> Transferir...
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1061,6 +1170,15 @@ export const TicketsPage: React.FC = () => {
 
       {/* New Ticket Modal */}
       <NewTicketModal isOpen={isNewTicketOpen} onClose={() => setIsNewTicketOpen(false)} />
+
+      {/* Transfer / Reassign Ticket Modal */}
+      <TransferTicketModal
+        ticket={transferringTicket}
+        onClose={() => setTransferringTicket(null)}
+        onSuccess={() => {
+          setSelectedTicket(null);
+        }}
+      />
 
       {/* CSAT Modal */}
       <CsatModal ticket={ratingTicket} onClose={() => setRatingTicket(null)} />
