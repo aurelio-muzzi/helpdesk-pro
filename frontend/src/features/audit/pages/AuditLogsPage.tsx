@@ -2,8 +2,6 @@ import React, { useState, useMemo } from 'react';
 import {
   Shield,
   ShieldAlert,
-  Search,
-  Filter,
   RefreshCw,
   Eye,
   Lock,
@@ -13,6 +11,8 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+import { FilterBar, SearchInput, FilterSelect } from '@/components/common/FilterBar';
+import { KpiCard } from '@/components/common/KpiCard';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useAuditLogs } from '../hooks/useAuditLogs';
 import { AuditDetailsModal } from '../components/AuditDetailsModal';
@@ -183,174 +183,56 @@ export const AuditLogsPage: React.FC = () => {
           gap: '1rem',
         }}
       >
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(59, 130, 246, 0.1)',
-              color: '#3b82f6',
-            }}
-          >
-            <Shield size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Total de Registros
-            </span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              {meta?.total ?? '—'}
-            </h3>
-          </div>
-        </div>
+        <KpiCard
+          icon={<Shield size={24} />}
+          label="Total de Registros"
+          value={meta?.total ?? '—'}
+          variant="blue"
+        />
 
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              color: '#10b981',
-            }}
-          >
-            <Lock size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Integridade dos Logs
-            </span>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#10b981', marginTop: '0.25rem' }}>
-              Protegido & Ativo
-            </h3>
-          </div>
-        </div>
+        <KpiCard
+          icon={<Lock size={24} />}
+          label="Integridade dos Logs"
+          value="Protegido & Ativo"
+          variant="emerald"
+        />
 
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(245, 158, 11, 0.1)',
-              color: '#f59e0b',
-            }}
-          >
-            <CheckCircle2 size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Página Atual
-            </span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              {meta ? `${meta.current_page} de ${meta.last_page}` : '1 de 1'}
-            </h3>
-          </div>
-        </div>
+        <KpiCard
+          icon={<CheckCircle2 size={24} />}
+          label="Página Atual"
+          value={meta ? `${meta.current_page} de ${meta.last_page}` : '1 de 1'}
+          variant="amber"
+        />
       </div>
 
       {/* Toolbar de Filtros */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '1rem',
-          flexWrap: 'wrap',
-          backgroundColor: 'var(--bg-card)',
-          padding: '1rem',
-          borderRadius: 'var(--radius-md)',
-          border: '1px solid var(--border-subtle)',
-        }}
-      >
-        <div style={{ position: 'relative', flex: 1, minWidth: '240px' }}>
-          <Search
-            size={16}
-            style={{
-              position: 'absolute',
-              left: '0.75rem',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: 'var(--text-tertiary)',
-            }}
-          />
-          <input
-            type="text"
-            placeholder="Buscar por descrição, endereço IP ou usuário..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setPage(1);
-            }}
-            style={{
-              width: '100%',
-              paddingLeft: '2.25rem',
-              paddingRight: '0.75rem',
-              height: '38px',
-              backgroundColor: 'var(--bg-muted)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: 'var(--radius-sm)',
-              color: 'var(--text-primary)',
-              fontSize: '0.875rem',
-            }}
-          />
-        </div>
+      <FilterBar>
+        <SearchInput
+          placeholder="Buscar por descrição, endereço IP ou usuário..."
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setPage(1);
+          }}
+        />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Filter size={16} style={{ color: 'var(--text-secondary)' }} />
-          <select
-            value={eventCategory}
-            onChange={(e) => {
-              setEventCategory(e.target.value);
-              setPage(1);
-            }}
-            aria-label="Filtro de Eventos"
-            style={{
-              height: '38px',
-              backgroundColor: 'var(--bg-muted)',
-              color: 'var(--text-primary)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '0 0.75rem',
-              fontSize: '0.8125rem',
-              cursor: 'pointer',
-            }}
-          >
-            <option value="all">Todos os Eventos</option>
-            <option value="auth.*">Autenticação (auth.*)</option>
-            <option value="auth.failed_login">Falhas de Login (auth.failed_login)</option>
-            <option value="ticket.*">Chamados (ticket.*)</option>
-            <option value="sla.*">Políticas de SLA (sla.*)</option>
-            <option value="article.*">Base de Conhecimento (article.*)</option>
-          </select>
-        </div>
-      </div>
+        <FilterSelect
+          icon={true}
+          value={eventCategory}
+          onChange={(e) => {
+            setEventCategory(e.target.value);
+            setPage(1);
+          }}
+          aria-label="Filtro de Eventos"
+        >
+          <option value="all">Todos os Eventos</option>
+          <option value="auth.*">Autenticação (auth.*)</option>
+          <option value="auth.failed_login">Falhas de Login (auth.failed_login)</option>
+          <option value="ticket.*">Chamados (ticket.*)</option>
+          <option value="sla.*">Políticas de SLA (sla.*)</option>
+          <option value="article.*">Base de Conhecimento (article.*)</option>
+        </FilterSelect>
+      </FilterBar>
 
       {/* Tabela de Logs */}
       <div

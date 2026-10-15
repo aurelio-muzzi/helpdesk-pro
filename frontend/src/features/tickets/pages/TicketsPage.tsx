@@ -7,7 +7,6 @@ import {
   FileText,
   User,
   UserCheck,
-  ArrowRightLeft,
   X,
   PlayCircle,
   Star,
@@ -15,12 +14,13 @@ import {
   Bell,
 } from 'lucide-react';
 import { FilterBar, SearchInput, FilterSelect } from '@/components/common/FilterBar';
+import { KpiCard } from '@/components/common/KpiCard';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useTickets, useChangeTicketStatus, useAssignTicket } from '../hooks/useTickets';
 import { usePriorities, useUsers } from '@/features/teams/hooks/useOrganizational';
 import { NewTicketModal } from '../components/NewTicketModal';
 import { TransferTicketModal } from '../components/TransferTicketModal';
-import { TicketTimeline } from '../components/TicketTimeline';
+import { TicketDetailDrawer } from '../components/TicketDetailDrawer';
 import { CsatModal } from '../components/CsatModal';
 import { ReopenTicketModal } from '../components/ReopenTicketModal';
 import { SatisfactionBadge } from '../components/SatisfactionBadge';
@@ -178,6 +178,39 @@ export const TicketsPage: React.FC = () => {
     }
   };
 
+  let ticketFeedbackContent: React.ReactNode = null;
+  if (isLoading) {
+    ticketFeedbackContent = (
+      <div
+        style={{
+          backgroundColor: 'var(--bg-card)',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: 'var(--radius-md)',
+          padding: '3rem',
+          textAlign: 'center',
+          color: 'var(--text-secondary)',
+        }}
+      >
+        Carregando chamados...
+      </div>
+    );
+  } else if (filteredTickets.length === 0) {
+    ticketFeedbackContent = (
+      <div
+        style={{
+          backgroundColor: 'var(--bg-card)',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: 'var(--radius-md)',
+          padding: '3rem',
+          textAlign: 'center',
+          color: 'var(--text-secondary)',
+        }}
+      >
+        Nenhum chamado encontrado com os filtros selecionados.
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Header */}
@@ -212,8 +245,9 @@ export const TicketsPage: React.FC = () => {
                     boxShadow: '0 0 6px #10b981',
                     display: 'inline-block',
                   }}
+                  aria-hidden="true"
                 />
-                Tempo Real Ativo
+                <span>Tempo Real Ativo</span>
               </span>
             )}
           </div>
@@ -248,129 +282,30 @@ export const TicketsPage: React.FC = () => {
 
       {/* KPI Cards */}
       <div className="kpi-grid">
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(59, 130, 246, 0.1)',
-              color: '#3b82f6',
-            }}
-          >
-            <FileText size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Total de Chamados
-            </span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              {counts.total}
-            </h3>
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(239, 68, 68, 0.1)',
-              color: '#ef4444',
-            }}
-          >
-            <AlertCircle size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Em Aberto (Triagem)
-            </span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              {counts.open}
-            </h3>
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(139, 92, 246, 0.1)',
-              color: '#8b5cf6',
-            }}
-          >
-            <Clock size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Em Atendimento
-            </span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              {counts.inProgress}
-            </h3>
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              color: '#10b981',
-            }}
-          >
-            <CheckCircle2 size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Resolvidos
-            </span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              {counts.resolved}
-            </h3>
-          </div>
-        </div>
+        <KpiCard
+          icon={<FileText size={24} />}
+          label="Total de Chamados"
+          value={counts.total}
+          variant="blue"
+        />
+        <KpiCard
+          icon={<AlertCircle size={24} />}
+          label="Em Aberto (Triagem)"
+          value={counts.open}
+          variant="rose"
+        />
+        <KpiCard
+          icon={<Clock size={24} />}
+          label="Em Atendimento"
+          value={counts.inProgress}
+          variant="purple"
+        />
+        <KpiCard
+          icon={<CheckCircle2 size={24} />}
+          label="Resolvidos"
+          value={counts.resolved}
+          variant="emerald"
+        />
       </div>
 
       {/* Filter and Search Bar */}
@@ -426,40 +361,13 @@ export const TicketsPage: React.FC = () => {
       </FilterBar>
 
       {/* Ticket List View (Mobile Cards & Desktop Table) */}
-      {isLoading ? (
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '3rem',
-            textAlign: 'center',
-            color: 'var(--text-secondary)',
-          }}
-        >
-          Carregando chamados...
-        </div>
-      ) : filteredTickets.length === 0 ? (
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '3rem',
-            textAlign: 'center',
-            color: 'var(--text-secondary)',
-          }}
-        >
-          Nenhum chamado encontrado com os filtros selecionados.
-        </div>
-      ) : (
+      {ticketFeedbackContent ?? (
         <>
           {/* Mobile Card List (< 768px) */}
           <div className="ticket-mobile-view">
             {filteredTickets.map((ticket) => (
               <div
                 key={ticket.id}
-                onClick={() => setSelectedTicket(ticket)}
                 style={{
                   backgroundColor: 'var(--bg-card)',
                   border: '1px solid var(--border-subtle)',
@@ -469,15 +377,26 @@ export const TicketsPage: React.FC = () => {
                   flexDirection: 'column',
                   gap: '0.75rem',
                   boxShadow: 'var(--shadow-sm)',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.15s ease',
                 }}
               >
                 {/* Header: Code & Badges */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '0.8125rem', color: 'var(--primary-400)' }}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTicket(ticket)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      fontFamily: 'monospace',
+                      fontWeight: 700,
+                      fontSize: '0.8125rem',
+                      color: 'var(--primary-400)',
+                      cursor: 'pointer',
+                    }}
+                  >
                     {ticket.code}
-                  </span>
+                  </button>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
                     <span
                       style={{
@@ -508,9 +427,23 @@ export const TicketsPage: React.FC = () => {
 
                 {/* Title & Category */}
                 <div>
-                  <h4 style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0, lineHeight: 1.35 }}>
-                    {ticket.title}
-                  </h4>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTicket(ticket)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      display: 'block',
+                      width: '100%',
+                    }}
+                  >
+                    <h4 style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0, lineHeight: 1.35 }}>
+                      {ticket.title}
+                    </h4>
+                  </button>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px', display: 'inline-block' }}>
                     {ticket.category.name}
                   </span>
@@ -565,7 +498,6 @@ export const TicketsPage: React.FC = () => {
                     paddingTop: '0.5rem',
                     borderTop: '1px solid var(--border-subtle)',
                   }}
-                  onClick={(e) => e.stopPropagation()}
                 >
                   <button
                     type="button"
@@ -590,7 +522,10 @@ export const TicketsPage: React.FC = () => {
 
                     {isStaff && ticket.status.value === 'open' && (
                       <button
-                        onClick={() => handleAssignToMe(ticket)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAssignToMe(ticket);
+                        }}
                         title="Iniciar atendimento e assumir chamado"
                         style={{
                           display: 'inline-flex',
@@ -612,7 +547,10 @@ export const TicketsPage: React.FC = () => {
                     )}
                     {isStaff && ticket.status.value === 'in_progress' && ticket.assigned_to?.id !== user?.id && (
                       <button
-                        onClick={() => handleAssignToMe(ticket)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAssignToMe(ticket);
+                        }}
                         title="Assumir este chamado para você"
                         style={{
                           display: 'inline-flex',
@@ -634,7 +572,10 @@ export const TicketsPage: React.FC = () => {
                     )}
                     {isStaff && ticket.status.value === 'in_progress' && (
                       <button
-                        onClick={() => handleQuickStatusChange(ticket, 'resolved')}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleQuickStatusChange(ticket, 'resolved');
+                        }}
                         title="Marcar como resolvido"
                         style={{
                           display: 'inline-flex',
@@ -658,7 +599,10 @@ export const TicketsPage: React.FC = () => {
                       !ticket.satisfaction &&
                       (user?.id === ticket.requester.id || user?.role?.name === 'admin') && (
                         <button
-                          onClick={() => setRatingTicket(ticket)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setRatingTicket(ticket);
+                          }}
                           title="Avaliar atendimento"
                           style={{
                             display: 'inline-flex',
@@ -681,7 +625,10 @@ export const TicketsPage: React.FC = () => {
                     {ticket.status.value === 'resolved' &&
                       (user?.id === ticket.requester.id || user?.role?.name === 'admin') && (
                         <button
-                          onClick={() => setReopeningTicket(ticket)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setReopeningTicket(ticket);
+                          }}
                           title="Reabrir chamado"
                           style={{
                             display: 'inline-flex',
@@ -734,12 +681,19 @@ export const TicketsPage: React.FC = () => {
                 {filteredTickets.map((ticket) => (
                   <tr
                     key={ticket.id}
+                    tabIndex={0}
                     style={{
                       borderBottom: '1px solid var(--border-subtle)',
                       cursor: 'pointer',
                       transition: 'background-color var(--transition-fast)',
                     }}
                     onClick={() => setSelectedTicket(ticket)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedTicket(ticket);
+                      }
+                    }}
                   >
                     <td style={{ padding: '0.875rem 1rem', fontFamily: 'monospace', fontWeight: 600, color: 'var(--primary-400)', whiteSpace: 'nowrap' }}>
                       {ticket.code}
@@ -939,233 +893,17 @@ export const TicketsPage: React.FC = () => {
 
       {/* Ticket Detail Drawer */}
       {selectedTicket && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 50,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-          onClick={() => setSelectedTicket(null)}
-        >
-          <div
-            className="ticket-drawer-container"
-            style={{
-              height: '100%',
-              backgroundColor: 'var(--bg-surface)',
-              borderLeft: '1px solid var(--border-default)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1.25rem',
-              overflowY: 'auto',
-              boxSizing: 'border-box',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--primary-400)', fontWeight: 600 }}>
-                  {selectedTicket.code}
-                </span>
-                <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '4px' }}>
-                  {selectedTicket.title}
-                </h3>
-              </div>
-              <button
-                onClick={() => setSelectedTicket(null)}
-                style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '6px' }}
-                aria-label="Fechar detalhes"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <span
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  padding: '2px 8px',
-                  borderRadius: 'var(--radius-full)',
-                  backgroundColor: `${selectedTicket.status.color}20`,
-                  color: selectedTicket.status.color,
-                }}
-              >
-                {selectedTicket.status.label}
-              </span>
-              <span
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  padding: '2px 8px',
-                  borderRadius: 'var(--radius-sm)',
-                  backgroundColor: `${selectedTicket.priority.color}22`,
-                  color: selectedTicket.priority.color,
-                }}
-              >
-                {selectedTicket.priority.display_name}
-              </span>
-              <span
-                style={{
-                  fontSize: '0.75rem',
-                  padding: '2px 8px',
-                  borderRadius: 'var(--radius-sm)',
-                  backgroundColor: 'var(--bg-muted)',
-                  color: 'var(--text-secondary)',
-                }}
-              >
-                {selectedTicket.category.name}
-              </span>
-            </div>
-
-            <div style={{ backgroundColor: 'var(--bg-card)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
-              <h5 style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600 }}>
-                DESCRIÇÃO
-              </h5>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-primary)', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
-                {selectedTicket.description}
-              </p>
-            </div>
-
-            {/* Solicitante & Atendente */}
-            <div className="form-grid-2col">
-              <div style={{ backgroundColor: 'var(--bg-card)', padding: '0.875rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Solicitante</span>
-                <p style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px' }}>
-                  {selectedTicket.requester.name}
-                </p>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{selectedTicket.requester.email}</span>
-              </div>
-              <div style={{ backgroundColor: 'var(--bg-card)', padding: '0.875rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Responsável</span>
-                <p style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px' }}>
-                  {selectedTicket.assigned_to?.name ?? 'Não atribuído'}
-                </p>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  {selectedTicket.assigned_to?.email ?? '—'}
-                </span>
-
-                {isStaff && !selectedTicket.status.is_final && (
-                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.625rem', flexWrap: 'wrap' }}>
-                    {selectedTicket.assigned_to?.id !== user?.id && (
-                      <button
-                        type="button"
-                        onClick={() => handleAssignToMe(selectedTicket)}
-                        disabled={assignTicketMutation.isPending}
-                        title="Assumir este chamado para você"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '4px',
-                          backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                          border: '1px solid rgba(59, 130, 246, 0.4)',
-                          color: '#60a5fa',
-                          padding: '4px 8px',
-                          borderRadius: 'var(--radius-sm)',
-                          fontSize: '0.75rem',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <UserCheck size={13} /> Assumir Atendimento
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => setTransferringTicket(selectedTicket)}
-                      title="Transferir ou reatribuir para outro membro da equipe"
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        backgroundColor: 'rgba(139, 92, 246, 0.15)',
-                        border: '1px solid rgba(139, 92, 246, 0.4)',
-                        color: '#a78bfa',
-                        padding: '4px 8px',
-                        borderRadius: 'var(--radius-sm)',
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      <ArrowRightLeft size={13} /> Transferir...
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Avaliação CSAT no drawer se houver */}
-            {selectedTicket.satisfaction && (
-              <div style={{ backgroundColor: 'rgba(234, 179, 8, 0.08)', border: '1px solid rgba(234, 179, 8, 0.25)', borderRadius: 'var(--radius-sm)', padding: '0.875rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Avaliação do Cliente</span>
-                  <SatisfactionBadge satisfaction={selectedTicket.satisfaction} />
-                </div>
-                {selectedTicket.satisfaction.comment && (
-                  <p style={{ fontSize: '0.8125rem', color: 'var(--text-primary)', fontStyle: 'italic', marginTop: '0.25rem' }}>
-                    "{selectedTicket.satisfaction.comment}"
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Ações adicionais no drawer (Avaliar / Reabrir) */}
-            {(selectedTicket.status.value === 'resolved' || selectedTicket.status.value === 'closed') && (
-              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                {!selectedTicket.satisfaction && (user?.id === selectedTicket.requester.id || user?.role?.name === 'admin') && (
-                  <button
-                    onClick={() => setRatingTicket(selectedTicket)}
-                    style={{
-                      flex: 1,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.5rem',
-                      padding: '0.625rem 1rem',
-                      borderRadius: 'var(--radius-sm)',
-                      backgroundColor: 'rgba(234, 179, 8, 0.15)',
-                      color: '#eab308',
-                      border: '1px solid rgba(234, 179, 8, 0.3)',
-                      fontWeight: 600,
-                      fontSize: '0.8125rem',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <Star size={16} /> Avaliar Atendimento (CSAT)
-                  </button>
-                )}
-                {selectedTicket.status.value === 'resolved' && (user?.id === selectedTicket.requester.id || user?.role?.name === 'admin') && (
-                  <button
-                    onClick={() => setReopeningTicket(selectedTicket)}
-                    style={{
-                      flex: 1,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.5rem',
-                      padding: '0.625rem 1rem',
-                      borderRadius: 'var(--radius-sm)',
-                      backgroundColor: 'rgba(249, 115, 22, 0.15)',
-                      color: '#fb923c',
-                      border: '1px solid rgba(249, 115, 22, 0.3)',
-                      fontWeight: 600,
-                      fontSize: '0.8125rem',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <RotateCcw size={16} /> Reabrir Chamado
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* Linha do Tempo e Interações */}
-            <TicketTimeline ticket={selectedTicket} />
-          </div>
-        </div>
+        <TicketDetailDrawer
+          ticket={selectedTicket}
+          onClose={() => setSelectedTicket(null)}
+          isStaff={isStaff}
+          currentUser={user}
+          onAssignToMe={(ticket) => handleAssignToMe(ticket)}
+          isAssigning={assignTicketMutation.isPending}
+          onTransfer={(ticket) => setTransferringTicket(ticket)}
+          onRate={(ticket) => setRatingTicket(ticket)}
+          onReopen={(ticket) => setReopeningTicket(ticket)}
+        />
       )}
 
       {/* New Ticket Modal */}

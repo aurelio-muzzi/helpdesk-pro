@@ -4,7 +4,6 @@ import {
   Building2,
   FolderTree,
   Flame,
-  Search,
   Plus,
   CheckCircle2,
   XCircle,
@@ -14,6 +13,8 @@ import {
   Settings2,
   Trash2,
 } from 'lucide-react';
+import { SearchInput } from '@/components/common/FilterBar';
+import { KpiCard } from '@/components/common/KpiCard';
 import {
   useDepartments,
   useTeams,
@@ -204,160 +205,36 @@ export const TeamsPage: React.FC = () => {
 
       {/* KPI Cards */}
       <div className="admin-kpi-grid">
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(59, 130, 246, 0.1)',
-              color: '#3b82f6',
-            }}
-          >
-            <Users size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Equipes Ativas
-            </span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              {teams?.length ?? 0}
-            </h3>
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(139, 92, 246, 0.1)',
-              color: '#a855f7',
-            }}
-          >
-            <UserCheck size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Usuários Registrados
-            </span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              {users?.length ?? 0}
-            </h3>
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              color: '#10b981',
-            }}
-          >
-            <Building2 size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Departamentos
-            </span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              {departments?.length ?? 0}
-            </h3>
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(245, 158, 11, 0.1)',
-              color: '#f59e0b',
-            }}
-          >
-            <FolderTree size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Categorias
-            </span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              {categories?.length ?? 0}
-            </h3>
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(239, 68, 68, 0.1)',
-              color: '#ef4444',
-            }}
-          >
-            <Flame size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Prioridades SLA
-            </span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              {priorities?.length ?? 0}
-            </h3>
-          </div>
-        </div>
+        <KpiCard
+          icon={<Users size={24} />}
+          label="Equipes Ativas"
+          value={teams?.length ?? 0}
+          variant="blue"
+        />
+        <KpiCard
+          icon={<UserCheck size={24} />}
+          label="Usuários Registrados"
+          value={users?.length ?? 0}
+          variant="purple"
+        />
+        <KpiCard
+          icon={<Building2 size={24} />}
+          label="Departamentos"
+          value={departments?.length ?? 0}
+          variant="emerald"
+        />
+        <KpiCard
+          icon={<FolderTree size={24} />}
+          label="Categorias"
+          value={categories?.length ?? 0}
+          variant="amber"
+        />
+        <KpiCard
+          icon={<Flame size={24} />}
+          label="Prioridades SLA"
+          value={priorities?.length ?? 0}
+          variant="rose"
+        />
       </div>
 
       {/* Navigation Tabs and Search */}
@@ -485,36 +362,12 @@ export const TeamsPage: React.FC = () => {
         </div>
 
         {/* Search Bar */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            backgroundColor: 'var(--bg-input)',
-            border: '1px solid var(--border-default)',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0.4rem 0.75rem',
-            minWidth: '200px',
-            flex: '1 1 200px',
-            minHeight: '40px',
-          }}
-        >
-          <Search size={16} style={{ color: 'var(--text-muted)' }} />
-          <input
-            type="text"
-            placeholder="Filtrar registros..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              outline: 'none',
-              width: '100%',
-              fontSize: '0.875rem',
-              color: 'var(--text-primary)',
-            }}
-          />
-        </div>
+        <SearchInput
+          placeholder="Filtrar registros..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          containerStyle={{ minWidth: '200px', flex: '1 1 200px' }}
+        />
       </div>
 
       {/* Tab Contents */}
