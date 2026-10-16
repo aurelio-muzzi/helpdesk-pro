@@ -13,6 +13,7 @@ import {
 import { useSlaPolicies, useDeleteSlaPolicy } from '../hooks/useSla';
 import { SlaPolicyFormModal } from '../components/SlaPolicyFormModal';
 import { ConfirmDeleteModal } from '@/components/feedback/ConfirmDeleteModal';
+import { KpiCard } from '@/components/common/KpiCard';
 import type { SlaPolicy } from '../types';
 
 const formatMinutes = (minutes: number): string => {
@@ -118,98 +119,26 @@ export const SlaPoliciesPage: React.FC = () => {
           gap: '1rem',
         }}
       >
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(59, 130, 246, 0.1)',
-              color: '#3b82f6',
-            }}
-          >
-            <ShieldAlert size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Regras Ativas
-            </span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              {activeCount}
-            </h3>
-          </div>
-        </div>
+        <KpiCard
+          icon={<ShieldAlert size={24} />}
+          label="Regras Ativas"
+          value={activeCount}
+          variant="blue"
+        />
 
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(239, 68, 68, 0.1)',
-              color: '#ef4444',
-            }}
-          >
-            <Zap size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Resposta Mais Rápida
-            </span>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              {formatMinutes(fastestResponseMinutes)}
-            </h3>
-          </div>
-        </div>
+        <KpiCard
+          icon={<Zap size={24} />}
+          label="Resposta Mais Rápida"
+          value={formatMinutes(fastestResponseMinutes)}
+          variant="rose"
+        />
 
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              color: '#10b981',
-            }}
-          >
-            <Clock size={24} />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Monitoramento
-            </span>
-            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-              Automático (24/7)
-            </h3>
-          </div>
-        </div>
+        <KpiCard
+          icon={<Clock size={24} />}
+          label="Monitoramento"
+          value="Automático (24/7)"
+          variant="emerald"
+        />
       </div>
 
       {/* SLA Policies Cards Grid */}

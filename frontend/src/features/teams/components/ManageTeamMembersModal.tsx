@@ -34,7 +34,13 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const currentMemberIds = members.map((m) => m.user_id);
-  const availableUsers = allUsers.filter((u) => !currentMemberIds.includes(u.id));
+  // Equipes de atendimento são compostas exclusivamente por agentes, gerentes ou administradores (solicitantes são excluídos)
+  const availableUsers = allUsers.filter(
+    (u) =>
+      !currentMemberIds.includes(u.id) &&
+      u.role?.name &&
+      ['agent', 'manager', 'admin'].includes(u.role.name)
+  );
 
   const handleAddMember = () => {
     if (!selectedUserId) return;
@@ -157,14 +163,16 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
         {/* Adicionar Membro */}
         <div>
           <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
-            Adicionar Atendente ou Usuário à Equipe
+            Adicionar Atendente à Equipe
           </label>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%' }}>
             <select
               value={selectedUserId}
               onChange={(e) => setSelectedUserId(Number(e.target.value))}
               style={{
-                flex: '1 1 200px',
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
                 padding: '0.625rem 0.75rem',
                 minHeight: '40px',
                 borderRadius: 'var(--radius-md)',
@@ -175,10 +183,10 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
                 outline: 'none',
               }}
             >
-              <option value="">Selecione um usuário para adicionar...</option>
+              <option value="">Selecione um atendente para adicionar...</option>
               {availableUsers.map((u) => (
                 <option key={u.id} value={u.id}>
-                  {u.name} ({u.email}) - {u.role?.display_name || 'Usuário'}
+                  {u.name} - {u.role?.display_name || 'Atendente'} ({u.email})
                 </option>
               ))}
             </select>
@@ -191,9 +199,10 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '0.375rem',
+                gap: '0.5rem',
                 padding: '0.625rem 1rem',
                 minHeight: '40px',
+                width: '100%',
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: selectedUserId ? 'var(--primary-600)' : 'var(--bg-card-hover)',
                 color: selectedUserId ? '#ffffff' : 'var(--text-muted)',
@@ -201,10 +210,11 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
                 fontWeight: 600,
                 fontSize: '0.875rem',
                 cursor: selectedUserId ? 'pointer' : 'not-allowed',
+                transition: 'all 0.15s ease',
               }}
             >
               <UserPlus size={16} />
-              Adicionar
+              Adicionar Atendente
             </button>
           </div>
         </div>
@@ -220,7 +230,7 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
               Nenhum membro vinculado a esta equipe ainda. Adicione atendentes no campo acima.
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
               {members.map((member) => {
                 const userInfo = allUsers.find((u) => u.id === member.user_id);
                 const name = userInfo?.name || `Usuário #${member.user_id}`;
@@ -232,91 +242,99 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
                     key={member.user_id}
                     style={{
                       display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '0.75rem 1rem',
+                      flexDirection: 'column',
+                      gap: '0.625rem',
+                      padding: '0.875rem 1rem',
                       backgroundColor: 'var(--bg-card)',
                       border: '1px solid var(--border-subtle)',
                       borderRadius: 'var(--radius-md)',
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <div
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.75rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.625rem', minWidth: 0, flex: 1 }}>
+                        <div
+                          style={{
+                            width: '32px',
+                            height: '32px',
+                            borderRadius: 'var(--radius-full)',
+                            backgroundColor: member.is_leader ? 'rgba(234, 179, 8, 0.15)' : 'rgba(59, 130, 246, 0.1)',
+                            color: member.is_leader ? '#eab308' : 'var(--primary-500)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 700,
+                            fontSize: '0.8125rem',
+                            flexShrink: 0,
+                            marginTop: '2px',
+                          }}
+                        >
+                          {member.is_leader ? <Crown size={16} /> : name.charAt(0).toUpperCase()}
+                        </div>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
+                            <span style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--text-primary)', wordBreak: 'break-word' }}>
+                              {name}
+                            </span>
+                            {member.is_leader && (
+                              <span style={{ fontSize: '0.6875rem', fontWeight: 700, padding: '2px 6px', borderRadius: 'var(--radius-full)', backgroundColor: 'rgba(234, 179, 8, 0.15)', color: '#eab308' }}>
+                                Líder da Equipe
+                              </span>
+                            )}
+                          </div>
+                          <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '2px 0 0', wordBreak: 'break-all' }}>
+                            {email} {roleName && `• ${roleName}`}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveMember(member.user_id)}
+                        aria-label="Remover membro"
+                        title="Remover da equipe"
                         style={{
-                          width: '32px',
-                          height: '32px',
-                          borderRadius: 'var(--radius-full)',
-                          backgroundColor: member.is_leader ? 'rgba(234, 179, 8, 0.15)' : 'rgba(59, 130, 246, 0.1)',
-                          color: member.is_leader ? '#eab308' : 'var(--primary-500)',
+                          minWidth: '36px',
+                          minHeight: '36px',
+                          borderRadius: 'var(--radius-sm)',
+                          border: '1px solid rgba(239, 68, 68, 0.2)',
+                          backgroundColor: 'rgba(239, 68, 68, 0.08)',
+                          color: 'var(--danger)',
+                          cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontWeight: 700,
-                          fontSize: '0.8125rem',
+                          flexShrink: 0,
                         }}
                       >
-                        {member.is_leader ? <Crown size={16} /> : name.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <span style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--text-primary)' }}>
-                            {name}
-                          </span>
-                          {member.is_leader && (
-                            <span style={{ fontSize: '0.6875rem', fontWeight: 700, padding: '2px 6px', borderRadius: 'var(--radius-full)', backgroundColor: 'rgba(234, 179, 8, 0.15)', color: '#eab308' }}>
-                              Líder da Equipe
-                            </span>
-                          )}
-                        </div>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                          {email} {roleName && `• ${roleName}`}
-                        </span>
-                      </div>
+                        <Trash2 size={16} />
+                      </button>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.5rem' }}>
                       <button
                         type="button"
                         onClick={() => handleToggleLeader(member.user_id)}
                         title={member.is_leader ? 'Remover liderança' : 'Definir como líder da equipe'}
                         aria-label={member.is_leader ? 'Remover liderança' : 'Definir como líder da equipe'}
                         style={{
-                          padding: '0.375rem 0.625rem',
+                          width: '100%',
+                          padding: '0.45rem 0.75rem',
                           minHeight: '36px',
                           borderRadius: 'var(--radius-sm)',
                           border: '1px solid var(--border-subtle)',
-                          backgroundColor: member.is_leader ? 'rgba(234, 179, 8, 0.1)' : 'var(--bg-canvas)',
+                          backgroundColor: member.is_leader ? 'rgba(234, 179, 8, 0.12)' : 'var(--bg-canvas)',
                           color: member.is_leader ? '#eab308' : 'var(--text-secondary)',
                           fontSize: '0.75rem',
                           fontWeight: 600,
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '4px',
+                          justifyContent: 'center',
+                          gap: '6px',
                         }}
                       >
                         <Crown size={14} />
-                        {member.is_leader ? 'Líder' : 'Tornar Líder'}
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveMember(member.user_id)}
-                        aria-label="Remover membro"
-                        style={{
-                          minWidth: '36px',
-                          minHeight: '36px',
-                          borderRadius: 'var(--radius-sm)',
-                          border: 'none',
-                          backgroundColor: 'transparent',
-                          color: 'var(--danger)',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <Trash2 size={16} />
+                        {member.is_leader ? 'Remover Liderança da Equipe' : 'Definir como Líder da Equipe'}
                       </button>
                     </div>
                   </div>
@@ -330,11 +348,11 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
       {/* Footer */}
       <div
         style={{
-          padding: '1rem 1.5rem',
+          padding: '1rem 1.25rem',
           borderTop: '1px solid var(--border-subtle)',
           display: 'flex',
           justifyContent: 'flex-end',
-          gap: '0.75rem',
+          gap: '0.625rem',
           backgroundColor: 'var(--bg-card)',
         }}
       >
@@ -343,7 +361,8 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
           onClick={onClose}
           disabled={syncMembersMutation.isPending}
           style={{
-            padding: '0.625rem 1.25rem',
+            flex: '1 1 auto',
+            padding: '0.625rem 1rem',
             minHeight: '40px',
             borderRadius: 'var(--radius-md)',
             fontSize: '0.875rem',
@@ -361,11 +380,12 @@ const ManageTeamMembersContent: React.FC<ManageTeamMembersContentProps> = ({
           onClick={handleSave}
           disabled={syncMembersMutation.isPending}
           style={{
+            flex: '1 1 auto',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '0.5rem',
-            padding: '0.625rem 1.5rem',
+            padding: '0.625rem 1.25rem',
             minHeight: '40px',
             borderRadius: 'var(--radius-md)',
             fontSize: '0.875rem',

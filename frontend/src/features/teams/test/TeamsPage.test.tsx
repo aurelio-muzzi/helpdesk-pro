@@ -44,6 +44,14 @@ vi.mock('../hooks/useOrganizational', () => ({
         role: { id: 3, name: 'agent', display_name: 'Agente de Suporte' },
         teams: [{ id: 1, name: 'Suporte N1' }],
       },
+      {
+        id: 3,
+        name: 'Mariana Agente',
+        email: 'mariana@local',
+        is_active: true,
+        role: { id: 3, name: 'agent', display_name: 'Agente de Suporte' },
+        teams: [],
+      },
     ],
     isLoading: false,
   }),
@@ -200,5 +208,24 @@ describe('TeamsPage Component', () => {
 
     expect(screen.getByText('ALTA')).toBeInTheDocument();
     expect(screen.getByText('URGENTE')).toBeInTheDocument();
+  });
+
+  it('excludes requesters and only displays staff agents in team members select dropdown', () => {
+    renderWithProviders(<TeamsPage />);
+
+    // Click "Gerenciar" on the team card
+    const manageBtn = screen.getByRole('button', { name: /Gerenciar/i });
+    fireEvent.click(manageBtn);
+
+    // Modal should be open
+    expect(screen.getByText(/Membros da Equipe: Suporte N1/i)).toBeInTheDocument();
+    expect(screen.getByText(/Adicionar Atendente à Equipe/i)).toBeInTheDocument();
+
+    // Select options should contain Mariana Agente but NOT Carlos Solicitante
+    const select = screen.getByRole('combobox');
+    const options = Array.from(select.querySelectorAll('option')).map((opt) => opt.textContent);
+
+    expect(options.some((text) => text?.includes('Mariana Agente'))).toBe(true);
+    expect(options.some((text) => text?.includes('Carlos Solicitante'))).toBe(false);
   });
 });

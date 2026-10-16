@@ -255,7 +255,7 @@ const UserFormContent: React.FC<UserFormContentProps> = ({
         </div>
 
         {/* Linha 2: Senha + Status Ativo integrados */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 1.2fr) minmax(200px, 1fr)', gap: '0.875rem', alignItems: 'flex-end' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '0.875rem', alignItems: 'flex-end' }}>
           {/* Senha */}
           <div>
             <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
@@ -310,12 +310,12 @@ const UserFormContent: React.FC<UserFormContentProps> = ({
           </div>
         </div>
 
-        {/* Linha 3: Perfil / Cargo em 4 colunas compactas */}
+        {/* Linha 3: Perfil / Cargo em colunas compactas e fluidas */}
         <div>
           <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
             Perfil de Acesso (Cargo) *
           </label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 120px), 1fr))', gap: '0.5rem' }}>
             {roles.map((role) => {
               const isSelected = Number(roleId) === Number(role.id);
               return (

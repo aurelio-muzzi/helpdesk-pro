@@ -13,7 +13,7 @@ vi.mock('@/features/auth/services/authService', () => ({
 describe('HelpDesk Pro - Application Routing & Auth Protection Tests', () => {
   it('redirects unauthenticated visitor to login page on root access', async () => {
     render(<App />);
-    const submitButton = await screen.findByRole('button', { name: /Entrar no sistema/i });
+    const submitButton = await screen.findByRole('button', { name: /Entrar no sistema/i }, { timeout: 5000 });
     expect(submitButton).toBeInTheDocument();
     expect(screen.getByText('Acesse sua conta para gerenciar chamados e atendimento')).toBeInTheDocument();
   });

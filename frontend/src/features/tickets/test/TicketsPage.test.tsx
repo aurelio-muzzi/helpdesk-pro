@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import TicketsPage from '../pages/TicketsPage';
 import type { Ticket } from '../types';
 
+const mockAssignMutate = vi.fn().mockResolvedValue({});
+
 const mockTickets: Ticket[] = [
   {
     id: 1,
@@ -92,6 +94,10 @@ vi.mock('../hooks/useTickets', () => ({
     mutateAsync: vi.fn(),
     isPending: false,
   }),
+  useAssignTicket: () => ({
+    mutateAsync: mockAssignMutate,
+    isPending: false,
+  }),
 }));
 
 vi.mock('@/features/teams/hooks/useOrganizational', () => ({
@@ -106,6 +112,26 @@ vi.mock('@/features/teams/hooks/useOrganizational', () => ({
       { id: 1, name: 'Hardware' },
       { id: 2, name: 'VPN & Redes' },
     ],
+  }),
+  useUsers: () => ({
+    data: [
+      { id: 5, name: 'Carlos Técnico', email: 'carlos@local' },
+    ],
+  }),
+}));
+
+vi.mock('@/features/auth/hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: {
+      id: 99,
+      name: 'Beatriz Agente',
+      email: 'beatriz@local',
+      role: { id: 2, name: 'agent' as const, display_name: 'Agente' },
+      is_active: true,
+      permissions: [],
+      created_at: '',
+      updated_at: '',
+    },
   }),
 }));
 
@@ -153,6 +179,23 @@ describe('TicketsPage Component', () => {
     expect(screen.queryByText('Erro de VPN')).not.toBeInTheDocument();
   });
 
+  it('filters tickets when selecting assignee', () => {
+    renderWithProviders(<TicketsPage />);
+
+    const assigneeSelect = screen.getByDisplayValue('Todos os Responsáveis');
+    expect(assigneeSelect).toBeInTheDocument();
+
+    // Filtra pelo técnico Carlos Técnico (id: 5)
+    fireEvent.change(assigneeSelect, { target: { value: '5' } });
+    expect(screen.getAllByText('Erro de VPN').length).toBeGreaterThan(0);
+    expect(screen.queryByText('Notebook não liga')).not.toBeInTheDocument();
+
+    // Filtra por Não Atribuído
+    fireEvent.change(assigneeSelect, { target: { value: 'unassigned' } });
+    expect(screen.getAllByText('Notebook não liga').length).toBeGreaterThan(0);
+    expect(screen.queryByText('Erro de VPN')).not.toBeInTheDocument();
+  });
+
   it('opens new ticket modal when clicking Novo Chamado button', () => {
     renderWithProviders(<TicketsPage />);
 
@@ -160,5 +203,15 @@ describe('TicketsPage Component', () => {
     fireEvent.click(newTicketButton);
 
     expect(screen.getByRole('heading', { name: /Abertura de Novo Chamado/i })).toBeInTheDocument();
+  });
+
+  it('allows staff to take over / reassign ticket to themselves', async () => {
+    renderWithProviders(<TicketsPage />);
+
+    const takeOverButtons = screen.getAllByRole('button', { name: /Assumir/i });
+    expect(takeOverButtons.length).toBeGreaterThan(0);
+
+    fireEvent.click(takeOverButtons[0]);
+    expect(mockAssignMutate).toHaveBeenCalled();
   });
 });

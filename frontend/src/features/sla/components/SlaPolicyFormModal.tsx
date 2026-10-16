@@ -248,7 +248,7 @@ const SlaPolicyFormContent: React.FC<SlaPolicyFormContentProps> = ({
         </div>
 
         {/* Linha 2: 1ª Resposta + Resolução */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '0.875rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '0.875rem' }}>
           {/* 1ª Resposta */}
           <div>
             <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
@@ -427,7 +427,7 @@ export const SlaPolicyFormModal: React.FC<SlaPolicyFormModalProps> = ({
       }}
     >
       <SlaPolicyFormContent
-        key={policyToEdit?.id ?? 'create'}
+        key={`${policyToEdit?.id ?? 'create'}-${priorities[0]?.id ?? 'none'}`}
         policyToEdit={policyToEdit}
         onClose={onClose}
         priorities={priorities}
