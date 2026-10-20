@@ -6,8 +6,19 @@
 [![Pint](https://img.shields.io/badge/Pint-PSR--12%20Clean-brightgreen.svg)](file:///c:/Projeto/helpdesk-pro/backend)
 [![ESLint](https://img.shields.io/badge/ESLint-0%20Warnings-brightgreen.svg)](file:///c:/Projeto/helpdesk-pro/frontend)
 [![Docker](https://img.shields.io/badge/Docker-Production%20Ready-blue.svg)](file:///c:/Projeto/helpdesk-pro/docker-compose.yml)
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Vídeo_de_Demonstração-FF0000?logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=iS5om0GxTGg)
 
 Sistema corporativo de Service Desk, Gestão de Incidentes (ITIL) e Rastreamento de Problemas projetado com arquitetura moderna fullstack, alta confiabilidade e padrões avançados de engenharia de software.
+
+---
+
+## 🎥 Demonstração em Vídeo
+
+Confira a visão geral das funcionalidades, interface dark mode e fluxo de atendimento no vídeo abaixo:
+
+[![Demonstração do HelpDesk Pro no YouTube](https://img.youtube.com/vi/iS5om0GxTGg/maxresdefault.jpg)](https://www.youtube.com/watch?v=iS5om0GxTGg "Clique para assistir à demonstração no YouTube")
+
+> 💡 *Clique na imagem acima para assistir ao vídeo de demonstração completo no YouTube.*
 
 ---
 
